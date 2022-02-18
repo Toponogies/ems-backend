@@ -10,7 +10,7 @@ public class DeviceConnection {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "credential_id")
     Credential credential;
 
     @Column(name = "ip_address", unique = true, nullable = false)
@@ -18,4 +18,36 @@ public class DeviceConnection {
 
     @Column(name = "port", nullable = false)
     String port;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Credential getCredential() {
+        return credential;
+    }
+
+    public void setCredential(Credential credential) {
+        this.credential = credential;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
 }

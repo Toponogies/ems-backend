@@ -1,19 +1,11 @@
 package vn.com.tma.emsbackend.dto;
 
-public class CredentialDto {
-    private Long id;
-
+public class CredentialRequestDto {
     private String name;
 
     private String username;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String password;
 
     public String getName() {
         return name;
@@ -29,5 +21,13 @@ public class CredentialDto {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
