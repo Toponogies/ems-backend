@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: EMS-Backend
+server:
+  port: 3000

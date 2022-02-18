@@ -1,0 +1,9 @@
+# IntelliJ IDEA folder
+/.idea
+*.iml
+
+# Build files
+/target
+
+# Local configuration file
+application.yaml
