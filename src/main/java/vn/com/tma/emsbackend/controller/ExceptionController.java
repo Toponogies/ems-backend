@@ -4,24 +4,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import vn.com.tma.emsbackend.dto.ErrorDto;
+import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 
 import java.util.Date;
 
 @ControllerAdvice
-public class ExceptionController {
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+public class ExceptionController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ErrorDto resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        return new ErrorDto(new Date(), HttpStatus.NOT_FOUND.toString(), ex.getMessage(), request.getDescription(false));
+    public ResponseEntity<ErrorDto> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+        ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ResourceConstraintViolationException.class)
+    public ResponseEntity<?> handleDataConstraintViolationException(Exception ex, WebRequest request) {
+        ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ErrorDto unexpectedException(Exception ex, WebRequest request) {
-        return new ErrorDto(new Date(), HttpStatus.INTERNAL_SERVER_ERROR.toString() ,ex.getMessage(), request.getDescription(false));
+    public ResponseEntity<?> handleUnexpectedException(Exception ex, WebRequest request) {
+        ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
