@@ -1,4 +1,4 @@
-package java.vn.com.tma.emsbackend.configuration;
+package vn.com.tma.emsbackend.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
