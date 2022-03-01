@@ -7,6 +7,7 @@ import vn.com.tma.emsbackend.entity.Credential;
 public class CredentialCreator {
     public static Credential createCredentialBy(CredentialRequestDto credentialRequestDto) {
         Credential credential = new Credential();
+        credential.setId(1L);
         credential.setUsername(credentialRequestDto.getUsername());
         credential.setName(credentialRequestDto.getName());
         credential.setPassword(credentialRequestDto.getPassword());
@@ -20,4 +21,13 @@ public class CredentialCreator {
         credentialDto.setName(credential.getName());
         return credentialDto;
     }
+
+    public static CredentialDto createCredentialDtoBy(CredentialRequestDto credentialRequestDto) {
+        CredentialDto credentialDto = new CredentialDto();
+        credentialDto.setId(1L);
+        credentialDto.setUsername(credentialRequestDto.getUsername());
+        credentialDto.setName(credentialRequestDto.getName());
+        return credentialDto;
+    }
+
 }

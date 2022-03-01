@@ -48,9 +48,14 @@ public class CredentialController {
     }
 
     @Operation(summary = "Add a new credential")
-    @ApiResponse(responseCode = "201",
-            description = "Added the credential",
-            content = {@Content(schema = @Schema(implementation = CredentialDto.class))})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "Added the credential",
+                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+            @ApiResponse(responseCode = "409",
+                    description = "Constraint violated",
+                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+    })
     @PostMapping
     public ResponseEntity<CredentialDto> addCredential(@RequestBody CredentialRequestDto credentialRequestDto) {
         CredentialDto credentialDto = credentialService.add(credentialRequestDto);
@@ -64,6 +69,9 @@ public class CredentialController {
                     content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
+                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))}),
+            @ApiResponse(responseCode = "409",
+                    description = "Constraint violated",
                     content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
     })
     @PutMapping("/{id}")
