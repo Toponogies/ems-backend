@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +17,11 @@ import vn.com.tma.emsbackend.service.credential.CredentialService;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/credentials")
 public class CredentialController {
     private final CredentialService credentialService;
-
-    @Autowired
-    public CredentialController(CredentialService credentialService) {
-        this.credentialService = credentialService;
-    }
 
     @Operation(summary = "Get all credentials")
     @ApiResponse(responseCode = "200",
@@ -52,9 +48,14 @@ public class CredentialController {
     }
 
     @Operation(summary = "Add a new credential")
-    @ApiResponse(responseCode = "201",
-            description = "Added the credential",
-            content = {@Content(schema = @Schema(implementation = CredentialDto.class))})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "Added the credential",
+                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+            @ApiResponse(responseCode = "409",
+                    description = "Constraint violated",
+                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+    })
     @PostMapping
     public ResponseEntity<CredentialDto> addCredential(@RequestBody CredentialRequestDto credentialRequestDto) {
         CredentialDto credentialDto = credentialService.add(credentialRequestDto);
@@ -68,6 +69,9 @@ public class CredentialController {
                     content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
+                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))}),
+            @ApiResponse(responseCode = "409",
+                    description = "Constraint violated",
                     content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
     })
     @PutMapping("/{id}")

@@ -1,22 +1,25 @@
 package vn.com.tma.emsbackend.common;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class Mapper {
-    private static final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
-    private Mapper() {
+    public Mapper() {
+        modelMapper = new ModelMapper();
     }
 
-    public static <S, D> D map(S source, Class<D> destination) {
+    public <S, D> D map(S source, Class<D> destination) {
         return modelMapper.map(source, destination);
     }
 
 
-    public static <S, D> List<D> mapList(List<S> sourceList, Class<D> destination) {
+    public <S, D> List<D> mapList(List<S> sourceList, Class<D> destination) {
         return sourceList.stream()
                 .map(source -> map(source, destination))
                 .collect(Collectors.toList());
