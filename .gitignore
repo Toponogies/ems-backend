@@ -7,3 +7,6 @@
 
 # Local configuration file
 application.yaml
+
+#log file
+ems-backend.log
