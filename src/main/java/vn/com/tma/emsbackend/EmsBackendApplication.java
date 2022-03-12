@@ -15,11 +15,9 @@ public class EmsBackendApplication {
 		CommonsRequestLoggingFilter loggingFilter = new CommonsRequestLoggingFilter();
 		loggingFilter.setIncludeClientInfo(true);
 		loggingFilter.setIncludeQueryString(true);
-		loggingFilter.setIncludePayload(true);
-		loggingFilter.setIncludeHeaders(false);
+		loggingFilter.setIncludeHeaders(true);
 		return loggingFilter;
 	}
-	
 
 	public static void main(String[] args) {
 		SpringApplication.run(EmsBackendApplication.class, args);
