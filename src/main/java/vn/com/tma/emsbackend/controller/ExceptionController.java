@@ -29,9 +29,10 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnexpectedException(Exception ex, WebRequest request) {
-        log.error("Have an out of control error: ",ex);
+        log.error("Have an out of control error: ", ex);
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
