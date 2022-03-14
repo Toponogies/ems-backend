@@ -1,6 +1,8 @@
 package vn.com.tma.emsbackend.service.credential;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,7 @@ import vn.com.tma.emsbackend.repository.CredentialRepository;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CredentialServiceImpl implements CredentialService {
@@ -24,27 +27,38 @@ public class CredentialServiceImpl implements CredentialService {
     private final PasswordEncoder passwordEncoder;
     private final Mapper mapper;
 
+
     @Override
     public List<CredentialDto> getAll() {
+        log.info("Get all credential");
+        
         List<Credential> credentials = credentialRepository.findAll();
         return mapper.mapList(credentials, CredentialDto.class);
     }
 
     @Override
     public CredentialDto get(long id) {
+        log.info("Get credential with id: {} ", id);
+
         Optional<Credential> credentialOptional = credentialRepository.findById(id);
-        if (credentialOptional.isEmpty()) throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        if (credentialOptional.isEmpty()) {
+            log.info(Constant.CREDENTIAL_NOT_FOUND + id);
+            throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        }
         return mapper.map(credentialOptional.get(), CredentialDto.class);
     }
 
     @Override
     public CredentialDto add(CredentialRequestDto credentialRequestDto) {
+        log.info("Add new credential");
+
         String encodedPassword = passwordEncoder.encode(credentialRequestDto.getPassword());
         Credential credential = mapper.map(credentialRequestDto, Credential.class);
         credential.setPassword(encodedPassword);
         try {
             credential = credentialRepository.save(credential);
         } catch (DataIntegrityViolationException e) {
+            log.error("Can not add new credential!", e);
             throw new ResourceConstraintViolationException(Constant.CONSTRAINT_VIOLATED + Credential.class.getName());
         }
         return mapper.map(credential, CredentialDto.class);
@@ -52,9 +66,13 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public CredentialDto update(long id, CredentialRequestDto credentialRequestDto) {
-        boolean isCredentialExisted = credentialRepository.existsById(id);
-        if (!isCredentialExisted) throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        log.info("Update credential with id:{}", id);
 
+        boolean isCredentialExisted = credentialRepository.existsById(id);
+        if (!isCredentialExisted) {
+            log.info(Constant.CREDENTIAL_NOT_FOUND + id);
+            throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        }
         String encodedPassword = passwordEncoder.encode(credentialRequestDto.getPassword());
         Credential credential = mapper.map(credentialRequestDto, Credential.class);
         credential.setId(id);
@@ -62,6 +80,7 @@ public class CredentialServiceImpl implements CredentialService {
         try {
             credential = credentialRepository.save(credential);
         } catch (DataIntegrityViolationException e) {
+            log.warn("Can not update credential with id:" + id, e);
             throw new ResourceConstraintViolationException(Constant.CONSTRAINT_VIOLATED + Credential.class.getName());
         }
         return mapper.map(credential, CredentialDto.class);
@@ -69,9 +88,12 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     public void delete(long id) {
+        log.info("Delete credential with id: " + id);
+
         try {
             credentialRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
+            log.info("Can not delete credential with id: " + id, e.getMessage());
             throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
         }
     }
