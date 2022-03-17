@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.entity.ManagedDevice;
+import vn.com.tma.emsbackend.exception.InvalidManagedDeviceIP;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 import vn.com.tma.emsbackend.repository.ManagedDeviceRepository;
@@ -62,10 +63,15 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
     public ManagedDeviceDto add(ManagedDeviceRequestDto managedDeviceRequestDto) {
         log.info("Add new managed device");
 
+        //check if Ip address is valid
+        if (!isValidIpAddress(managedDeviceRequestDto.getIpAddress())) {
+            throw new InvalidManagedDeviceIP();
+        }
         ManagedDevice managedDevice = mapper.map(managedDeviceRequestDto, ManagedDevice.class);
         try {
             managedDeviceRepository.save(managedDevice);
         } catch (DataIntegrityViolationException e) {
+            log.warn(Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
             throw new ResourceConstraintViolationException(
                     Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
         }
@@ -83,6 +89,10 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         ManagedDevice managedDevice = managedDeviceOptional.get();
 
         // Update data
+        // check if valid ip address
+        if (!isValidIpAddress(managedDeviceRequestDto.getIpAddress())) {
+            throw new InvalidManagedDeviceIP();
+        }
         managedDevice.setIpAddress(managedDeviceRequestDto.getIpAddress());
         managedDevice.setLabel(managedDeviceRequestDto.getLabel());
         managedDevice.setPort(managedDeviceRequestDto.getPort());
@@ -99,6 +109,24 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
                     Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
         }
         return mapper.map(managedDevice, ManagedDeviceDto.class);
+    }
+
+    private boolean isValidIpAddress(String ipAddress) {
+        String[] octets = ipAddress.split("\\.");
+        if (octets.length != 4) {
+            return false;
+        }
+        for (String octet : octets) {
+            try {
+                int octetValue = Integer.valueOf(octet);
+                if (octetValue < 0 || octetValue > 225) {
+                    return false;
+                }
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

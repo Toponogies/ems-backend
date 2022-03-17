@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import lombok.extern.slf4j.Slf4j;
 import vn.com.tma.emsbackend.dto.ErrorDto;
+import vn.com.tma.emsbackend.exception.InvalidManagedDeviceIP;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 
@@ -29,6 +30,11 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(InvalidManagedDeviceIP.class)
+    public ResponseEntity<?> handleInvalidManagedDeviceIPException(Exception ex, WebRequest request){
+        ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnexpectedException(Exception ex, WebRequest request) {
