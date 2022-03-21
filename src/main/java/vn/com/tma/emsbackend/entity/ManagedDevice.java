@@ -19,7 +19,7 @@ import lombok.Setter;
 public class ManagedDevice {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
 
     @Column(name = "firmware")
     private String firmware;

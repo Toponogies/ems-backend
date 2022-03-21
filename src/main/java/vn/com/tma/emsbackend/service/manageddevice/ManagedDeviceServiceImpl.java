@@ -44,6 +44,7 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
             log.info(Constant.DEVICE_NOT_FOUND + id);
             throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND + id);
         }
+        var a = managedDeviceOptional.get();
         return mapper.map(managedDeviceOptional.get(), ManagedDeviceDto.class);
     }
 
@@ -69,13 +70,12 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         }
         ManagedDevice managedDevice = mapper.map(managedDeviceRequestDto, ManagedDevice.class);
         try {
-            managedDeviceRepository.save(managedDevice);
+            return mapper.map(managedDeviceRepository.save(managedDevice), ManagedDeviceDto.class);
         } catch (DataIntegrityViolationException e) {
             log.warn(Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
             throw new ResourceConstraintViolationException(
                     Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
         }
-        return mapper.map(managedDevice, ManagedDeviceDto.class);
     }
 
     @Override
