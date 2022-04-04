@@ -24,9 +24,7 @@ import java.util.Optional;
 @Service
 public class CredentialServiceImpl implements CredentialService {
     private final CredentialRepository credentialRepository;
-    private final PasswordEncoder passwordEncoder;
     private final Mapper mapper;
-
 
     @Override
     public List<CredentialDto> getAll() {
@@ -52,9 +50,7 @@ public class CredentialServiceImpl implements CredentialService {
     public CredentialDto add(CredentialRequestDto credentialRequestDto) {
         log.info("Add new credential");
 
-        String encodedPassword = passwordEncoder.encode(credentialRequestDto.getPassword());
         Credential credential = mapper.map(credentialRequestDto, Credential.class);
-        credential.setPassword(encodedPassword);
         try {
             credential = credentialRepository.save(credential);
         } catch (DataIntegrityViolationException e) {
@@ -73,10 +69,8 @@ public class CredentialServiceImpl implements CredentialService {
             log.info(Constant.CREDENTIAL_NOT_FOUND + id);
             throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
         }
-        String encodedPassword = passwordEncoder.encode(credentialRequestDto.getPassword());
         Credential credential = mapper.map(credentialRequestDto, Credential.class);
         credential.setId(id);
-        credential.setPassword(encodedPassword);
         try {
             credential = credentialRepository.save(credential);
         } catch (DataIntegrityViolationException e) {
@@ -93,7 +87,7 @@ public class CredentialServiceImpl implements CredentialService {
         try {
             credentialRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            log.info("Can not delete credential with id: " + id, e.getMessage());
+            log.info("Can not delete credential with id: {}" + id, e.getMessage());
             throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
         }
     }

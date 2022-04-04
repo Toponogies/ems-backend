@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.com.tma.emsbackend.common.Mapper;
 import vn.com.tma.emsbackend.dto.CredentialDto;
 import vn.com.tma.emsbackend.dto.CredentialRequestDto;
@@ -19,7 +18,6 @@ import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 import vn.com.tma.emsbackend.service.credential.CredentialServiceImpl;
-import vn.com.tma.emsbackend.util.Constant;
 
 import java.util.*;
 
@@ -36,9 +34,6 @@ class CredentialServiceTests {
     private CredentialRepository credentialRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private Mapper mapper;
 
     private CredentialService credentialService;
@@ -51,7 +46,7 @@ class CredentialServiceTests {
 
     @BeforeEach
     void setUp() {
-        credentialService = new CredentialServiceImpl(credentialRepository, passwordEncoder, mapper);
+        credentialService = new CredentialServiceImpl(credentialRepository, mapper);
 
         credentialRequestDto = new CredentialRequestDto();
         credentialRequestDto.setName("name");
@@ -119,7 +114,6 @@ class CredentialServiceTests {
 
     @Test
     void shouldAddACredentialWhenAddWithValidData() {
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
         when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
         when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
 
@@ -130,17 +124,12 @@ class CredentialServiceTests {
         CredentialDto credentialDtoResult = credentialService.add(credentialRequestDto);
 
         // Then
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(passwordEncoder).encode(stringArgumentCaptor.capture());
-        String password = stringArgumentCaptor.getValue();
-        assertThat(password).isEqualTo(credentialRequestDto.getPassword());
-
         ArgumentCaptor<Credential> credentialArgumentCaptor = ArgumentCaptor.forClass(Credential.class);
         verify(credentialRepository).save(credentialArgumentCaptor.capture());
         Credential credentialResult = credentialArgumentCaptor.getValue();
         assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
         assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-        assertThat(credentialResult.getPassword()).isEqualTo(Constant.hashedPassword);
+        assertThat(credentialResult.getPassword()).isEqualTo(credentialRequestDto.getPassword());
 
         assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
@@ -151,7 +140,6 @@ class CredentialServiceTests {
     void shouldThrowExceptionWhenAddWithConstraintViolatedData() {
         // Given
         when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
         when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
 
         // When
@@ -169,7 +157,6 @@ class CredentialServiceTests {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
         when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
         when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
 
@@ -182,17 +169,12 @@ class CredentialServiceTests {
         long id = longArgumentCaptor.getValue();
         assertThat(id).isEqualTo(1L);
 
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(passwordEncoder).encode(stringArgumentCaptor.capture());
-        String password = stringArgumentCaptor.getValue();
-        assertThat(password).isEqualTo(credentialRequestDto.getPassword());
-
         ArgumentCaptor<Credential> credentialArgumentCaptor = ArgumentCaptor.forClass(Credential.class);
         verify(credentialRepository).save(credentialArgumentCaptor.capture());
         Credential credentialResult = credentialArgumentCaptor.getValue();
         assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
         assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-        assertThat(credentialResult.getPassword()).isEqualTo(Constant.hashedPassword);
+        assertThat(credentialResult.getPassword()).isEqualTo(credentialRequestDto.getPassword());
 
         assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
@@ -219,7 +201,6 @@ class CredentialServiceTests {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
         when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
         when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
 
         // When

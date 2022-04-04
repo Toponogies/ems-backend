@@ -19,6 +19,7 @@ public class CredentialCreator {
         credentialDto.setId(credential.getId());
         credentialDto.setUsername(credential.getUsername());
         credentialDto.setName(credential.getName());
+        credentialDto.setPassword(credential.getPassword());
         return credentialDto;
     }
 
@@ -27,6 +28,7 @@ public class CredentialCreator {
         credentialDto.setId(1L);
         credentialDto.setUsername(credentialRequestDto.getUsername());
         credentialDto.setName(credentialRequestDto.getName());
+        credentialDto.setPassword(credentialRequestDto.getPassword());
         return credentialDto;
     }
 

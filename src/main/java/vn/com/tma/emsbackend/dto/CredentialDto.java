@@ -11,4 +11,6 @@ public class CredentialDto {
     private String name;
 
     private String username;
+
+    private String password;
 }

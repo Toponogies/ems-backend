@@ -24,7 +24,7 @@ public class LoggingIntegrationTests {
     private TestRestTemplate testRestTemplate;
 
     private ListAppender<ILoggingEvent> appender;
-    private Logger appLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private final Logger appLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @BeforeEach
     public void setUp() {
@@ -65,7 +65,7 @@ public class LoggingIntegrationTests {
         
         testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDto.class);
 
+        // TODO: Try fixing this warning
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage);
-
     }
 }
