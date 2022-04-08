@@ -2,12 +2,8 @@ package vn.com.tma.emsbackend.integration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import javax.transaction.Transactional;
 
 import org.assertj.core.api.Assertions;
-import org.hibernate.Hibernate;
 
 import static org.assertj.core.groups.Tuple.tuple;
 
@@ -19,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,13 +59,13 @@ public class ManagedDeviceIntegrationTests {
                 ManagedDevice managedDevice1 = new ManagedDevice();
                 managedDevice1.setIpAddress("10.10.88.91");
                 managedDevice1.setLabel("10.10.88.91");
-                managedDevice1.setPort(22);
+                managedDevice1.setSSHPort(22);
                 managedDevice1.setCredential(credential);
 
                 ManagedDevice managedDevice2 = new ManagedDevice();
                 managedDevice2.setIpAddress("10.10.88.92");
                 managedDevice2.setLabel("10.10.88.92");
-                managedDevice2.setPort(22);
+                managedDevice2.setSSHPort(22);
                 managedDevice2.setCredential(credential);
 
                 managedDevices.add(managedDevice1);
@@ -102,10 +97,10 @@ public class ManagedDeviceIntegrationTests {
                                                 ManagedDeviceDto::getCredentialName)
                                 .contains(
                                                 tuple(managedDevice1.getIpAddress(), managedDevice1.getLabel(),
-                                                                managedDevice1.getPort(),
+                                                                managedDevice1.getSSHPort(),
                                                                 credential.getName()),
                                                 tuple(managedDevice2.getIpAddress(), managedDevice2.getLabel(),
-                                                                managedDevice2.getPort(),
+                                                                managedDevice2.getSSHPort(),
                                                                 credential.getName()));
         }
 

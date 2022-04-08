@@ -1,9 +1,15 @@
 package vn.com.tma.emsbackend.controller;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -31,10 +37,19 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidManagedDeviceIP.class)
-    public ResponseEntity<?> handleInvalidManagedDeviceIPException(Exception ex, WebRequest request){
+    public ResponseEntity<?> handleInvalidManagedDeviceIPException(Exception ex, WebRequest request) {
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorDto errorDto = new ErrorDto(new Date(), ex.getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .findFirst()
+                .orElse(ex.getMessage()), request.getDescription(false));
+        return handleExceptionInternal(ex, errorDto, headers, status, request);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleUnexpectedException(Exception ex, WebRequest request) {
@@ -42,4 +57,5 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

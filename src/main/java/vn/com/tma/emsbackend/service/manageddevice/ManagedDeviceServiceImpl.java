@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.entity.ManagedDevice;
-import vn.com.tma.emsbackend.exception.InvalidManagedDeviceIP;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 import vn.com.tma.emsbackend.repository.ManagedDeviceRepository;
@@ -36,17 +36,31 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
     }
 
     @Override
-    public ManagedDeviceDto get(long id) {
+    public ManagedDeviceDto getById(long id) {
         log.info("Get managed device with id:{}", id);
 
         Optional<ManagedDevice> managedDeviceOptional = managedDeviceRepository.findById(id);
         if (managedDeviceOptional.isEmpty()) {
-            log.info(Constant.DEVICE_NOT_FOUND + id);
-            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND + id);
+            log.info(Constant.DEVICE_NOT_FOUND_BY_ID + id);
+            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND_BY_ID + id);
         }
-        var a = managedDeviceOptional.get();
         return mapper.map(managedDeviceOptional.get(), ManagedDeviceDto.class);
     }
+
+    public ManagedDeviceDto getByIpAddress(String ipAddress) {
+        log.info("Get managed device with ip address: {}", ipAddress);
+
+        ManagedDevice managedDevice = managedDeviceRepository.getFirstByIpAddress(ipAddress);
+
+        //If not found device
+        if (managedDevice == null) {
+            log.info(Constant.DEVICE_NOT_FOUND_BY_IP_ADDRESS + ipAddress);
+            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND_BY_IP_ADDRESS + ipAddress);
+        }
+
+        return mapper.map(managedDevice, ManagedDeviceDto.class);
+    }
+
 
     @Override
     public void delete(long id) {
@@ -56,7 +70,7 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
             throw new ResourceConstraintViolationException(
                     Constant.CONSTRAINT_VIOLATED + ManagedDevice.class.getName());
         } catch (EmptyResultDataAccessException e) {
-            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND + id);
+            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND_BY_ID + id);
         }
     }
 
@@ -65,10 +79,8 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         log.info("Add new managed device");
 
         //check if Ip address is valid
-        if (!isValidIpAddress(managedDeviceRequestDto.getIpAddress())) {
-            throw new InvalidManagedDeviceIP();
-        }
         ManagedDevice managedDevice = mapper.map(managedDeviceRequestDto, ManagedDevice.class);
+        managedDevice.setState(Enum.ManagedDeviceState.OUT_OF_SERVICE);
         try {
             return mapper.map(managedDeviceRepository.save(managedDevice), ManagedDeviceDto.class);
         } catch (DataIntegrityViolationException e) {
@@ -84,18 +96,15 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         // Get device by id
         Optional<ManagedDevice> managedDeviceOptional = managedDeviceRepository.findById(id);
         if (managedDeviceOptional.isEmpty()) {
-            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND + id);
+            throw new ResourceNotFoundException(Constant.DEVICE_NOT_FOUND_BY_ID + id);
         }
         ManagedDevice managedDevice = managedDeviceOptional.get();
 
         // Update data
         // check if valid ip address
-        if (!isValidIpAddress(managedDeviceRequestDto.getIpAddress())) {
-            throw new InvalidManagedDeviceIP();
-        }
         managedDevice.setIpAddress(managedDeviceRequestDto.getIpAddress());
         managedDevice.setLabel(managedDeviceRequestDto.getLabel());
-        managedDevice.setPort(managedDeviceRequestDto.getPort());
+        managedDevice.setSSHPort(managedDeviceRequestDto.getPort());
 
         // set new credential
         Credential credential = new Credential();
@@ -111,22 +120,5 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         return mapper.map(managedDevice, ManagedDeviceDto.class);
     }
 
-    private boolean isValidIpAddress(String ipAddress) {
-        String[] octets = ipAddress.split("\\.");
-        if (octets.length != 4) {
-            return false;
-        }
-        for (String octet : octets) {
-            try {
-                int octetValue = Integer.valueOf(octet);
-                if (octetValue < 0 || octetValue > 225) {
-                    return false;
-                }
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return true;
-    }
 
 }

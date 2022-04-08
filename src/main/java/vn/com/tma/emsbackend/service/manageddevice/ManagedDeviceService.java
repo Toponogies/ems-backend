@@ -6,13 +6,15 @@ import vn.com.tma.emsbackend.dto.ManagedDeviceDto;
 import vn.com.tma.emsbackend.dto.ManagedDeviceRequestDto;
 
 public interface ManagedDeviceService {
-    public List<ManagedDeviceDto> getAll();
+    List<ManagedDeviceDto> getAll();
 
-    public ManagedDeviceDto get(long id);
+    ManagedDeviceDto getById(long id);
+
+    ManagedDeviceDto getByIpAddress(String ipAddress);
 
     ManagedDeviceDto add(ManagedDeviceRequestDto managedDeviceRequestDto);
 
-    public void delete(long id);
+    void delete(long id);
 
-    public ManagedDeviceDto update(long id, ManagedDeviceRequestDto managedDeviceRequestDto);
+    ManagedDeviceDto update(long id, ManagedDeviceRequestDto managedDeviceRequestDto);
 }
