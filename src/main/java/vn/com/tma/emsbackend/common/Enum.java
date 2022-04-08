@@ -26,4 +26,13 @@ public class Enum {
         OUT_OF_SERVICE,
         IN_PROCESS
     }
+
+
+    public enum ManagedDeviceType{
+        VCX,
+        GT,
+        GX,
+        LT,
+        LX,
+    }
 }

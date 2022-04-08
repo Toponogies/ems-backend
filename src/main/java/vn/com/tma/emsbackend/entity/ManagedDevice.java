@@ -31,7 +31,7 @@ public class ManagedDevice {
     private String label;
 
     @Column(name = "device_type")
-    private String deviceType;
+    private Enum.ManagedDeviceType deviceType;
 
     @Column(name = "model")
     private String model;

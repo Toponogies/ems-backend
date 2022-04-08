@@ -47,6 +47,7 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         return mapper.map(managedDeviceOptional.get(), ManagedDeviceDto.class);
     }
 
+    @Override
     public ManagedDeviceDto getByIpAddress(String ipAddress) {
         log.info("Get managed device with ip address: {}", ipAddress);
 
@@ -59,6 +60,14 @@ public class ManagedDeviceServiceImpl implements ManagedDeviceService {
         }
 
         return mapper.map(managedDevice, ManagedDeviceDto.class);
+    }
+
+    @Override
+    public List<ManagedDeviceDto>  getByDeviceType(Enum.ManagedDeviceType deviceType){
+        log.info("Get all managed device with device type: {}", deviceType.name());
+
+        List<ManagedDevice> managedDevices = managedDeviceRepository.getByDeviceType(deviceType);
+        return mapper.mapList(managedDevices, ManagedDeviceDto.class);
     }
 
 

@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.dto.ErrorDto;
 import vn.com.tma.emsbackend.dto.ManagedDeviceDto;
 import vn.com.tma.emsbackend.dto.ManagedDeviceRequestDto;
@@ -73,7 +74,18 @@ public class ManagedDeviceController {
         return managedDeviceService.getByIpAddress(ipAddress);
     }
 
-
+    // GET /type/{device_type}
+    @Operation(summary = "Get all managed device by device type")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the managed device", content = {
+                    @Content(schema = @Schema(implementation = ManagedDeviceDto.class))}),
+            @ApiResponse(responseCode = "404", description = "Managed device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+    })
+    @GetMapping("/type/{device_type}")
+    public List<ManagedDeviceDto> getDevicesByDeviceType(@PathVariable(value = "device_type") Enum.ManagedDeviceType deviceType) {
+        return managedDeviceService.getByDeviceType(deviceType);
+    }
 
      //POST /
     @Operation(summary = "Add a new credential")
