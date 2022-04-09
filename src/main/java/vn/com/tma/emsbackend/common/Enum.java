@@ -21,14 +21,14 @@ public class Enum {
         private final String value;
     }
 
-    public enum ManagedDeviceState {
+    public enum NetworkDeviceState {
         IN_SERVICE,
         OUT_OF_SERVICE,
         IN_PROCESS
     }
 
 
-    public enum ManagedDeviceType{
+    public enum NetworkDeviceType {
         VCX,
         GT,
         GX,

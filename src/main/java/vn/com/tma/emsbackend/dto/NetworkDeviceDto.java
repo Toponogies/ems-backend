@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ManagedDeviceDto {
+public class NetworkDeviceDto {
     private Long id;
 
     private String firmware;

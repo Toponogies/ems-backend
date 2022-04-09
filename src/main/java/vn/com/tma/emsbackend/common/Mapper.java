@@ -2,12 +2,10 @@ package vn.com.tma.emsbackend.common;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.stereotype.Component;
 
-import vn.com.tma.emsbackend.dto.ManagedDeviceRequestDto;
-import vn.com.tma.emsbackend.entity.ManagedDevice;
+import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
+import vn.com.tma.emsbackend.entity.NetworkDevice;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +18,7 @@ public class Mapper {
         modelMapper = new ModelMapper();
 
         //custom mapping
-        modelMapper.addMappings(getManagedDeviceRequestDtoMapping());
+        modelMapper.addMappings(getNetworkDeviceRequestDtoMapping());
     }
 
     public <S, D> D map(S source, Class<D> destination) {
@@ -33,14 +31,13 @@ public class Mapper {
                 .collect(Collectors.toList());
     }
 
-    private PropertyMap<ManagedDeviceRequestDto, ManagedDevice> getManagedDeviceRequestDtoMapping() {
-        PropertyMap<ManagedDeviceRequestDto, ManagedDevice> managedDeviceRequestDtoMap = new PropertyMap<ManagedDeviceRequestDto, ManagedDevice>() {
+    private PropertyMap<NetworkDeviceDto, NetworkDevice> getNetworkDeviceRequestDtoMapping() {
+        return new PropertyMap<>() {
             @Override
             protected void configure() {
                 map().getCredential().setId(source.getCredentialId());
                 map().setId(null);
             }
         };
-        return managedDeviceRequestDtoMap;
     }
 }

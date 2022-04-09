@@ -9,8 +9,8 @@ import vn.com.tma.emsbackend.common.Enum;
 @Getter
 @Setter
 @Entity
-@Table(name = "managed_devices")
-public class ManagedDevice {
+@Table(name = "network_devices")
+public class NetworkDevice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,16 +31,16 @@ public class ManagedDevice {
     private String label;
 
     @Column(name = "device_type")
-    private Enum.ManagedDeviceType deviceType;
+    private Enum.NetworkDeviceType deviceType;
 
     @Column(name = "model")
     private String model;
 
     @Column(name = "ssh_port", nullable = false)
-    private long SSHPort;
+    private long sshPort;
 
     @Column(name = "state", nullable = false,columnDefinition = "int default 0")
-    private Enum.ManagedDeviceState state;
+    private Enum.NetworkDeviceState state;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "credential_id")

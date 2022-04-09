@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class ManagedDeviceRequestDto {
+public class NetworkDeviceRequestDto {
     @NotNull(message = "Label field can not empty")
     private String label;
 

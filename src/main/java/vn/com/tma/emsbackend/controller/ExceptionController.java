@@ -4,18 +4,14 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 import vn.com.tma.emsbackend.dto.ErrorDto;
-import vn.com.tma.emsbackend.exception.InvalidManagedDeviceIP;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 
@@ -34,12 +30,6 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleDataConstraintViolationException(Exception ex, WebRequest request) {
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(InvalidManagedDeviceIP.class)
-    public ResponseEntity<?> handleInvalidManagedDeviceIPException(Exception ex, WebRequest request) {
-        ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
     @Override
