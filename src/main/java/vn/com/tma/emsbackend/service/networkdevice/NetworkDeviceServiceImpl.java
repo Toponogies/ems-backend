@@ -86,7 +86,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDto add(NetworkDeviceRequestDto networkDeviceRequestDto) {
         log.info("Add new device");
 
-        //Check if Ip address is valid
         NetworkDevice networkDevice = mapper.map(networkDeviceRequestDto, NetworkDevice.class);
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
         try {
@@ -109,7 +108,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         NetworkDevice networkDevice = networkDeviceOptional.get();
 
         // Update data
-        // check if valid ip address
         networkDevice.setIpAddress(networkDeviceRequestDto.getIpAddress());
         networkDevice.setLabel(networkDeviceRequestDto.getLabel());
         networkDevice.setSshPort(networkDeviceRequestDto.getPort());

@@ -39,7 +39,7 @@ public class NetworkDeviceController {
     @ApiResponse(responseCode = "200", description = "Get all network devices", content = {
             @Content(array = @ArraySchema(schema = @Schema(implementation = NetworkDeviceDto.class)))})
     @GetMapping()
-    public List<NetworkDeviceDto> getAllnetworkDevices() {
+    public List<NetworkDeviceDto> getAllNetworkDevices() {
         return networkDeviceService.getAll();
     }
 
@@ -52,8 +52,8 @@ public class NetworkDeviceController {
                     @Content(schema = @Schema(implementation = ErrorDto.class))})
     })
     @GetMapping("/{id}")
-    public NetworkDeviceDto getDeviceById(@PathVariable(value = "id") Long networkeviceId) {
-        return networkDeviceService.getById(networkeviceId);
+    public NetworkDeviceDto getDeviceById(@PathVariable(value = "id") Long networkDeviceId) {
+        return networkDeviceService.getById(networkDeviceId);
     }
 
 
