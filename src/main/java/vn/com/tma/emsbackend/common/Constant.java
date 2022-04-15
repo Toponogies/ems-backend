@@ -8,4 +8,10 @@ public class Constant {
     public static String DEVICE_NOT_FOUND_BY_ID = "Device not found on :: id =  ";
     public static String DEVICE_NOT_FOUND_BY_IP_ADDRESS = "Device not found on :: ip address =  ";
 
+    public static final String CREDENTIAL_TABLE = "credentials";
+    public static final String NETWORK_DEVICE_TABLE = "network_devices";
+    public static final String INTERFACE_TABLE = "interfaces";
+    public static final String PORT_TABLE = "ports";
+    public static final String NTP_SERVER_TABLE = "ntp_server";
+
 }

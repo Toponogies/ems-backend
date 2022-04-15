@@ -7,8 +7,8 @@ public class Enum {
     @Getter
     @AllArgsConstructor
     public enum State {
-        DISABLE("disabled"),
-        ENABLE("enabled");
+        DISABLED("disabled"),
+        ENABLED("enabled");
 
         private final String value;
     }
@@ -16,8 +16,8 @@ public class Enum {
     @Getter
     @AllArgsConstructor
     public enum InterfaceDHCP {
-        DISABLE("disabled"),
-        ENABLE("enabled");
+        DISABLED("disabled"),
+        ENABLED("enabled");
         private final String value;
     }
 
