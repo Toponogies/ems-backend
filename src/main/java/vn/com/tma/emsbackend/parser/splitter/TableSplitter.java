@@ -1,11 +1,11 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.splitter;
 
 import vn.com.tma.emsbackend.exception.ApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableReader {
+public class TableSplitter {
     private final String[] lines;
     private List<String> keys;
     private List<List<String>> rows;
@@ -15,11 +15,11 @@ public class TableReader {
 
     private int currentIndex = -1;
 
-    public TableReader(String commandResult) {
+    public TableSplitter(String commandResult) {
         lines = commandResult.split("\n");
     }
 
-    public TableReader split() {
+    public TableSplitter split() {
         //get index of end header line and limit data lengths each cell
         endHeaderLineIndex = getEndHeaderLineIndex();
 
@@ -63,7 +63,6 @@ public class TableReader {
 
 
     private List<String> splitLine(String line) {
-        //split line into list of string, which each string is data of a column
         List<String> result = new ArrayList<>();
         int curIndex = 0;
         for (Integer length : columnLimitLengths) {
@@ -80,8 +79,7 @@ public class TableReader {
     private List<List<String>> splitAllDataLines() {
         List<List<String>> rowsData = new ArrayList<>();
         for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; endHeaderLineIndex++) {
-            //empty line
-            if (lines[endHeaderLineIndex].length() < 2) {
+            if (isEmptyLine(lines[endHeaderLineIndex])){
                 break;
             }
             rowsData.add(splitLine(lines[index]));
@@ -109,5 +107,9 @@ public class TableReader {
 
     private List<String> getKeys() {
         return splitLine(lines[endHeaderLineIndex - 1]);
+    }
+
+    private boolean isEmptyLine(String line){
+        return line.length() < 2;
     }
 }

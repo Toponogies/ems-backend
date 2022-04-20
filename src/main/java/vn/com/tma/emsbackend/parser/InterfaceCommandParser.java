@@ -3,6 +3,7 @@ package vn.com.tma.emsbackend.parser;
 import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.common.SSHColumn;
 import vn.com.tma.emsbackend.entity.NDInterface;
+import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public class InterfaceCommandParser {
     public static List<NDInterface> interfaceShowParse(String executeResult){
         List<NDInterface> ndInterfaces = new ArrayList<>();
-        TableReader tableReader = new TableReader(executeResult).split();
+        TableSplitter tableReader = new TableSplitter(executeResult).split();
         while(tableReader.next()){
             NDInterface ndInterface = new NDInterface();
             ndInterface.setDhcp(Enum.InterfaceDHCP.valueOf(tableReader.getValue(SSHColumn.NDInterface.DHCP).toUpperCase()));
