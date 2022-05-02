@@ -4,12 +4,13 @@ import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.tma.emsbackend.common.Constant;
 import vn.com.tma.emsbackend.common.Enum;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "network_devices")
+@Table(name = Constant.NETWORK_DEVICE_TABLE)
 public class NetworkDevice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +38,7 @@ public class NetworkDevice {
     private String model;
 
     @Column(name = "ssh_port", nullable = false)
-    private long sshPort;
+    private int sshPort;
 
     @Column(name = "state", nullable = false,columnDefinition = "int default 0")
     private Enum.NetworkDeviceState state;

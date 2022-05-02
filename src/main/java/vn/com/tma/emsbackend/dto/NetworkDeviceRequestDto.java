@@ -17,7 +17,7 @@ public class NetworkDeviceRequestDto {
     private String ipAddress;
 
     @Port(message = "Invalid port number")
-    private long port;
+    private int port;
 
     @NotNull(message = "Credential can not empty")
     private long credentialId;
