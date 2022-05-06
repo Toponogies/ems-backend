@@ -50,7 +50,7 @@ public class NTPCommandParser {
         int index = startIndex;
         if (lines[startIndex].split(":").length == 1) return new ArrayList<>();
         List<NTPServer> ntpServers = new ArrayList<>();
-        while (lines[index].length() != 0) {
+        while (lines[index].trim().length() != 0) {
             ntpServers.add(parseNTPServer(lines[index], state));
             index++;
         }

@@ -6,6 +6,7 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.entity.NetworkDevice;
 import vn.com.tma.emsbackend.exception.ApplicationException;
 
@@ -25,7 +26,7 @@ public class SSHExecutor {
 
     private SshClient sshClient;
 
-    private static final List<String> END_DELIM_CHAR = Arrays.asList(":", "#");
+    private static final List<String> END_DELIM_CHAR = Arrays.asList(":", "#", ">");
 
     public String execute(String command) {
         if (currentManagedDevice == null) {
@@ -62,6 +63,7 @@ public class SSHExecutor {
     private ClientSession createClientSession() {
         ClientSession newClientSession = null;
         try {
+            var a = currentManagedDevice.getCredential().getUsername();
             newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());
             newClientSession.auth().verify();

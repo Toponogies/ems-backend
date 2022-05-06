@@ -22,7 +22,7 @@ public class NetworkDeviceDto {
 
     private String model;
 
-    private int port;
+    private int sshPort;
 
     private long credentialId;
 

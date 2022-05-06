@@ -13,18 +13,27 @@ import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
 import vn.com.tma.emsbackend.dto.NetworkDeviceRequestDto;
 import vn.com.tma.emsbackend.entity.Credential;
+import vn.com.tma.emsbackend.entity.NDInterface;
 import vn.com.tma.emsbackend.entity.NetworkDevice;
+import vn.com.tma.emsbackend.entity.Port;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 import vn.com.tma.emsbackend.common.Constant;
 import vn.com.tma.emsbackend.common.Mapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
+import vn.com.tma.emsbackend.repository.ssh.InterfaceSSHRepository;
+import vn.com.tma.emsbackend.repository.ssh.NetworkDeviceSSHRepository;
+import vn.com.tma.emsbackend.repository.ssh.PortSSHRepository;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceRepository networkDeviceRepository;
+
+    private final InterfaceSSHRepository interfaceSSHRepository;
+
+    private final PortSSHRepository portSSHRepository;
     private final Mapper mapper;
 
     @Override
@@ -38,7 +47,16 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     @Override
     public NetworkDeviceDto getById(long id) {
         log.info("Get network device with id:{}", id);
+        Port port = new Port();
+        port.setName("PORT-1");
 
+        NDInterface ndInterface = new NDInterface();
+        ndInterface.setName("test_interface_name");
+        ndInterface.setIpAddress("1.1.1.1");
+        ndInterface.setDhcp(Enum.InterfaceDHCP.ENABLED);
+        ndInterface.setNetmask("255.255.255.0");
+
+        interfaceSSHRepository.add(id,ndInterface,port);
         Optional<NetworkDevice> networkDeviceOptional = networkDeviceRepository.findById(id);
         if (networkDeviceOptional.isEmpty()) {
             log.info(Constant.DEVICE_NOT_FOUND_BY_ID + id);

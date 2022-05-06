@@ -13,7 +13,7 @@ public class ListSplitter {
     }
     public ListSplitter split(){
         for(String line:lines){
-            if(line.matches("^.+:.+$")){
+            if(line.trim().matches("^.*:.*$")){
                 String[] tuple = line.split(":",2);
                 keyValuePair.put(tuple[0].trim(), tuple[1].trim());
             }

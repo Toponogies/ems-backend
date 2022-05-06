@@ -2,6 +2,7 @@ package vn.com.tma.emsbackend.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 import vn.com.tma.emsbackend.common.Constant;
 import vn.com.tma.emsbackend.common.Enum;
 
@@ -33,6 +34,10 @@ public class NDInterface {
 
     @Column(name = "gateway")
     private String gateway;
+
+    @OneToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "port_id")
+    private Port port;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "managed_device_id")

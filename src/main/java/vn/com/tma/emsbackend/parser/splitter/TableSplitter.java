@@ -41,7 +41,7 @@ public class TableSplitter {
      * @return if there is no more row
      */
     public boolean next() {
-        if (currentIndex < rows.size()) {
+        if (currentIndex < rows.size() - 1) {
             currentIndex++;
             return true;
         }
@@ -78,8 +78,8 @@ public class TableSplitter {
 
     private List<List<String>> splitAllDataLines() {
         List<List<String>> rowsData = new ArrayList<>();
-        for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; endHeaderLineIndex++) {
-            if (isEmptyLine(lines[endHeaderLineIndex])){
+        for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; index++) {
+            if (isEmptyLine(lines[index])){
                 break;
             }
             rowsData.add(splitLine(lines[index]));
@@ -89,7 +89,7 @@ public class TableSplitter {
 
     private int getEndHeaderLineIndex() {
         for (int index = 0; index < lines.length; index++) {
-            if (lines[index].matches("^-.*-$")) {
+            if (lines[index].trim().matches("^-.*-$")) {
                 return index;
             }
         }

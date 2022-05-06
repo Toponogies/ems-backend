@@ -11,6 +11,13 @@ public class Enum {
         ENABLED("enabled");
 
         private final String value;
+
+        public static Enum.State getState(String value){
+            if(Constant.NEGATIVE_WORK.contains(value)){
+                return DISABLED;
+            }
+            return ENABLED;
+        }
     }
 
     @Getter
@@ -19,6 +26,12 @@ public class Enum {
         DISABLED("disabled"),
         ENABLED("enabled");
         private final String value;
+        public static Enum.InterfaceDHCP parse(String value){
+            if(Constant.NEGATIVE_WORK.contains(value)){
+                return DISABLED;
+            }
+            return ENABLED;
+        }
     }
 
     public enum NetworkDeviceState {

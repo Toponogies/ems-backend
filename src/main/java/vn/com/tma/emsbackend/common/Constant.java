@@ -1,5 +1,8 @@
 package vn.com.tma.emsbackend.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Constant {
     public static final int MAX_PORT_NUMBER = 65535;
     public static String CREDENTIAL_NOT_FOUND = "Credential not found on :: ";
@@ -14,4 +17,5 @@ public class Constant {
     public static final String PORT_TABLE = "ports";
     public static final String NTP_SERVER_TABLE = "ntp_server";
 
+    public static final List<String> NEGATIVE_WORK =  new ArrayList<>(List.of(new String[]{"NO", "DISABLE", "DISABLED"}));
 }
