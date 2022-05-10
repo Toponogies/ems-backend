@@ -7,6 +7,7 @@ import vn.com.tma.emsbackend.common.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.InterfaceCommandGenerator;
 import vn.com.tma.emsbackend.entity.NDInterface;
 import vn.com.tma.emsbackend.entity.Port;
+import vn.com.tma.emsbackend.exception.SSHExecuteFailException;
 import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
 
 import java.util.ArrayList;
@@ -41,5 +42,10 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
         SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
         String command = InterfaceCommandGenerator.add(ndInterface, port);
         String result = sshExecutor.execute(command);
+        String[] returnValue = result.split(":| >",2);
+        if(returnValue[1].trim().length() > 1)
+        {
+            throw new SSHExecuteFailException(returnValue[1].split("\n")[1].trim());
+        }
     }
 }

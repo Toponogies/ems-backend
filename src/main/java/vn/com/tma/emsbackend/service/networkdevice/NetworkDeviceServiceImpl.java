@@ -22,7 +22,6 @@ import vn.com.tma.emsbackend.common.Constant;
 import vn.com.tma.emsbackend.common.Mapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.repository.ssh.InterfaceSSHRepository;
-import vn.com.tma.emsbackend.repository.ssh.NetworkDeviceSSHRepository;
 import vn.com.tma.emsbackend.repository.ssh.PortSSHRepository;
 
 @Slf4j
