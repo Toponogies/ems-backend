@@ -6,7 +6,6 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.entity.NetworkDevice;
 import vn.com.tma.emsbackend.exception.ApplicationException;
 

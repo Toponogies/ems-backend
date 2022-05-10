@@ -18,11 +18,13 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
 
     public List<NDInterface> getAll(long deviceId, List<Port> devicePorts) {
         SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
-        String result = sshExecutor.execute("interface show");
+        String result = sshExecutor.execute(InterfaceCommandGenerator.showAll());
+
         List<String> interfacesName = InterfaceCommandParser.interfaceShowParse(result);
         List<NDInterface> ndInterfaces = new ArrayList<>();
+
         for (String interfaceName : interfacesName) {
-            String detailResult = sshExecutor.execute("interface show " + interfaceName);
+            String detailResult = sshExecutor.execute(InterfaceCommandGenerator.showDetail(interfaceName));
             NDInterface ndInterface = InterfaceCommandParser.interfaceShowDetailParse(detailResult);
             for (Port port : devicePorts) {
                 if (port.getName().equals(ndInterface.getPort().getName())) {
@@ -38,7 +40,6 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
     public void add(long deviceId, NDInterface ndInterface, Port port) {
         SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
         String command = InterfaceCommandGenerator.add(ndInterface, port);
-        String result = sshExecutor.execute(InterfaceCommandGenerator.add(ndInterface, port));
-        System.out.println(result);
+        String result = sshExecutor.execute(command);
     }
 }

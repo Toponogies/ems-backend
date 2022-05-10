@@ -6,6 +6,7 @@ import vn.com.tma.emsbackend.entity.Port;
 public class InterfaceCommandGenerator {
     private static final String COMMAND_PREFIX = "interface";
     private static final String ADD_ACTION = "add";
+
     private static final String NAME_PARAMS = "name";
     private static final String DHCP_PARAMS = "dhcp";
     private static final String ADDRESS_PARAMS = "address";
@@ -22,6 +23,13 @@ public class InterfaceCommandGenerator {
                 (ndInterface.getNetmask() == null || ndInterface.getNetmask().length() == 0 ? "" : NETMASK_PARAMS + " " + ndInterface.getNetmask() + " ") +
                 (ndInterface.getGateway() == null || ndInterface.getGateway().length() == 0 ? "" : GATEWAY_PARAMS + " " + ndInterface.getGateway() + " ") +
                 PORT_PARAMS + " " + port.getName();
+    }
+
+    public static String showAll(){
+        return COMMAND_PREFIX + " show";
+    }
+    public static String showDetail(String interfaceName){
+        return COMMAND_PREFIX + " show " + interfaceName;
     }
 
 }
