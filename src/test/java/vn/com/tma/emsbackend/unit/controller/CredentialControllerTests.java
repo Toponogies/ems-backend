@@ -1,6 +1,8 @@
 package vn.com.tma.emsbackend.unit.controller;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,21 +10,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import vn.com.tma.emsbackend.controller.CredentialController;
 import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static vn.com.tma.emsbackend.util.entity.CredentialCreator.createCredentialDtoBy;
 
 @WebMvcTest(CredentialController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -33,20 +31,18 @@ class CredentialControllerTests {
     @MockBean
     private CredentialService credentialService;
 
-    private CredentialRequestDto credentialRequestDto;
-
     private CredentialDto credentialDto;
 
     private final JsonMapper jsonMapper = new JsonMapper();
 
     @BeforeEach
     void setUp() {
-        credentialRequestDto = new CredentialRequestDto();
-        credentialRequestDto.setName("name");
-        credentialRequestDto.setUsername("username");
-        credentialRequestDto.setPassword("password");
-
-        credentialDto = createCredentialDtoBy(credentialRequestDto);
+        RestAssuredMockMvc.mockMvc(mvc);
+        credentialDto = new CredentialDto();
+        credentialDto.setId(1L);
+        credentialDto.setName("name");
+        credentialDto.setUsername("username");
+        credentialDto.setPassword("password");
     }
 
     @Test
@@ -54,14 +50,14 @@ class CredentialControllerTests {
         // Given
         when(credentialService.getAll()).thenReturn(List.of(credentialDto));
 
-        // When
-        MockHttpServletResponse response = mvc.perform(get("/api/v1/credentials")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(jsonMapper.writeValueAsString(List.of(credentialDto)));
+        // When - Then
+        given()
+                .auth().none()
+                .get("/api/v1/credentials")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(ContentType.JSON)
+                .body(is(jsonMapper.writeValueAsString(List.of(credentialDto))));
     }
 
     @Test
@@ -70,13 +66,13 @@ class CredentialControllerTests {
         when(credentialService.get(anyLong())).thenReturn(credentialDto);
 
         // When
-        MockHttpServletResponse response = mvc.perform(get("/api/v1/credentials/" + 1L)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.getContentAsString()).isEqualTo(jsonMapper.writeValueAsString(credentialDto));
+        given()
+                .auth().none()
+                .get("/api/v1/credentials/" + 1L)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .contentType(ContentType.JSON)
+                .body(is(jsonMapper.writeValueAsString(credentialDto)));
     }
 //
 //    @Test

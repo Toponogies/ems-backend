@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.com.tma.emsbackend.common.Constant;
 import vn.com.tma.emsbackend.common.Mapper;
 import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
 import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
@@ -47,10 +45,10 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
-    public CredentialDto add(CredentialRequestDto credentialRequestDto) {
+    public CredentialDto add(CredentialDto credentialDto) {
         log.info("Add new credential");
 
-        Credential credential = mapper.map(credentialRequestDto, Credential.class);
+        Credential credential = mapper.map(credentialDto, Credential.class);
         try {
             credential = credentialRepository.save(credential);
         } catch (DataIntegrityViolationException e) {
@@ -61,7 +59,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
-    public CredentialDto update(long id, CredentialRequestDto credentialRequestDto) {
+    public CredentialDto update(long id, CredentialDto credentialDto) {
         log.info("Update credential with id:{}", id);
 
         boolean isCredentialExisted = credentialRepository.existsById(id);
@@ -69,7 +67,7 @@ public class CredentialServiceImpl implements CredentialService {
             log.info(Constant.CREDENTIAL_NOT_FOUND + id);
             throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
         }
-        Credential credential = mapper.map(credentialRequestDto, Credential.class);
+        Credential credential = mapper.map(credentialDto, Credential.class);
         credential.setId(id);
         try {
             credential = credentialRepository.save(credential);

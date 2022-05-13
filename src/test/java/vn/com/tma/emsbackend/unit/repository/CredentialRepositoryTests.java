@@ -1,6 +1,5 @@
 package vn.com.tma.emsbackend.unit.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 @DataJpaTest
 @ResetDatabase
@@ -43,7 +42,7 @@ class CredentialRepositoryTests {
         List<Credential> credentialListResult = credentialRepository.findAll();
 
         // Then
-        assertThat(credentialListResult).as("should have 1 member in the List").hasSize(1);
+        assertThat(credentialListResult).hasSize(1);
 
         Credential credentialResult = credentialListResult.get(0);
         assertThat(credentialResult.getId()).isEqualTo(credential.getId());
@@ -60,7 +59,7 @@ class CredentialRepositoryTests {
         List<Credential> credentialListResult = credentialRepository.findAll();
 
         // Then
-        Assertions.assertThat(credentialListResult).as("should have 0 member in the List").hasSize(0);
+        assertThat(credentialListResult).hasSize(0);
     }
 
     @Test
@@ -72,7 +71,7 @@ class CredentialRepositoryTests {
         Optional<Credential> credentialOptionalResult = credentialRepository.findById(1L);
 
         // Then
-        assertThat(credentialOptionalResult).as("should have a Credential in the Option").isPresent();
+        assertThat(credentialOptionalResult).isPresent();
 
         Credential credentialResult = credentialOptionalResult.get();
         assertThat(credentialResult.getId()).isEqualTo(credential.getId());
@@ -89,7 +88,7 @@ class CredentialRepositoryTests {
         Optional<Credential> credentialOptionalResult = credentialRepository.findById(1L);
 
         // Then
-        assertThat(credentialOptionalResult).as("should not have a Credential in the Option").isEmpty();
+        assertThat(credentialOptionalResult).isEmpty();
     }
 
     @Test
@@ -101,7 +100,7 @@ class CredentialRepositoryTests {
         boolean isCredentialExisted = credentialRepository.existsById(1L);
 
         // Then
-        assertThat(isCredentialExisted).as("should return true").isTrue();
+        assertThat(isCredentialExisted).isTrue();
     }
 
     @Test
@@ -112,7 +111,7 @@ class CredentialRepositoryTests {
         boolean isCredentialExisted = credentialRepository.existsById(1L);
 
         // Then
-        assertThat(isCredentialExisted).as("should return false").isFalse();
+        assertThat(isCredentialExisted).isFalse();
     }
 
     @Test
@@ -131,7 +130,7 @@ class CredentialRepositoryTests {
 
         // Then
         Optional<Credential> credentialOptionalResult = credentialRepository.findById(1L);
-        assertThat(credentialOptionalResult).as("should have a Credential in the Option").isPresent();
+        assertThat(credentialOptionalResult).isPresent();
 
         Credential credentialResult = credentialOptionalResult.get();
         assertThat(credentialResult.getId()).isEqualTo(credentialUpdate.getId());
@@ -156,13 +155,19 @@ class CredentialRepositoryTests {
 
         // Then
         List<Credential> credentialListResult = credentialRepository.findAll();
-        Assertions.assertThat(credentialListResult).as("should have 2 members in the List").hasSize(2);
-        Assertions.assertThat(credentialListResult).as("should match data in items")
-                .extracting(Credential::getId, Credential::getName, Credential::getUsername, Credential::getPassword)
-                .containsExactlyInAnyOrder(
-                        tuple(1L, "name", "username", "password"),
-                        tuple(2L, "name2", "username2", "password2")
-                );
+        assertThat(credentialListResult).hasSize(2);
+
+        Credential credentialResult1 = credentialListResult.get(0);
+        assertThat(credentialResult1.getId()).isEqualTo(credential.getId());
+        assertThat(credentialResult1.getName()).isEqualTo(credential.getName());
+        assertThat(credentialResult1.getUsername()).isEqualTo(credential.getUsername());
+        assertThat(credentialResult1.getPassword()).isEqualTo(credential.getPassword());
+
+        Credential credentialResult2 = credentialListResult.get(1);
+        assertThat(credentialResult2.getId()).isEqualTo(credential2.getId());
+        assertThat(credentialResult2.getName()).isEqualTo(credential2.getName());
+        assertThat(credentialResult2.getUsername()).isEqualTo(credential2.getUsername());
+        assertThat(credentialResult2.getPassword()).isEqualTo(credential2.getPassword());
     }
 
     @Test
@@ -185,10 +190,7 @@ class CredentialRepositoryTests {
         });
 
         // Then
-        assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessageContaining("CREDENTIALS(NAME)");
+        assertThat(throwable).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -201,7 +203,7 @@ class CredentialRepositoryTests {
 
         // Then
         Optional<Credential> credentialOptionalResult = credentialRepository.findById(1L);
-        Assertions.assertThat(credentialOptionalResult).as("should have no Credential in the Option").isEmpty();
+        assertThat(credentialOptionalResult).isEmpty();
     }
 
     @Test
@@ -212,8 +214,6 @@ class CredentialRepositoryTests {
         Throwable throwable = catchThrowable(() -> credentialRepository.deleteById(1L));
 
         // Then
-        assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(throwable).isInstanceOf(EmptyResultDataAccessException.class);
     }
 }
