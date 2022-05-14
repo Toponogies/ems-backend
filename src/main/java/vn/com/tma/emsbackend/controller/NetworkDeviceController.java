@@ -1,5 +1,6 @@
 package vn.com.tma.emsbackend.controller;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.dto.ErrorDto;
 import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
-import vn.com.tma.emsbackend.dto.NetworkDeviceRequestDto;
 import vn.com.tma.emsbackend.service.networkdevice.NetworkDeviceService;
 
 import javax.validation.Valid;
@@ -39,7 +39,7 @@ public class NetworkDeviceController {
     @ApiResponse(responseCode = "200", description = "Get all network devices", content = {
             @Content(array = @ArraySchema(schema = @Schema(implementation = NetworkDeviceDto.class)))})
     @GetMapping()
-    public List<NetworkDeviceDto> getAllNetworkDevices() {
+    public Collection<NetworkDeviceDto> getAllNetworkDevices() {
         return networkDeviceService.getAll();
     }
 
@@ -53,7 +53,7 @@ public class NetworkDeviceController {
     })
     @GetMapping("/{id}")
     public NetworkDeviceDto getDeviceById(@PathVariable(value = "id") Long networkDeviceId) {
-        return networkDeviceService.getById(networkDeviceId);
+        return networkDeviceService.get(networkDeviceId);
     }
 
 
@@ -92,8 +92,8 @@ public class NetworkDeviceController {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping()
-    public NetworkDeviceDto addDevice(@Valid @RequestBody NetworkDeviceRequestDto networkDeviceRequestDto) {
-        return networkDeviceService.add(networkDeviceRequestDto);
+    public NetworkDeviceDto addDevice(@Valid @RequestBody NetworkDeviceDto networkDeviceDto) {
+        return networkDeviceService.add(networkDeviceDto);
     }
 
 
@@ -125,7 +125,7 @@ public class NetworkDeviceController {
 
     @PutMapping("/{id}")
     public NetworkDeviceDto updateDevice(@PathVariable(value = "id") Long deviceId,
-                                         @RequestBody NetworkDeviceRequestDto deviceRequestDto) {
-        return networkDeviceService.update(deviceId, deviceRequestDto);
+                                         @RequestBody NetworkDeviceDto networkDeviceDto) {
+        return networkDeviceService.update(deviceId, networkDeviceDto);
     }
 }

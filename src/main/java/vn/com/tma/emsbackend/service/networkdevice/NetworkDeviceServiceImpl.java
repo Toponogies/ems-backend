@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.com.tma.emsbackend.common.Enum;
 import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
-import vn.com.tma.emsbackend.dto.NetworkDeviceRequestDto;
 import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.entity.NetworkDevice;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
@@ -36,7 +35,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    public NetworkDeviceDto getById(long id) {
+    public NetworkDeviceDto get(long id) {
         log.info("Get network device with id:{}", id);
 
         Optional<NetworkDevice> networkDeviceOptional = networkDeviceRepository.findById(id);
@@ -83,10 +82,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    public NetworkDeviceDto add(NetworkDeviceRequestDto networkDeviceRequestDto) {
+    public NetworkDeviceDto add(NetworkDeviceDto networkDeviceDto) {
         log.info("Add new device");
 
-        NetworkDevice networkDevice = mapper.map(networkDeviceRequestDto, NetworkDevice.class);
+        NetworkDevice networkDevice = mapper.map(networkDeviceDto, NetworkDevice.class);
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
         try {
             return mapper.map(networkDeviceRepository.save(networkDevice), NetworkDeviceDto.class);
@@ -98,7 +97,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    public NetworkDeviceDto update(long id, NetworkDeviceRequestDto networkDeviceRequestDto) {
+    public NetworkDeviceDto update(long id, NetworkDeviceDto networkDeviceDto) {
         log.info("Update network device with id:{}", id);
         // Get device by id
         Optional<NetworkDevice> networkDeviceOptional = networkDeviceRepository.findById(id);
@@ -108,13 +107,13 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         NetworkDevice networkDevice = networkDeviceOptional.get();
 
         // Update data
-        networkDevice.setIpAddress(networkDeviceRequestDto.getIpAddress());
-        networkDevice.setLabel(networkDeviceRequestDto.getLabel());
-        networkDevice.setSshPort(networkDeviceRequestDto.getPort());
+        networkDevice.setIpAddress(networkDeviceDto.getIpAddress());
+        networkDevice.setLabel(networkDeviceDto.getLabel());
+        networkDevice.setSshPort(networkDeviceDto.getPort());
 
         // set new credential
         Credential credential = new Credential();
-        credential.setId(networkDeviceRequestDto.getCredentialId());
+        credential.setId(networkDeviceDto.getCredentialDto().getId());
         networkDevice.setCredential(credential);
 
         try {

@@ -14,12 +14,11 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LoggingIntegrationTests {
+class LoggingIntegrationTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
@@ -39,7 +38,7 @@ public class LoggingIntegrationTests {
     }
 
     @Test
-    public void shouldLogGetCredentialWithId() {
+    void shouldLogGetCredentialWithId() {
         testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDto.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
@@ -47,7 +46,7 @@ public class LoggingIntegrationTests {
     }
 
     @Test
-    public void shouldLogCouldNotDelete() {
+    void shouldLogCouldNotDelete() {
         testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDto.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
@@ -56,16 +55,15 @@ public class LoggingIntegrationTests {
     }
 
     @Test
-    public void shouldLogAddNewCredential(){
-        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-        credentialRequestDto.setName("This_is_a_name");
-        credentialRequestDto.setUsername("username");
-        credentialRequestDto.setPassword("ThisIsARandomPassword");
-        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+    void shouldLogAddNewCredential(){
+        CredentialDto credentialDto = new CredentialDto();
+        credentialDto.setName("This_is_a_name");
+        credentialDto.setUsername("username");
+        credentialDto.setPassword("ThisIsARandomPassword");
+        HttpEntity<CredentialDto> httpEntity = new HttpEntity<>(credentialDto, null);
         
         testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDto.class);
 
-        // TODO: Try fixing this warning
-        assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage);
+        assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage).contains("Add new credential");
     }
 }
