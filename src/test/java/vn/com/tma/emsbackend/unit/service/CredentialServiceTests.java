@@ -1,25 +1,20 @@
 package vn.com.tma.emsbackend.unit.service;
 
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import vn.com.tma.emsbackend.common.Mapper;
 import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
 import vn.com.tma.emsbackend.entity.Credential;
 import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
 import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 import vn.com.tma.emsbackend.service.credential.CredentialServiceImpl;
-import vn.com.tma.emsbackend.util.Constant;
 
 import java.util.*;
 
@@ -28,7 +23,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static vn.com.tma.emsbackend.util.entity.CredentialCreator.createCredentialBy;
-import static vn.com.tma.emsbackend.util.entity.CredentialCreator.createCredentialDtoBy;
 
 @ExtendWith(MockitoExtension.class)
 class CredentialServiceTests {
@@ -36,14 +30,9 @@ class CredentialServiceTests {
     private CredentialRepository credentialRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private Mapper mapper;
 
     private CredentialService credentialService;
-
-    private CredentialRequestDto credentialRequestDto;
 
     private Credential credential;
 
@@ -51,15 +40,15 @@ class CredentialServiceTests {
 
     @BeforeEach
     void setUp() {
-        credentialService = new CredentialServiceImpl(credentialRepository, passwordEncoder, mapper);
+        credentialService = new CredentialServiceImpl(credentialRepository, mapper);
 
-        credentialRequestDto = new CredentialRequestDto();
-        credentialRequestDto.setName("name");
-        credentialRequestDto.setUsername("username");
-        credentialRequestDto.setPassword("password");
+        credentialDto = new CredentialDto();
+        credentialDto.setId(1L);
+        credentialDto.setName("name");
+        credentialDto.setUsername("username");
+        credentialDto.setPassword("password");
 
-        credential = createCredentialBy(credentialRequestDto);
-        credentialDto = createCredentialDtoBy(credential);
+        credential = createCredentialBy(credentialDto);
     }
 
     @Test
@@ -74,7 +63,7 @@ class CredentialServiceTests {
         // Then
         verify(credentialRepository).findAll();
 
-        assertThat(credentialDtoListResult).as("should have 1 member in the List").hasSize(1);
+        assertThat(credentialDtoListResult).hasSize(1);
         CredentialDto credentialDtoResult = credentialDtoListResult.get(0);
         assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
@@ -91,14 +80,10 @@ class CredentialServiceTests {
         CredentialDto credentialDtoResult = credentialService.get(1L);
 
         // Then
-        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(credentialRepository).findById(longArgumentCaptor.capture());
-        long id = longArgumentCaptor.getValue();
-        assertThat(id).isEqualTo(1L);
-
         assertThat(credentialDtoResult.getId()).isEqualTo(credential.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credential.getName());
         assertThat(credentialDtoResult.getUsername()).isEqualTo(credential.getUsername());
+        assertThat(credentialDtoResult.getPassword()).isEqualTo(credential.getPassword());
     }
 
     @Test
@@ -110,58 +95,39 @@ class CredentialServiceTests {
         Throwable throwable = catchThrowable(() -> credentialService.get(1L));
 
         // Then
-        AssertionsForClassTypes.assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(String.valueOf(1L));
+        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
     }
 
 
     @Test
     void shouldAddACredentialWhenAddWithValidData() {
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
-        when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
+        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
         when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
 
         // Given
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
 
         // When
-        CredentialDto credentialDtoResult = credentialService.add(credentialRequestDto);
+        CredentialDto credentialDtoResult = credentialService.add(credentialDto);
 
         // Then
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(passwordEncoder).encode(stringArgumentCaptor.capture());
-        String password = stringArgumentCaptor.getValue();
-        assertThat(password).isEqualTo(credentialRequestDto.getPassword());
-
-        ArgumentCaptor<Credential> credentialArgumentCaptor = ArgumentCaptor.forClass(Credential.class);
-        verify(credentialRepository).save(credentialArgumentCaptor.capture());
-        Credential credentialResult = credentialArgumentCaptor.getValue();
-        assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
-        assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-        assertThat(credentialResult.getPassword()).isEqualTo(Constant.hashedPassword);
-
         assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
         assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialDto.getUsername());
+        assertThat(credentialDtoResult.getPassword()).isEqualTo(credential.getPassword());
     }
 
     @Test
     void shouldThrowExceptionWhenAddWithConstraintViolatedData() {
         // Given
         when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
-        when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
+        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
 
         // When
-        Throwable throwable = catchThrowable(() -> credentialService.add(credentialRequestDto));
+        Throwable throwable = catchThrowable(() -> credentialService.add(credentialDto));
 
         // Then
-        AssertionsForClassTypes.assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(ResourceConstraintViolationException.class)
-                .hasMessageContaining(Credential.class.getName());
+        assertThat(throwable).isInstanceOf(ResourceConstraintViolationException.class);
     }
 
     @Test
@@ -169,34 +135,17 @@ class CredentialServiceTests {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
-        when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
+        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
         when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
 
         // When
-        CredentialDto credentialDtoResult = credentialService.update(1L, credentialRequestDto);
+        CredentialDto credentialDtoResult = credentialService.update(1L, credentialDto);
 
         // Then
-        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(credentialRepository).existsById(longArgumentCaptor.capture());
-        long id = longArgumentCaptor.getValue();
-        assertThat(id).isEqualTo(1L);
-
-        ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(passwordEncoder).encode(stringArgumentCaptor.capture());
-        String password = stringArgumentCaptor.getValue();
-        assertThat(password).isEqualTo(credentialRequestDto.getPassword());
-
-        ArgumentCaptor<Credential> credentialArgumentCaptor = ArgumentCaptor.forClass(Credential.class);
-        verify(credentialRepository).save(credentialArgumentCaptor.capture());
-        Credential credentialResult = credentialArgumentCaptor.getValue();
-        assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
-        assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-        assertThat(credentialResult.getPassword()).isEqualTo(Constant.hashedPassword);
-
         assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
         assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
         assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialDto.getUsername());
+        assertThat(credentialDtoResult.getPassword()).isEqualTo(credentialDto.getPassword());
     }
 
     @Test
@@ -205,13 +154,10 @@ class CredentialServiceTests {
         when(credentialRepository.existsById(anyLong())).thenReturn(false);
 
         // When
-        Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialRequestDto));
+        Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialDto));
 
         // Then
-        AssertionsForClassTypes.assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(String.valueOf(1L));
+        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -219,17 +165,13 @@ class CredentialServiceTests {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
         when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(passwordEncoder.encode(anyString())).thenReturn(Constant.hashedPassword);
-        when(mapper.map(any(CredentialRequestDto.class), any())).thenReturn(credential);
+        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
 
         // When
-        Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialRequestDto));
+        Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialDto));
 
         // Then
-        AssertionsForClassTypes.assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(ResourceConstraintViolationException.class)
-                .hasMessageContaining(Credential.class.getName());
+        assertThat(throwable).isInstanceOf(ResourceConstraintViolationException.class);
     }
 
     @Test
@@ -241,10 +183,7 @@ class CredentialServiceTests {
         credentialService.delete(1L);
 
         // Then
-        ArgumentCaptor<Long> longArgumentCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(credentialRepository).deleteById(longArgumentCaptor.capture());
-        long id = longArgumentCaptor.getValue();
-        assertThat(id).isEqualTo(1L);
+        verify(credentialRepository).deleteById(1L);
     }
 
     @Test
@@ -256,9 +195,6 @@ class CredentialServiceTests {
         Throwable throwable = catchThrowable(() -> credentialService.delete(1L));
 
         // Then
-        AssertionsForClassTypes.assertThat(throwable)
-                .as("should throw the correct exception")
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining(String.valueOf(1L));
+        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
     }
 }
