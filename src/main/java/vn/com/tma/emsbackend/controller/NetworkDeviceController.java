@@ -48,7 +48,7 @@ public class NetworkDeviceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the network device", content = {
                     @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
-            @ApiResponse(responseCode = "404", description = "network device not found", content = {
+            @ApiResponse(responseCode = "404", description = "Network device not found", content = {
                     @Content(schema = @Schema(implementation = ErrorDto.class))})
     })
     @GetMapping("/{id}")

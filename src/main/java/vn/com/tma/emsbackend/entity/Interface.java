@@ -25,7 +25,7 @@ public class Interface {
     @Column(name = "dhcp", nullable = false)
     private Enum.State dhcp;
 
-    @Column(name = "ip_address",  unique = true)
+    @Column(name = "ip_address")
     private String ipAddress;
 
     @Column(name = "netmask")
@@ -33,6 +33,10 @@ public class Interface {
 
     @Column(name = "gateway")
     private String gateway;
+
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "port_id")
+    private Port port;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "managed_device_id")

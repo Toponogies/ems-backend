@@ -27,7 +27,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceConstraintViolationException.class)
-    public ResponseEntity<?> handleDataConstraintViolationException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDto> handleDataConstraintViolationException(Exception ex, WebRequest request) {
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
     }
@@ -42,7 +42,7 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleUnexpectedException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDto> handleUnexpectedException(Exception ex, WebRequest request) {
         log.error("Have an out of control error: ", ex);
         ErrorDto errorDto = new ErrorDto(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
