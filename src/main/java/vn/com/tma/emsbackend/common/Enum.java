@@ -9,15 +9,6 @@ public class Enum {
     public enum State {
         DISABLED("disabled"),
         ENABLED("enabled");
-
-        private final String value;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public enum InterfaceDHCP {
-        DISABLED("disabled"),
-        ENABLED("enabled");
         private final String value;
     }
 
@@ -26,7 +17,6 @@ public class Enum {
         OUT_OF_SERVICE,
         IN_PROCESS
     }
-
 
     public enum NetworkDeviceType {
         VCX,

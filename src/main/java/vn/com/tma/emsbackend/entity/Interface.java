@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = Constant.INTERFACE_TABLE)
-public class NDInterface {
+public class Interface {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -23,7 +23,7 @@ public class NDInterface {
     private Enum.State state;
 
     @Column(name = "dhcp", nullable = false)
-    private Enum.InterfaceDHCP dhcp;
+    private Enum.State dhcp;
 
     @Column(name = "ip_address",  unique = true)
     private String ipAddress;

@@ -10,8 +10,8 @@ public class SSHColumn {
         public static final String FIRMWARE = "Firmware version";
     }
 
-    public static final class NDInterface {
-        private NDInterface(){}
+    public static final class Interface {
+        private Interface(){}
         public static final String DHCP = "DHCP";
         public static final String GATEWAY = "Gateway";
         public static final String IPADDRESS = "IP address";
