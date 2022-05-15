@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
+import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
@@ -70,18 +71,14 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDTO add(NetworkDeviceDTO networkDeviceDTO) {
         log.info("Add new device");
 
-        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
-        if (!checkIfCredentialExisted) {
-            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
-        }
-
-        boolean checkIfExistedByLabel = networkDeviceRepository.existsByLabel(networkDeviceDTO.getLabel());
-        if (checkIfExistedByLabel) {
-            throw new DeviceLabelExistsException(networkDeviceDTO.getLabel());
-        }
+        checkIfPropertiesExisted(networkDeviceDTO);
 
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
+
+        Credential credential = new Credential();
+        credential.setId(networkDeviceDTO.getCredentialId());
+        networkDevice.setCredential(credential);
 
         return networkDeviceMapper.entityToDTO(networkDeviceRepository.save(networkDevice));
     }
@@ -90,12 +87,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
-        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
-        if (!checkIfCredentialExisted) {
-            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
-        }
+        checkIfPropertiesExisted(networkDeviceDTO);
 
-        // Get device by id
         Optional<NetworkDevice> networkDeviceOptional = networkDeviceRepository.findById(id);
         if (networkDeviceOptional.isEmpty()) {
             throw new DeviceNotFoundException(String.valueOf(id));
@@ -125,5 +118,22 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         }
 
         networkDeviceRepository.deleteById(id);
+    }
+
+    private void checkIfPropertiesExisted(NetworkDeviceDTO networkDeviceDTO) {
+        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
+        if (!checkIfCredentialExisted) {
+            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
+        }
+
+        boolean checkIfExistedByLabel = networkDeviceRepository.existsByLabel(networkDeviceDTO.getLabel());
+        if (checkIfExistedByLabel) {
+            throw new DeviceLabelExistsException(networkDeviceDTO.getLabel());
+        }
+
+        boolean checkIfExistedByIpAddress = networkDeviceRepository.existsByIpAddress(networkDeviceDTO.getIpAddress());
+        if (checkIfExistedByIpAddress) {
+            throw new DeviceIPExistsException(networkDeviceDTO.getIpAddress());
+        }
     }
 }

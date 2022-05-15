@@ -7,6 +7,8 @@ import lombok.Setter;
 import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -44,6 +46,9 @@ public class NetworkDevice {
     private Enum.NetworkDeviceState state;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "credential_id")
+    @JoinColumn(name = "credential_id", nullable = false)
     private Credential credential;
+
+    @OneToMany(mappedBy = "networkDevice")
+    private List<Port> ports;
 }

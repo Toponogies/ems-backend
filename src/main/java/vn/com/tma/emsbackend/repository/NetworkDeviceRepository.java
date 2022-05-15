@@ -15,4 +15,6 @@ public interface NetworkDeviceRepository extends JpaRepository<NetworkDevice, Lo
     List<NetworkDevice> findAllByDeviceType(Enum.NetworkDeviceType deviceType);
 
     boolean existsByLabel(String label);
+
+    boolean existsByIpAddress(String ipAddress);
 }

@@ -29,6 +29,6 @@ public class Port {
     private Enum.State state;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "managed_device_id")
+    @JoinColumn(name = "device_id")
     private NetworkDevice networkDevice;
 }

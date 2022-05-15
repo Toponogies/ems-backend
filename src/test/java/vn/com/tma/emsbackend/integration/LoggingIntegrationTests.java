@@ -50,8 +50,7 @@ class LoggingIntegrationTests {
         testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
-                .contains("Delete credential with id: 1")
-                .contains("Can not delete credential with id: 1");
+                .contains("Delete credential with id: 1");
     }
 
     @Test

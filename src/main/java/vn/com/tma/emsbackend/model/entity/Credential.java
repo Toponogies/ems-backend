@@ -16,12 +16,11 @@ public class Credential {
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)
-    String name;
+    private String name;
 
     @Column(name = "username", nullable = false)
-    String username;
+    private String username;
 
     @Column(name = "password", nullable = false)
-    String password;
-
+    private String password;
 }

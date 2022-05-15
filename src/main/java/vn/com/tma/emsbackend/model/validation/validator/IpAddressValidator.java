@@ -19,7 +19,7 @@ public class IpAddressValidator implements ConstraintValidator<IpAddress, String
         for (String octet : octets) {
             try {
                 int octetValue = Integer.parseInt(octet);
-                if (octetValue < 0 || octetValue > 225) {
+                if (octetValue < 0 || octetValue > 255) {
                     return false;
                 }
             } catch (Exception e) {
