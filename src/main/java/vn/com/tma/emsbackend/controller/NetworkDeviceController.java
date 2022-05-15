@@ -21,10 +21,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import vn.com.tma.emsbackend.common.Enum;
-import vn.com.tma.emsbackend.dto.ErrorDto;
-import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
-import vn.com.tma.emsbackend.service.networkdevice.NetworkDeviceService;
+import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.model.dto.ErrorDTO;
+import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import javax.validation.Valid;
 
@@ -37,9 +37,9 @@ public class NetworkDeviceController {
 
     @Operation(summary = "Get all network devices")
     @ApiResponse(responseCode = "200", description = "Get all network devices", content = {
-            @Content(array = @ArraySchema(schema = @Schema(implementation = NetworkDeviceDto.class)))})
+            @Content(array = @ArraySchema(schema = @Schema(implementation = NetworkDeviceDTO.class)))})
     @GetMapping()
-    public Collection<NetworkDeviceDto> getAllNetworkDevices() {
+    public Collection<NetworkDeviceDTO> getAllNetworkDevices() {
         return networkDeviceService.getAll();
     }
 
@@ -47,12 +47,12 @@ public class NetworkDeviceController {
     @Operation(summary = "Get a specific network device by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the network device", content = {
-                    @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Network device not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @GetMapping("/{id}")
-    public NetworkDeviceDto getDeviceById(@PathVariable(value = "id") Long networkDeviceId) {
+    public NetworkDeviceDTO getDeviceById(@PathVariable(value = "id") Long networkDeviceId) {
         return networkDeviceService.get(networkDeviceId);
     }
 
@@ -60,39 +60,39 @@ public class NetworkDeviceController {
     @Operation(summary = "Get a specific network device by ip address")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the network device", content = {
-                    @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Network device not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @GetMapping("/ip/{ip_address}")
-    public NetworkDeviceDto getDeviceByIpAddress(@PathVariable(value = "ip_address") String ipAddress) {
+    public NetworkDeviceDTO getDeviceByIpAddress(@PathVariable(value = "ip_address") String ipAddress) {
         return networkDeviceService.getByIpAddress(ipAddress);
     }
 
     @Operation(summary = "Get all network device by device type")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the network device", content = {
-                    @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Network device not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @GetMapping("/type/{device_type}")
-    public List<NetworkDeviceDto> getDevicesByDeviceType(@PathVariable(value = "device_type") Enum.NetworkDeviceType deviceType) {
+    public List<NetworkDeviceDTO> getDevicesByDeviceType(@PathVariable(value = "device_type") Enum.NetworkDeviceType deviceType) {
         return networkDeviceService.getByDeviceType(deviceType);
     }
 
     @Operation(summary = "Add a new device")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Added the network device", content = {
-                    @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
             @ApiResponse(responseCode = "409", description = "Constraint violated", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))}),
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))}),
             @ApiResponse(responseCode = "400", description = "IP address is invalid", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})})
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping()
-    public NetworkDeviceDto addDevice(@Valid @RequestBody NetworkDeviceDto networkDeviceDto) {
+    public NetworkDeviceDTO addDevice(@Valid @RequestBody NetworkDeviceDTO networkDeviceDto) {
         return networkDeviceService.add(networkDeviceDto);
     }
 
@@ -102,9 +102,9 @@ public class NetworkDeviceController {
             @ApiResponse(responseCode = "204", description = "Deleted network device", content = {
                     @Content(schema = @Schema())}),
             @ApiResponse(responseCode = "404", description = "network device not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))}),
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))}),
             @ApiResponse(responseCode = "409", description = "Constraint violated", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
@@ -116,16 +116,16 @@ public class NetworkDeviceController {
     @Operation(summary = "Update a specific network device by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Edited the network device", content = {
-                    @Content(schema = @Schema(implementation = NetworkDeviceDto.class))}),
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
             @ApiResponse(responseCode = "404", description = "network device not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))}),
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))}),
             @ApiResponse(responseCode = "409", description = "Constraint violated", content = {
-                    @Content(schema = @Schema(implementation = ErrorDto.class))})
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
 
     @PutMapping("/{id}")
-    public NetworkDeviceDto updateDevice(@PathVariable(value = "id") Long deviceId,
-                                         @RequestBody NetworkDeviceDto networkDeviceDto) {
+    public NetworkDeviceDTO updateDevice(@PathVariable(value = "id") Long deviceId,
+                                         @RequestBody NetworkDeviceDTO networkDeviceDto) {
         return networkDeviceService.update(deviceId, networkDeviceDto);
     }
 }

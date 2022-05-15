@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import vn.com.tma.emsbackend.common.Mapper;
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.entity.Credential;
-import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
-import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
+import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
+import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
+import vn.com.tma.emsbackend.model.mapper.CredentialMapper;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 import vn.com.tma.emsbackend.service.credential.CredentialServiceImpl;
@@ -30,19 +31,19 @@ class CredentialServiceTests {
     private CredentialRepository credentialRepository;
 
     @Mock
-    private Mapper mapper;
+    private CredentialMapper credentialMapper;
 
     private CredentialService credentialService;
 
     private Credential credential;
 
-    private CredentialDto credentialDto;
+    private CredentialDTO credentialDto;
 
     @BeforeEach
     void setUp() {
-        credentialService = new CredentialServiceImpl(credentialRepository, mapper);
+        credentialService = new CredentialServiceImpl(credentialRepository, credentialMapper);
 
-        credentialDto = new CredentialDto();
+        credentialDto = new CredentialDTO();
         credentialDto.setId(1L);
         credentialDto.setName("name");
         credentialDto.setUsername("username");
@@ -55,35 +56,35 @@ class CredentialServiceTests {
     void shouldGetAllCredentialsWhenGetAll() {
         // Given
         when(credentialRepository.findAll()).thenReturn(List.of(credential));
-        when(mapper.mapList(anyList(), any())).thenReturn(List.of(credentialDto));
+        when(credentialMapper.entitiesToDTOs(anyList())).thenReturn(List.of(credentialDto));
 
         // When
-        List<CredentialDto> credentialDtoListResult = credentialService.getAll();
+        List<CredentialDTO> credentialDTOListResult = credentialService.getAll();
 
         // Then
         verify(credentialRepository).findAll();
 
-        assertThat(credentialDtoListResult).hasSize(1);
-        CredentialDto credentialDtoResult = credentialDtoListResult.get(0);
-        assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
-        assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
-        assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialDto.getUsername());
+        assertThat(credentialDTOListResult).hasSize(1);
+        CredentialDTO credentialDTOResult = credentialDTOListResult.get(0);
+        assertThat(credentialDTOResult.getId()).isEqualTo(credentialDto.getId());
+        assertThat(credentialDTOResult.getName()).isEqualTo(credentialDto.getName());
+        assertThat(credentialDTOResult.getUsername()).isEqualTo(credentialDto.getUsername());
     }
 
     @Test
     void shouldGetACredentialWhenGetWithExistedId() {
         // Given
         when(credentialRepository.findById(anyLong())).thenReturn(Optional.of(credential));
-        when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
+        when(credentialMapper.entityToDTO(any(Credential.class))).thenReturn(credentialDto);
 
         // When
-        CredentialDto credentialDtoResult = credentialService.get(1L);
+        CredentialDTO credentialDTOResult = credentialService.get(1L);
 
         // Then
-        assertThat(credentialDtoResult.getId()).isEqualTo(credential.getId());
-        assertThat(credentialDtoResult.getName()).isEqualTo(credential.getName());
-        assertThat(credentialDtoResult.getUsername()).isEqualTo(credential.getUsername());
-        assertThat(credentialDtoResult.getPassword()).isEqualTo(credential.getPassword());
+        assertThat(credentialDTOResult.getId()).isEqualTo(credential.getId());
+        assertThat(credentialDTOResult.getName()).isEqualTo(credential.getName());
+        assertThat(credentialDTOResult.getUsername()).isEqualTo(credential.getUsername());
+        assertThat(credentialDTOResult.getPassword()).isEqualTo(credential.getPassword());
     }
 
     @Test
@@ -95,57 +96,57 @@ class CredentialServiceTests {
         Throwable throwable = catchThrowable(() -> credentialService.get(1L));
 
         // Then
-        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(throwable).isInstanceOf(CredentialNotFoundException.class);
     }
 
 
     @Test
     void shouldAddACredentialWhenAddWithValidData() {
-        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
-        when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
-
         // Given
+        when(credentialMapper.dtoToEntity(any(CredentialDTO.class))).thenReturn(credential);
+        when(credentialMapper.entityToDTO(any(Credential.class))).thenReturn(credentialDto);
+        when(credentialRepository.existsByName(anyString())).thenReturn(false);
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
 
         // When
-        CredentialDto credentialDtoResult = credentialService.add(credentialDto);
+        CredentialDTO credentialDTOResult = credentialService.add(credentialDto);
 
         // Then
-        assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
-        assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
-        assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialDto.getUsername());
-        assertThat(credentialDtoResult.getPassword()).isEqualTo(credential.getPassword());
+        assertThat(credentialDTOResult.getId()).isEqualTo(credentialDto.getId());
+        assertThat(credentialDTOResult.getName()).isEqualTo(credentialDto.getName());
+        assertThat(credentialDTOResult.getUsername()).isEqualTo(credentialDto.getUsername());
+        assertThat(credentialDTOResult.getPassword()).isEqualTo(credential.getPassword());
     }
 
     @Test
-    void shouldThrowExceptionWhenAddWithConstraintViolatedData() {
+    void shouldThrowExceptionWhenAddWithExistedName() {
         // Given
-        when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
+        when(credentialRepository.existsByName(anyString())).thenReturn(true);
 
         // When
         Throwable throwable = catchThrowable(() -> credentialService.add(credentialDto));
 
         // Then
-        assertThat(throwable).isInstanceOf(ResourceConstraintViolationException.class);
+        assertThat(throwable).isInstanceOf(CredentialNameExistsException.class);
     }
 
     @Test
     void shouldUpdateACredentialWhenUpdateWithExistedIdAndValidData() {
         // Given
+        when(credentialMapper.dtoToEntity(any(CredentialDTO.class))).thenReturn(credential);
+        when(credentialMapper.entityToDTO(any(Credential.class))).thenReturn(credentialDto);
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
+        when(credentialRepository.existsByName(anyString())).thenReturn(false);
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
-        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
-        when(mapper.map(any(Credential.class), any())).thenReturn(credentialDto);
 
         // When
-        CredentialDto credentialDtoResult = credentialService.update(1L, credentialDto);
+        CredentialDTO credentialDTOResult = credentialService.update(1L, credentialDto);
 
         // Then
-        assertThat(credentialDtoResult.getId()).isEqualTo(credentialDto.getId());
-        assertThat(credentialDtoResult.getName()).isEqualTo(credentialDto.getName());
-        assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialDto.getUsername());
-        assertThat(credentialDtoResult.getPassword()).isEqualTo(credentialDto.getPassword());
+        assertThat(credentialDTOResult.getId()).isEqualTo(credentialDto.getId());
+        assertThat(credentialDTOResult.getName()).isEqualTo(credentialDto.getName());
+        assertThat(credentialDTOResult.getUsername()).isEqualTo(credentialDto.getUsername());
+        assertThat(credentialDTOResult.getPassword()).isEqualTo(credentialDto.getPassword());
     }
 
     @Test
@@ -157,26 +158,26 @@ class CredentialServiceTests {
         Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialDto));
 
         // Then
-        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(throwable).isInstanceOf(CredentialNotFoundException.class);
     }
 
     @Test
-    void shouldThrowExceptionWhenUpdateWithConstraintViolatedData() {
+    void shouldThrowExceptionWhenUpdateWithExistedName() {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
-        when(credentialRepository.save(any(Credential.class))).thenThrow(DataIntegrityViolationException.class);
-        when(mapper.map(any(CredentialDto.class), any())).thenReturn(credential);
+        when(credentialRepository.existsByName(anyString())).thenReturn(true);
 
         // When
         Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialDto));
 
         // Then
-        assertThat(throwable).isInstanceOf(ResourceConstraintViolationException.class);
+        assertThat(throwable).isInstanceOf(CredentialNameExistsException.class);
     }
 
     @Test
     void shouldDeleteACredentialWhenDeleteWithExistedId() {
         // Given
+        when(credentialRepository.existsById(anyLong())).thenReturn(true);
         doNothing().when(credentialRepository).deleteById(anyLong());
 
         // When
@@ -189,12 +190,12 @@ class CredentialServiceTests {
     @Test
     void shouldThrowExceptionWhenDeleteWithNotExistedId() {
         // Given
-        doThrow(EmptyResultDataAccessException.class).doNothing().when(credentialRepository).deleteById(anyLong());
+        when(credentialRepository.existsById(anyLong())).thenReturn(false);
 
         // When
         Throwable throwable = catchThrowable(() -> credentialService.delete(1L));
 
         // Then
-        assertThat(throwable).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(throwable).isInstanceOf(CredentialNotFoundException.class);
     }
 }

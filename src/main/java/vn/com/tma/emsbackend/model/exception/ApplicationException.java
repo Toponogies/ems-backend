@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.exception;
+package vn.com.tma.emsbackend.model.exception;
 
 public class ApplicationException extends  RuntimeException{
     public ApplicationException() {

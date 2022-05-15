@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.common;
+package vn.com.tma.emsbackend.common.constant;
 
 public class SSHColumn {
     private SSHColumn(){}

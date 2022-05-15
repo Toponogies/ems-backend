@@ -1,10 +1,10 @@
 package vn.com.tma.emsbackend.util.entity;
 
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.entity.Credential;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
 
 public class CredentialCreator {
-    public static Credential createCredentialBy(CredentialDto credentialDto) {
+    public static Credential createCredentialBy(CredentialDTO credentialDto) {
         Credential credential = new Credential();
         credential.setId(credentialDto.getId());
         credential.setUsername(credentialDto.getUsername());
@@ -13,8 +13,8 @@ public class CredentialCreator {
         return credential;
     }
 
-    public static CredentialDto createCredentialDtoBy(Credential credential) {
-        CredentialDto credentialDto = new CredentialDto();
+    public static CredentialDTO createCredentialDtoBy(Credential credential) {
+        CredentialDTO credentialDto = new CredentialDTO();
         credentialDto.setId(credential.getId());
         credentialDto.setUsername(credential.getUsername());
         credentialDto.setName(credential.getName());

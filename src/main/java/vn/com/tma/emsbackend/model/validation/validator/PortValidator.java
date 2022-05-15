@@ -1,7 +1,7 @@
-package vn.com.tma.emsbackend.validation.validator;
+package vn.com.tma.emsbackend.model.validation.validator;
 
-import vn.com.tma.emsbackend.common.Constant;
-import vn.com.tma.emsbackend.validation.Port;
+import vn.com.tma.emsbackend.common.constant.Constant;
+import vn.com.tma.emsbackend.model.validation.Port;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

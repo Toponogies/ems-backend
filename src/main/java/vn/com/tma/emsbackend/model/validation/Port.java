@@ -1,7 +1,6 @@
-package vn.com.tma.emsbackend.validation;
+package vn.com.tma.emsbackend.model.validation;
 
-import vn.com.tma.emsbackend.validation.validator.IpAddressValidator;
-import vn.com.tma.emsbackend.validation.validator.PortValidator;
+import vn.com.tma.emsbackend.model.validation.validator.PortValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

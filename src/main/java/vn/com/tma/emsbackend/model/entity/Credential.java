@@ -1,14 +1,15 @@
-package vn.com.tma.emsbackend.entity;
+package vn.com.tma.emsbackend.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.tma.emsbackend.common.constant.Constant;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "credentials")
+@Table(name = Constant.CREDENTIAL_TABLE)
 public class Credential {
     @Id
     @GeneratedValue

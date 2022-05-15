@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.entity.Credential;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.util.database.ResetDatabase;
 
@@ -66,16 +66,16 @@ class CredentialIntegrationTests {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<CredentialDto> credentialsResponse = response.getBody().as(new TypeRef<>() {});
+        List<CredentialDTO> credentialsResponse = response.getBody().as(new TypeRef<>() {});
         assertThat(credentialsResponse).hasSize(2);
-        CredentialDto credentialResult1 = credentialsResponse.get(0);
+        CredentialDTO credentialResult1 = credentialsResponse.get(0);
         Credential credentialBase1 = credentialList.get(0);
         assertThat(credentialResult1.getId()).isEqualTo(credentialBase1.getId());
         assertThat(credentialResult1.getName()).isEqualTo(credentialBase1.getName());
         assertThat(credentialResult1.getUsername()).isEqualTo(credentialBase1.getUsername());
         assertThat(credentialResult1.getPassword()).isEqualTo(credentialBase1.getPassword());
 
-        CredentialDto credentialResult2 = credentialsResponse.get(1);
+        CredentialDTO credentialResult2 = credentialsResponse.get(1);
         Credential credentialBase2 = credentialList.get(1);
         assertThat(credentialResult2.getId()).isEqualTo(credentialBase2.getId());
         assertThat(credentialResult2.getName()).isEqualTo(credentialBase2.getName());

@@ -22,8 +22,8 @@
 //import vn.com.tma.emsbackend.common.Mapper;
 //import vn.com.tma.emsbackend.dto.NetworkDeviceDto;
 //import vn.com.tma.emsbackend.dto.NetworkDeviceRequestDto;
-//import vn.com.tma.emsbackend.entity.Credential;
-//import vn.com.tma.emsbackend.entity.NetworkDevice;
+//import vn.com.tma.emsbackend.model.entity.Credential;
+//import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 //import vn.com.tma.emsbackend.repository.CredentialRepository;
 //import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 //import vn.com.tma.emsbackend.util.database.ResetDatabase;

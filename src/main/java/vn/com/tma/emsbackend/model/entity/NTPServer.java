@@ -1,9 +1,9 @@
-package vn.com.tma.emsbackend.entity;
+package vn.com.tma.emsbackend.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.tma.emsbackend.common.Constant;
-import vn.com.tma.emsbackend.common.Enum;
+import vn.com.tma.emsbackend.common.constant.Constant;
+import vn.com.tma.emsbackend.common.enums.Enum;
 
 import javax.persistence.*;
 

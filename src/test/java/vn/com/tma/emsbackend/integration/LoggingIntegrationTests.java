@@ -13,7 +13,7 @@ import org.springframework.http.HttpMethod;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import vn.com.tma.emsbackend.dto.CredentialDto;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +39,7 @@ class LoggingIntegrationTests {
 
     @Test
     void shouldLogGetCredentialWithId() {
-        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDto.class);
+        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
                 .contains("Get credential with id: 1 ");
@@ -47,7 +47,7 @@ class LoggingIntegrationTests {
 
     @Test
     void shouldLogCouldNotDelete() {
-        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDto.class);
+        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
                 .contains("Delete credential with id: 1")
@@ -56,13 +56,13 @@ class LoggingIntegrationTests {
 
     @Test
     void shouldLogAddNewCredential(){
-        CredentialDto credentialDto = new CredentialDto();
+        CredentialDTO credentialDto = new CredentialDTO();
         credentialDto.setName("This_is_a_name");
         credentialDto.setUsername("username");
         credentialDto.setPassword("ThisIsARandomPassword");
-        HttpEntity<CredentialDto> httpEntity = new HttpEntity<>(credentialDto, null);
+        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(credentialDto, null);
         
-        testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDto.class);
+        testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage).contains("Add new credential");
     }

@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.ErrorDto;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 
 import java.util.Collection;
@@ -24,9 +24,9 @@ public class CredentialController {
     @Operation(summary = "Get all credentials")
     @ApiResponse(responseCode = "200",
             description = "Found list of all credentials",
-            content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CredentialDto.class)))})
+            content = {@Content(array = @ArraySchema(schema = @Schema(implementation = CredentialDTO.class)))})
     @GetMapping()
-    public Collection<CredentialDto> getAllCredentials() {
+    public Collection<CredentialDTO> getAllCredentials() {
         return credentialService.getAll();
     }
 
@@ -34,13 +34,13 @@ public class CredentialController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Found the credential",
-                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+                    content = {@Content(schema = @Schema(implementation = CredentialDTO.class))}),
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
-                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+                    content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @GetMapping("/{id}")
-    public CredentialDto getCredentialById(@PathVariable(value = "id") Long credentialId) {
+    public CredentialDTO getCredentialById(@PathVariable(value = "id") Long credentialId) {
         return credentialService.get(credentialId);
     }
 
@@ -48,14 +48,14 @@ public class CredentialController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
                     description = "Added the credential",
-                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+                    content = {@Content(schema = @Schema(implementation = CredentialDTO.class))}),
             @ApiResponse(responseCode = "409",
                     description = "Constraint violated",
-                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+                    content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CredentialDto addCredential(@RequestBody CredentialDto credentialDto) {
+    public CredentialDTO addCredential(@RequestBody CredentialDTO credentialDto) {
         return credentialService.add(credentialDto);
     }
 
@@ -63,16 +63,16 @@ public class CredentialController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Edited the credential",
-                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+                    content = {@Content(schema = @Schema(implementation = CredentialDTO.class))}),
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
-                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))}),
+                    content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),
             @ApiResponse(responseCode = "409",
                     description = "Constraint violated",
-                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+                    content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @PutMapping("/{id}")
-    public CredentialDto updateCredential(@PathVariable(value = "id") Long credentialId, @RequestBody CredentialDto credentialDto) {
+    public CredentialDTO updateCredential(@PathVariable(value = "id") Long credentialId, @RequestBody CredentialDTO credentialDto) {
         return credentialService.update(credentialId, credentialDto);
     }
 
@@ -80,10 +80,10 @@ public class CredentialController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Edited the credential",
-                    content = {@Content(schema = @Schema(implementation = CredentialDto.class))}),
+                    content = {@Content(schema = @Schema(implementation = CredentialDTO.class))}),
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
-                    content = {@Content(schema = @Schema(implementation = ErrorDto.class))})
+                    content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

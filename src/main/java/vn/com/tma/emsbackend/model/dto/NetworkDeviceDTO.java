@@ -1,15 +1,15 @@
-package vn.com.tma.emsbackend.dto;
+package vn.com.tma.emsbackend.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.tma.emsbackend.validation.IpAddress;
-import vn.com.tma.emsbackend.validation.Port;
+import vn.com.tma.emsbackend.model.validation.IpAddress;
+import vn.com.tma.emsbackend.model.validation.Port;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class NetworkDeviceDto {
+public class NetworkDeviceDTO {
     private Long id;
 
     private String firmware;
@@ -29,7 +29,9 @@ public class NetworkDeviceDto {
     private String model;
 
     @Port(message = "Invalid port number")
-    private int port;
+    private int sshPort;
 
-    private CredentialDto credentialDto;
+    private String state;
+
+    private Long credentialId;
 }

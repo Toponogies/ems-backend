@@ -1,11 +1,11 @@
-package vn.com.tma.emsbackend.entity;
+package vn.com.tma.emsbackend.model.entity;
 
 import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.tma.emsbackend.common.Constant;
-import vn.com.tma.emsbackend.common.Enum;
+import vn.com.tma.emsbackend.common.constant.Constant;
+import vn.com.tma.emsbackend.common.enums.Enum;
 
 @Getter
 @Setter
@@ -28,7 +28,7 @@ public class NetworkDevice {
     @Column(name = "ip_address", unique = true, nullable = false)
     private String ipAddress;
 
-    @Column(name = "label", nullable = false)
+    @Column(name = "label", unique = true, nullable = false)
     private String label;
 
     @Column(name = "device_type")
@@ -40,7 +40,7 @@ public class NetworkDevice {
     @Column(name = "ssh_port", nullable = false)
     private int sshPort;
 
-    @Column(name = "state", nullable = false,columnDefinition = "int default 0")
+    @Column(name = "state", nullable = false, columnDefinition = "int default 0")
     private Enum.NetworkDeviceState state;
 
     @ManyToOne(fetch = FetchType.LAZY)

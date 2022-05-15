@@ -1,7 +1,7 @@
 package vn.com.tma.emsbackend.parser;
 
-import vn.com.tma.emsbackend.common.Enum;
-import vn.com.tma.emsbackend.entity.NTPServer;
+import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.model.entity.NTPServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class NTPCommandParser {
     private static NTPServer parseNTPServer(String line, Enum.State state) {
         NTPServer ntpServer = new NTPServer();
         String[] tuple = line.split(SPLIT_REGEX);
-        String address = "";
+        String address;
         if (state == Enum.State.ENABLED) {
             address = tuple[tuple.length - 2].trim();
         } else {
