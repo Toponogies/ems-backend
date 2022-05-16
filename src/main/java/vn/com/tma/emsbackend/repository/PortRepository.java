@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PortRepository extends JpaRepository<Port, Long> {
-    List<Port> findByNetworkDeviceId(Long networkDeviceId);
+    List<Port> findByNetworkDevice_Id(Long networkDeviceId);
 }

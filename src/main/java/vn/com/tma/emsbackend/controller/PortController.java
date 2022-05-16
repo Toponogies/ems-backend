@@ -31,9 +31,12 @@ public class PortController {
         return portService.getAll();
     }
 
-    @Operation(summary = "Get all ports by network device")
-    @ApiResponse(responseCode = "200", description = "Get all ports", content = {
-            @Content(array = @ArraySchema(schema = @Schema(implementation = PortDTO.class)))})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get all ports", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = PortDTO.class)))}),
+            @ApiResponse(responseCode = "404", description = "Device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
+    })
     @GetMapping("/devices/{deviceId}")
     public Collection<PortDTO> getPortsByDevice(@PathVariable(value = "deviceId") Long deviceId) {
         return portService.getByNetworkDevice(deviceId);

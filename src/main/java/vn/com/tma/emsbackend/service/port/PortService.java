@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PortService extends Service<PortDTO> {
     List<PortDTO> getByNetworkDevice(Long deviceId);
+
+    boolean existsById(Long id);
 }

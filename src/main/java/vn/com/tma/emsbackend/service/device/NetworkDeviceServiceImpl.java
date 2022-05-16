@@ -1,23 +1,22 @@
 package vn.com.tma.emsbackend.service.device;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
-import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
-import vn.com.tma.emsbackend.model.entity.Credential;
-import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
+
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -94,12 +93,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDeviceOptional.isEmpty()) {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
-        NetworkDevice networkDevice = networkDeviceOptional.get();
 
-        // Update data
-        networkDevice.setIpAddress(networkDeviceDTO.getIpAddress());
-        networkDevice.setLabel(networkDeviceDTO.getLabel());
-        networkDevice.setSshPort(networkDeviceDTO.getSshPort());
+        NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
 
         // Set new credential
         Credential credential = new Credential();
@@ -137,4 +132,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceIPExistsException(networkDeviceDTO.getIpAddress());
         }
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return networkDeviceRepository.existsById(id);
+    }
+
 }

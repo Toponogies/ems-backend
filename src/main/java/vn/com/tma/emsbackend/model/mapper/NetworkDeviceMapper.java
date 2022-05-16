@@ -18,5 +18,6 @@ public interface NetworkDeviceMapper extends IMapper<NetworkDevice, NetworkDevic
     NetworkDevice dtoToEntity(NetworkDeviceDTO networkDeviceDTO);
 
     @Mapping(target = "credentialId", source = "networkDevice.credential.id")
+    @Mapping(target = "ports", ignore = true)
     NetworkDeviceDTO entityToDTO(NetworkDevice networkDevice);
 }

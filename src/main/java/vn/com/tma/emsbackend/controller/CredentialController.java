@@ -49,8 +49,8 @@ public class CredentialController {
             @ApiResponse(responseCode = "201",
                     description = "Added the credential",
                     content = {@Content(schema = @Schema(implementation = CredentialDTO.class))}),
-            @ApiResponse(responseCode = "409",
-                    description = "Constraint violated",
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid data",
                     content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @PostMapping
@@ -67,8 +67,8 @@ public class CredentialController {
             @ApiResponse(responseCode = "404",
                     description = "Credential not found",
                     content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),
-            @ApiResponse(responseCode = "409",
-                    description = "Constraint violated",
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid data",
                     content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @PutMapping("/{id}")

@@ -10,4 +10,6 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     NetworkDeviceDTO getByIpAddress(String ipAddress);
 
     List<NetworkDeviceDTO> getByDeviceType(Enum.NetworkDeviceType deviceType);
+
+    boolean existsById(Long id);
 }

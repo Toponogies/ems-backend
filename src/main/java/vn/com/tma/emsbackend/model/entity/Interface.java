@@ -16,7 +16,7 @@ public class Interface {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "state", nullable = false)
@@ -25,7 +25,7 @@ public class Interface {
     @Column(name = "dhcp", nullable = false)
     private Enum.State dhcp;
 
-    @Column(name = "ip_address")
+    @Column(name = "ip_address", nullable = false)
     private String ipAddress;
 
     @Column(name = "netmask")
@@ -34,8 +34,8 @@ public class Interface {
     @Column(name = "gateway")
     private String gateway;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "port_id")
+    @OneToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "port_id", unique = true)
     private Port port;
 
     @ManyToOne(fetch = FetchType.LAZY)

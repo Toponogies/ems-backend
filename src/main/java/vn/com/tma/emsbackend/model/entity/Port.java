@@ -22,11 +22,15 @@ public class Port {
     @Column(name = "mac_address")
     private String macAddress;
 
+    // TODO: Check if name is unique
     @Column(name = "name")
     private String name;
 
     @Column(name = "state")
     private Enum.State state;
+
+    @OneToOne(mappedBy = "port")
+    private Interface anInterface;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id")
