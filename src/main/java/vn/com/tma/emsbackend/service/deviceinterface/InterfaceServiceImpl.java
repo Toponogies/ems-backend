@@ -122,6 +122,7 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new InterfaceNotFoundException(id);
         }
 
+        // TODO: Valid update name
         Interface anInterface = interfaceOptional.get();
         if (interfaceDTO.getName().equals(anInterface.getName())) {
             throw new InterfaceNameUpdateForbiddenException();

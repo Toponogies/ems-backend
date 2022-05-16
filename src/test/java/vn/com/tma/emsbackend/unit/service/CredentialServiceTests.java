@@ -136,7 +136,7 @@ class CredentialServiceTests {
         when(credentialMapper.dtoToEntity(any(CredentialDTO.class))).thenReturn(credential);
         when(credentialMapper.entityToDTO(any(Credential.class))).thenReturn(credentialDto);
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
-        when(credentialRepository.existsByName(anyString())).thenReturn(false);
+        when(credentialRepository.findByName(anyString())).thenReturn(null);
         when(credentialRepository.save(any(Credential.class))).thenReturn(new Credential());
 
         // When
@@ -165,7 +165,8 @@ class CredentialServiceTests {
     void shouldThrowExceptionWhenUpdateWithExistedName() {
         // Given
         when(credentialRepository.existsById(anyLong())).thenReturn(true);
-        when(credentialRepository.existsByName(anyString())).thenReturn(true);
+        credential.setId(100L);
+        when(credentialRepository.findByName(anyString())).thenReturn(credential);
 
         // When
         Throwable throwable = catchThrowable(() -> credentialService.update(1L, credentialDto));

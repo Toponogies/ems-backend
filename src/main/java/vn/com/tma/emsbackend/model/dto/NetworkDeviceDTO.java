@@ -32,9 +32,10 @@ public class NetworkDeviceDTO {
     private String model;
 
     @Port(message = "Invalid port number")
-    @NotNull(message = "Port number field can not empty")
+    @NotNull(message = "Port number field can not be empty")
     private int sshPort;
 
+    @NotNull(message = "State can not be empty")
     private String state;
 
     @NotNull(message = "Device must have a credential")

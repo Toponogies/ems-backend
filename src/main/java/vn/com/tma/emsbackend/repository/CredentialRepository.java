@@ -7,4 +7,6 @@ import vn.com.tma.emsbackend.model.entity.Credential;
 @Repository
 public interface CredentialRepository extends JpaRepository<Credential, Long> {
     boolean existsByName(String name);
+
+    Credential findByName(String name);
 }

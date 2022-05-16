@@ -65,8 +65,8 @@ public class CredentialServiceImpl implements CredentialService {
             throw new CredentialNotFoundException(id);
         }
 
-        boolean checkIfExistedByName = credentialRepository.existsByName(credentialDto.getName());
-        if (checkIfExistedByName) {
+        Credential credentialWithDupName = credentialRepository.findByName(credentialDto.getName());
+        if (credentialWithDupName != null && !credentialWithDupName.getId().equals(id)) {
             throw new CredentialNameExistsException(credentialDto.getName());
         }
 
