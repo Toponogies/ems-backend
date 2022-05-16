@@ -42,6 +42,12 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, errorDto, headers, status, request);
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity<ErrorDTO> handleUnsupportedOperationException(Exception ex, WebRequest request) {
+        ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> handleUnexpectedException(Exception ex, WebRequest request) {
         log.error("Have an out of control error: ", ex);

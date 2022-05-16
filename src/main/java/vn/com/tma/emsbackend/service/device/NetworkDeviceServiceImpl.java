@@ -24,6 +24,7 @@ import vn.com.tma.emsbackend.service.credential.CredentialService;
 @Service
 public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceRepository networkDeviceRepository;
+
     private final NetworkDeviceMapper networkDeviceMapper;
 
     private final CredentialService credentialService;
