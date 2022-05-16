@@ -3,15 +3,12 @@ package vn.com.tma.emsbackend.service.credential;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import vn.com.tma.emsbackend.common.Constant;
-import vn.com.tma.emsbackend.common.Mapper;
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.entity.Credential;
-import vn.com.tma.emsbackend.exception.ResourceConstraintViolationException;
-import vn.com.tma.emsbackend.exception.ResourceNotFoundException;
+import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
+import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
+import vn.com.tma.emsbackend.model.mapper.CredentialMapper;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 
 import java.util.List;
@@ -22,71 +19,78 @@ import java.util.Optional;
 @Service
 public class CredentialServiceImpl implements CredentialService {
     private final CredentialRepository credentialRepository;
-    private final Mapper mapper;
+    private final CredentialMapper credentialMapper;
 
     @Override
-    public List<CredentialDto> getAll() {
+    public List<CredentialDTO> getAll() {
         log.info("Get all credential");
-        
+
         List<Credential> credentials = credentialRepository.findAll();
-        return mapper.mapList(credentials, CredentialDto.class);
+
+        return credentialMapper.entitiesToDTOs(credentials);
     }
 
     @Override
-    public CredentialDto get(long id) {
+    public CredentialDTO get(long id) {
         log.info("Get credential with id: {} ", id);
 
         Optional<Credential> credentialOptional = credentialRepository.findById(id);
         if (credentialOptional.isEmpty()) {
-            log.info(Constant.CREDENTIAL_NOT_FOUND + id);
-            throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+            throw new CredentialNotFoundException(id);
         }
-        return mapper.map(credentialOptional.get(), CredentialDto.class);
+        return credentialMapper.entityToDTO(credentialOptional.get());
     }
 
     @Override
-    public CredentialDto add(CredentialDto credentialDto) {
+    public CredentialDTO add(CredentialDTO credentialDto) {
         log.info("Add new credential");
 
-        Credential credential = mapper.map(credentialDto, Credential.class);
-        try {
-            credential = credentialRepository.save(credential);
-        } catch (DataIntegrityViolationException e) {
-            log.error("Can not add new credential!", e);
-            throw new ResourceConstraintViolationException(Constant.CONSTRAINT_VIOLATED + Credential.class.getName());
+        boolean checkIfExistedByName = credentialRepository.existsByName(credentialDto.getName());
+        if (checkIfExistedByName) {
+            throw new CredentialNameExistsException(credentialDto.getName());
         }
-        return mapper.map(credential, CredentialDto.class);
+
+        Credential credential = credentialMapper.dtoToEntity(credentialDto);
+        credential = credentialRepository.save(credential);
+
+        return credentialMapper.entityToDTO(credential);
     }
 
     @Override
-    public CredentialDto update(long id, CredentialDto credentialDto) {
+    public CredentialDTO update(long id, CredentialDTO credentialDto) {
         log.info("Update credential with id:{}", id);
 
-        boolean isCredentialExisted = credentialRepository.existsById(id);
-        if (!isCredentialExisted) {
-            log.info(Constant.CREDENTIAL_NOT_FOUND + id);
-            throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        boolean checkIfExistedById = credentialRepository.existsById(id);
+        if (!checkIfExistedById) {
+            throw new CredentialNotFoundException(id);
         }
-        Credential credential = mapper.map(credentialDto, Credential.class);
+
+        boolean checkIfExistedByName = credentialRepository.existsByName(credentialDto.getName());
+        if (checkIfExistedByName) {
+            throw new CredentialNameExistsException(credentialDto.getName());
+        }
+
+        Credential credential = credentialMapper.dtoToEntity(credentialDto);
         credential.setId(id);
-        try {
-            credential = credentialRepository.save(credential);
-        } catch (DataIntegrityViolationException e) {
-            log.warn("Can not update credential with id:" + id, e);
-            throw new ResourceConstraintViolationException(Constant.CONSTRAINT_VIOLATED + Credential.class.getName());
-        }
-        return mapper.map(credential, CredentialDto.class);
+        credential = credentialRepository.save(credential);
+
+        return credentialMapper.entityToDTO(credential);
     }
 
     @Override
     public void delete(long id) {
         log.info("Delete credential with id: " + id);
 
-        try {
-            credentialRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            log.info("Can not delete credential with id: {}" + id, e.getMessage());
-            throw new ResourceNotFoundException(Constant.CREDENTIAL_NOT_FOUND + id);
+        boolean checkIfExistedById = credentialRepository.existsById(id);
+        if (!checkIfExistedById) {
+            throw new CredentialNotFoundException(id);
         }
+
+        credentialRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return credentialRepository.existsById(id);
     }
 }

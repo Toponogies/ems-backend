@@ -1,27 +1,31 @@
 package vn.com.tma.emsbackend.parser;
 
-import vn.com.tma.emsbackend.common.Enum;
-import vn.com.tma.emsbackend.common.SSHColumn;
-import vn.com.tma.emsbackend.entity.NDInterface;
+import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.common.constant.SSHColumn;
+import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InterfaceCommandParser {
-    public static List<NDInterface> interfaceShowParse(String executeResult){
-        List<NDInterface> ndInterfaces = new ArrayList<>();
+    private InterfaceCommandParser() {
+        throw new IllegalStateException("Utility class");
+    }
+
+    public static List<Interface> interfaceShowParse(String executeResult){
+        List<Interface> anInterfaces = new ArrayList<>();
         TableSplitter tableReader = new TableSplitter(executeResult).split();
         while(tableReader.next()){
-            NDInterface ndInterface = new NDInterface();
-            ndInterface.setDhcp(Enum.InterfaceDHCP.valueOf(tableReader.getValue(SSHColumn.NDInterface.DHCP).toUpperCase()));
-            ndInterface.setGateway(tableReader.getValue(SSHColumn.NDInterface.GATEWAY));
-            ndInterface.setIpAddress(tableReader.getValue(SSHColumn.NDInterface.IPADDRESS));
-            ndInterface.setName(tableReader.getValue(SSHColumn.NDInterface.NAME));
-            ndInterface.setNetmask(tableReader.getValue(SSHColumn.NDInterface.NETMASK));
-            ndInterface.setState(Enum.State.valueOf(tableReader.getValue(SSHColumn.NDInterface.STATE).toUpperCase()));
-            ndInterfaces.add(ndInterface);
+            Interface anInterface = new Interface();
+            anInterface.setDhcp(Enum.State.valueOf(tableReader.getValue(SSHColumn.Interface.DHCP).toUpperCase()));
+            anInterface.setGateway(tableReader.getValue(SSHColumn.Interface.GATEWAY));
+            anInterface.setIpAddress(tableReader.getValue(SSHColumn.Interface.IPADDRESS));
+            anInterface.setName(tableReader.getValue(SSHColumn.Interface.NAME));
+            anInterface.setNetmask(tableReader.getValue(SSHColumn.Interface.NETMASK));
+            anInterface.setState(Enum.State.valueOf(tableReader.getValue(SSHColumn.Interface.STATE).toUpperCase()));
+            anInterfaces.add(anInterface);
         }
-        return ndInterfaces;
+        return anInterfaces;
     }
 }

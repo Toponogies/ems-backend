@@ -13,13 +13,12 @@ import org.springframework.http.HttpMethod;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LoggingIntegrationTests {
+class LoggingIntegrationTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
@@ -39,33 +38,31 @@ public class LoggingIntegrationTests {
     }
 
     @Test
-    public void shouldLogGetCredentialWithId() {
-        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDto.class);
+    void shouldLogGetCredentialWithId() {
+        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
                 .contains("Get credential with id: 1 ");
     }
 
     @Test
-    public void shouldLogCouldNotDelete() {
-        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDto.class);
+    void shouldLogCouldNotDelete() {
+        testRestTemplate.exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDTO.class);
 
         assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage)
-                .contains("Delete credential with id: 1")
-                .contains("Can not delete credential with id: 1");
+                .contains("Delete credential with id: 1");
     }
 
     @Test
-    public void shouldLogAddNewCredential(){
-        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-        credentialRequestDto.setName("This_is_a_name");
-        credentialRequestDto.setUsername("username");
-        credentialRequestDto.setPassword("ThisIsARandomPassword");
-        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+    void shouldLogAddNewCredential(){
+        CredentialDTO credentialDto = new CredentialDTO();
+        credentialDto.setName("This_is_a_name");
+        credentialDto.setUsername("username");
+        credentialDto.setPassword("ThisIsARandomPassword");
+        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(credentialDto, null);
         
-        testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDto.class);
+        testRestTemplate.exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDTO.class);
 
-        // TODO: Try fixing this warning
-        assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage);
+        assertThat(appender.list).extracting(ILoggingEvent::getFormattedMessage).contains("Add new credential");
     }
 }

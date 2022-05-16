@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import vn.com.tma.emsbackend.entity.Credential;
+import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.util.database.ResetDatabase;
 
@@ -59,7 +59,7 @@ class CredentialRepositoryTests {
         List<Credential> credentialListResult = credentialRepository.findAll();
 
         // Then
-        assertThat(credentialListResult).hasSize(0);
+        assertThat(credentialListResult).isEmpty();
     }
 
     @Test
