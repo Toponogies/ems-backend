@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.com.tma.emsbackend.model.validation.IpAddress;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -11,15 +12,15 @@ import javax.validation.constraints.NotNull;
 public class InterfaceDTO {
     private Long id;
 
-    @NotNull(message = "Name field can not empty")
+    @NotBlank(message = "Name field can not empty")
     private String name;
 
     private String state;
 
     private String dhcp;
 
+    @NotBlank(message = "IP address field can not empty")
     @IpAddress(message = "Invalid ip address")
-    @NotNull(message = "IP address field can not empty")
     private String ipAddress;
 
     private String netmask;

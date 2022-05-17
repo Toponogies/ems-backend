@@ -13,6 +13,7 @@ import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class CredentialController {
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CredentialDTO addCredential(@RequestBody CredentialDTO credentialDto) {
+    public CredentialDTO addCredential(@Valid @RequestBody CredentialDTO credentialDto) {
         return credentialService.add(credentialDto);
     }
 
@@ -72,7 +73,7 @@ public class CredentialController {
                     content = {@Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @PutMapping("/{id}")
-    public CredentialDTO updateCredential(@PathVariable(value = "id") Long credentialId, @RequestBody CredentialDTO credentialDto) {
+    public CredentialDTO updateCredential(@PathVariable(value = "id") Long credentialId, @Valid @RequestBody CredentialDTO credentialDto) {
         return credentialService.update(credentialId, credentialDto);
     }
 

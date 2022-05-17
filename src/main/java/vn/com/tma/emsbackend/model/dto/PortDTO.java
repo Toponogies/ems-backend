@@ -3,22 +3,22 @@ package vn.com.tma.emsbackend.model.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 public class PortDTO {
     private Long id;
 
+    @NotBlank(message = "Name field can not empty")
+    private String name;
+
     private String connector;
 
     private String macAddress;
 
-    @NotNull(message = "Name field can not empty")
-    private String name;
-
     private String state;
 
-    @NotNull(message = "Port must belong to a device")
+    @NotBlank(message = "Port must belong to a device")
     private Long networkDeviceId;
 }

@@ -5,6 +5,7 @@ import lombok.Setter;
 import vn.com.tma.emsbackend.model.validation.IpAddress;
 import vn.com.tma.emsbackend.model.validation.Port;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -18,22 +19,21 @@ public class NetworkDeviceDTO {
 
     private String macAddress;
 
+    @NotEmpty(message = "IP address field can not empty")
     @IpAddress(message = "Invalid IP address")
-    @NotNull(message = "IP address field can not empty")
     private String ipAddress;
 
-    @NotNull(message = "Label field can not empty")
+    @NotEmpty(message = "Label field can not empty")
     private String label;
 
     private String deviceType;
 
     private String model;
 
+    @NotNull(message = "Port number field can not be null")
     @Port(message = "Invalid port number")
-    @NotNull(message = "Port number field can not be empty")
     private int sshPort;
 
-    @NotNull(message = "State can not be empty")
     private String state;
 
     @NotNull(message = "Device must have a credential")

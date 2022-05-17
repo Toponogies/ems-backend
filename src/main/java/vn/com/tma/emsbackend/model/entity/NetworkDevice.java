@@ -49,10 +49,10 @@ public class NetworkDevice {
     @JoinColumn(name = "credential_id", nullable = false)
     private Credential credential;
 
-    @OneToMany(mappedBy = "networkDevice")
+    @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
     private List<Port> ports;
 
-    @OneToMany(mappedBy = "networkDevice")
+    @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
     private List<Interface> interfaces;
 
 }

@@ -3,6 +3,7 @@ package vn.com.tma.emsbackend.service.deviceinterface;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
@@ -78,6 +79,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
+    @Transactional
     public InterfaceDTO add(InterfaceDTO interfaceDTO) {
         // Check device exist
         boolean checkIfDeviceExisted = networkDeviceService.existsById(interfaceDTO.getNetworkDeviceId());
@@ -105,6 +107,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
+    @Transactional
     public InterfaceDTO update(long id, InterfaceDTO interfaceDTO) {
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(interfaceDTO.getNetworkDeviceId());
@@ -133,6 +136,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
         boolean checkIfExistedById = interfaceRepository.existsById(id);
         if (!checkIfExistedById) {

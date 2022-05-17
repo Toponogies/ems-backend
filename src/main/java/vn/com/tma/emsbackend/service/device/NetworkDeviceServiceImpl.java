@@ -3,6 +3,7 @@ package vn.com.tma.emsbackend.service.device;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
@@ -68,6 +69,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    @Transactional
     public NetworkDeviceDTO add(NetworkDeviceDTO networkDeviceDTO) {
         log.info("Add new device");
 
@@ -86,8 +88,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceIPExistsException(networkDeviceDTO.getIpAddress());
         }
 
+        networkDeviceDTO.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE.toString());
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
-        networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
 
         Credential credential = new Credential();
         credential.setId(networkDeviceDTO.getCredentialId());
@@ -97,6 +99,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    @Transactional
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
@@ -121,6 +124,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         }
 
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
+        networkDevice.setId(id);
 
         // Set new credential
         Credential credential = new Credential();
@@ -133,6 +137,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
         boolean checkIfExistedById = networkDeviceRepository.existsById(id);
         if (!checkIfExistedById) {
