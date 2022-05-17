@@ -33,10 +33,11 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
             CredentialNameExistsException.class,
             DeviceLabelExistsException.class,
             DeviceIPExistsException.class,
-            InterfaceNameUpdateForbiddenException.class,
-            PortAndDeviceMismatchException.class
+            InterfaceNameExistsException.class,
+            PortAndDeviceMismatchException.class,
+            PortIsAssignedException.class
     })
-    public ResponseEntity<ErrorDTO> handleExistingEntityException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDTO> handleBadRequestException(Exception ex, WebRequest request) {
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }

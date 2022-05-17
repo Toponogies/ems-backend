@@ -76,4 +76,9 @@ public class PortServiceImpl implements PortService {
         return portRepository.existsById(id);
     }
 
+    @Override
+    public Optional<Port> getById(Long id) {
+        return portRepository.findById(id);
+    }
+
 }

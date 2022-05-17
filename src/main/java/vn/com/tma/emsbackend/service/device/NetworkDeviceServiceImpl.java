@@ -100,11 +100,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
-        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
-        if (!checkIfCredentialExisted) {
-            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
-        }
-
         NetworkDevice deviceDupLable = networkDeviceRepository.findByLabel(networkDeviceDTO.getLabel());
         if (deviceDupLable != null && !deviceDupLable.getId().equals(id)) {
             throw new DeviceLabelExistsException(networkDeviceDTO.getLabel());
@@ -118,6 +113,11 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         Optional<NetworkDevice> networkDeviceOptional = networkDeviceRepository.findById(id);
         if (networkDeviceOptional.isEmpty()) {
             throw new DeviceNotFoundException(String.valueOf(id));
+        }
+
+        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
+        if (!checkIfCredentialExisted) {
+            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
         }
 
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);

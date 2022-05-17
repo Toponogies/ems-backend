@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
-import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
@@ -86,22 +85,16 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new DeviceNotFoundException(String.valueOf(interfaceDTO.getNetworkDeviceId()));
         }
 
+        // Check duplicate name
+        boolean checkIfNameExisted = interfaceRepository.existsByName(interfaceDTO.getName());
+        if (checkIfNameExisted) {
+            throw new InterfaceNameExistsException(interfaceDTO.getName());
+        }
+
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(interfaceDTO.getNetworkDeviceId());
 
-        Port port = null;
-        if (interfaceDTO.getPortId() != null) {
-            // Check if port exist
-            PortDTO portDTO = portService.get(interfaceDTO.getPortId());
-
-            // Check port's device is the same with interface device
-            if (!portDTO.getId().equals(interfaceDTO.getNetworkDeviceId())) {
-                throw new PortAndDeviceMismatchException();
-            }
-
-            port = new Port();
-            port.setId(interfaceDTO.getPortId());
-        }
+        Port port = getValidPort(interfaceDTO);
 
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setNetworkDevice(networkDevice);
@@ -122,27 +115,15 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new InterfaceNotFoundException(id);
         }
 
-        // TODO: Valid update name
-        Interface anInterface = interfaceOptional.get();
-        if (interfaceDTO.getName().equals(anInterface.getName())) {
-            throw new InterfaceNameUpdateForbiddenException();
+        // Check duplicate name
+        Interface interfaceDupName = interfaceRepository.findByName(interfaceDTO.getName());
+        if (interfaceDupName != null && !interfaceDupName.getId().equals(id)) {
+            throw new InterfaceNameExistsException(interfaceDTO.getName());
         }
 
-        Port port = null;
-        if (interfaceDTO.getPortId() != null) {
-            // Check if port exist
-            PortDTO portDTO = portService.get(interfaceDTO.getPortId());
+        Port port = getValidPort(interfaceDTO);
 
-            // Check port's device is the same with interface device
-            if (!portDTO.getId().equals(interfaceDTO.getNetworkDeviceId())) {
-                throw new PortAndDeviceMismatchException();
-            }
-
-            port = new Port();
-            port.setId(interfaceDTO.getPortId());
-        }
-
-        anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
+        Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setId(id);
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
@@ -159,5 +140,27 @@ public class InterfaceServiceImpl implements InterfaceService {
         }
 
         interfaceRepository.deleteById(id);
+    }
+
+    private Port getValidPort(InterfaceDTO interfaceDTO) {
+        Port port = null;
+        if (interfaceDTO.getPortId() != null) {
+            Optional<Port> portOptional = portService.getById(interfaceDTO.getPortId());
+
+            if (portOptional.isEmpty()) {
+                throw new PortNotFoundException(interfaceDTO.getPortId());
+            }
+
+            port = portOptional.get();
+
+            if (!port.getId().equals(interfaceDTO.getNetworkDeviceId())) {
+                throw new PortAndDeviceMismatchException();
+            }
+
+            if (port.getAnInterface() != null) {
+                throw new PortIsAssignedException(interfaceDTO.getPortId());
+            }
+        }
+        return port;
     }
 }

@@ -12,4 +12,7 @@ public interface InterfaceRepository extends JpaRepository<Interface, Long> {
 
     Interface findByPort_Id(Long portId);
 
+    Interface findByName(String name);
+
+    boolean existsByName(String name);
 }
