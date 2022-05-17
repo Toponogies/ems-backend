@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = Constant.INTERFACE_TABLE)
 public class Interface {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -41,5 +41,4 @@ public class Interface {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "managed_device_id")
     private NetworkDevice networkDevice;
-
 }

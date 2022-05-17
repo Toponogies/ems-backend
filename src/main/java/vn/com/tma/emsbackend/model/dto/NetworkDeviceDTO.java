@@ -1,13 +1,11 @@
 package vn.com.tma.emsbackend.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.tma.emsbackend.model.validation.IpAddress;
 import vn.com.tma.emsbackend.model.validation.Port;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Getter
 @Setter
@@ -20,7 +18,7 @@ public class NetworkDeviceDTO {
 
     private String macAddress;
 
-    @IpAddress(message = "Invalid ip address")
+    @IpAddress(message = "Invalid IP address")
     @NotNull(message = "IP address field can not empty")
     private String ipAddress;
 
@@ -40,7 +38,4 @@ public class NetworkDeviceDTO {
 
     @NotNull(message = "Device must have a credential")
     private Long credentialId;
-
-    @JsonIgnore
-    private List<PortDTO> ports;
 }

@@ -16,11 +16,11 @@ public interface NetworkDeviceMapper extends IMapper<NetworkDevice, NetworkDevic
     @Mapping(target = "deviceType", ignore = true)
     @Mapping(target = "model", ignore = true)
     @Mapping(target = "ports", ignore = true)
+    @Mapping(target = "interfaces", ignore = true)
     @Mapping(target = "state", source = "state", qualifiedByName = "stringToState")
     NetworkDevice dtoToEntity(NetworkDeviceDTO networkDeviceDTO);
 
     @Mapping(target = "credentialId", source = "networkDevice.credential.id")
-    @Mapping(target = "ports", ignore = true)
     NetworkDeviceDTO entityToDTO(NetworkDevice networkDevice);
 
     @Named("stringToState")

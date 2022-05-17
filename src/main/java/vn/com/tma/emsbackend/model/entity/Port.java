@@ -22,8 +22,7 @@ public class Port {
     @Column(name = "mac_address")
     private String macAddress;
 
-    // TODO: Check if name is unique
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "state")
