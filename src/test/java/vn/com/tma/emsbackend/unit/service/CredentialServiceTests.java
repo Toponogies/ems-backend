@@ -10,6 +10,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
+import vn.com.tma.emsbackend.model.exception.CredentialLinkedToDeviceException;
 import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
 import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.CredentialMapper;
@@ -178,7 +180,8 @@ class CredentialServiceTests {
     @Test
     void shouldDeleteACredentialWhenDeleteWithExistedId() {
         // Given
-        when(credentialRepository.existsById(anyLong())).thenReturn(true);
+        credential.setDevices(null);
+        when(credentialRepository.findById(anyLong())).thenReturn(Optional.of(credential));
         doNothing().when(credentialRepository).deleteById(anyLong());
 
         // When
@@ -191,7 +194,7 @@ class CredentialServiceTests {
     @Test
     void shouldThrowExceptionWhenDeleteWithNotExistedId() {
         // Given
-        when(credentialRepository.existsById(anyLong())).thenReturn(false);
+        when(credentialRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // When
         Throwable throwable = catchThrowable(() -> credentialService.delete(1L));
@@ -199,4 +202,18 @@ class CredentialServiceTests {
         // Then
         assertThat(throwable).isInstanceOf(CredentialNotFoundException.class);
     }
+
+    @Test
+    void shouldThrowExceptionWhenDeleteCredentialLinkingToDevice() {
+        // Given
+        credential.setDevices(List.of(new NetworkDevice()));
+        when(credentialRepository.findById(anyLong())).thenReturn(Optional.of(credential));
+
+        // When
+        Throwable throwable = catchThrowable(() -> credentialService.delete(1L));
+
+        // Then
+        assertThat(throwable).isInstanceOf(CredentialLinkedToDeviceException.class);
+    }
+
 }

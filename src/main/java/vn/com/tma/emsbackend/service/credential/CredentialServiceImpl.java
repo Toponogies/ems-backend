@@ -94,7 +94,7 @@ public class CredentialServiceImpl implements CredentialService {
 
         Credential credential = credentialOptional.get();
 
-        if (!credential.getDevices().isEmpty()) {
+        if (credential.getDevices() != null && !credential.getDevices().isEmpty()) {
             throw new CredentialLinkedToDeviceException(id);
         }
 
