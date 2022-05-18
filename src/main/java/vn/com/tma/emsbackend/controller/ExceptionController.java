@@ -1,5 +1,6 @@
 package vn.com.tma.emsbackend.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,27 +10,35 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import lombok.extern.slf4j.Slf4j;
-import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
-import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
-import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
-import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
+import vn.com.tma.emsbackend.model.exception.*;
 
 import java.util.Date;
 
 @Slf4j
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
-    @ExceptionHandler({DeviceNotFoundException.class, CredentialNotFoundException.class})
+    @ExceptionHandler({
+            DeviceNotFoundException.class,
+            CredentialNotFoundException.class,
+            PortNotFoundException.class,
+            InterfaceNotFoundException.class
+    })
     public ResponseEntity<ErrorDTO> handleNotFoundException(Exception ex, WebRequest request) {
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({CredentialNameExistsException.class, DeviceLabelExistsException.class})
-    public ResponseEntity<ErrorDTO> handleExistingEntityException(Exception ex, WebRequest request) {
+    @ExceptionHandler({
+            CredentialNameExistsException.class,
+            DeviceLabelExistsException.class,
+            DeviceIPExistsException.class,
+            InterfaceNameExistsException.class,
+            PortAndDeviceMismatchException.class,
+            PortIsAssignedException.class,
+            CredentialLinkedToDeviceException.class
+    })
+    public ResponseEntity<ErrorDTO> handleBadRequestException(Exception ex, WebRequest request) {
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }

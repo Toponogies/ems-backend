@@ -3,7 +3,10 @@ package vn.com.tma.emsbackend.service.credential;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.model.exception.CredentialLinkedToDeviceException;
 import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
 import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
@@ -42,6 +45,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
+    @Transactional
     public CredentialDTO add(CredentialDTO credentialDto) {
         log.info("Add new credential");
 
@@ -57,6 +61,7 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
+    @Transactional
     public CredentialDTO update(long id, CredentialDTO credentialDto) {
         log.info("Update credential with id:{}", id);
 
@@ -65,8 +70,8 @@ public class CredentialServiceImpl implements CredentialService {
             throw new CredentialNotFoundException(id);
         }
 
-        boolean checkIfExistedByName = credentialRepository.existsByName(credentialDto.getName());
-        if (checkIfExistedByName) {
+        Credential credentialWithDupName = credentialRepository.findByName(credentialDto.getName());
+        if (credentialWithDupName != null && !credentialWithDupName.getId().equals(id)) {
             throw new CredentialNameExistsException(credentialDto.getName());
         }
 
@@ -78,12 +83,19 @@ public class CredentialServiceImpl implements CredentialService {
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
         log.info("Delete credential with id: " + id);
 
-        boolean checkIfExistedById = credentialRepository.existsById(id);
-        if (!checkIfExistedById) {
+        Optional<Credential> credentialOptional = credentialRepository.findById(id);
+        if (credentialOptional.isEmpty()) {
             throw new CredentialNotFoundException(id);
+        }
+
+        Credential credential = credentialOptional.get();
+
+        if (credential.getDevices() != null && !credential.getDevices().isEmpty()) {
+            throw new CredentialLinkedToDeviceException(id);
         }
 
         credentialRepository.deleteById(id);

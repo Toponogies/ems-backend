@@ -21,10 +21,10 @@ public class NetworkDevice {
     @Column(name = "firmware")
     private String firmware;
 
-    @Column(name = "serial", unique = true)
+    @Column(name = "serial")
     private String serial;
 
-    @Column(name = "mac_address", unique = true)
+    @Column(name = "mac_address")
     private String macAddress;
 
     @Column(name = "ip_address", unique = true, nullable = false)
@@ -49,6 +49,10 @@ public class NetworkDevice {
     @JoinColumn(name = "credential_id", nullable = false)
     private Credential credential;
 
-    @OneToMany(mappedBy = "networkDevice")
+    @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
     private List<Port> ports;
+
+    @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
+    private List<Interface> interfaces;
+
 }

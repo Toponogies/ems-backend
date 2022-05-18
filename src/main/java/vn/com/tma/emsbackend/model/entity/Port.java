@@ -22,11 +22,14 @@ public class Port {
     @Column(name = "mac_address")
     private String macAddress;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "state")
     private Enum.State state;
+
+    @OneToOne(mappedBy = "port")
+    private Interface anInterface;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id")

@@ -5,6 +5,7 @@ import lombok.Setter;
 import vn.com.tma.emsbackend.common.constant.Constant;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +24,7 @@ public class Credential {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "credential")
+    List<NetworkDevice> devices;
 }
