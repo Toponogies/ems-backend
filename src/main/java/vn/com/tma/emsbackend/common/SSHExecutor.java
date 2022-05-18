@@ -6,8 +6,8 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.entity.NetworkDevice;
-import vn.com.tma.emsbackend.exception.ApplicationException;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
+import vn.com.tma.emsbackend.model.exception.ApplicationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

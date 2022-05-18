@@ -1,8 +1,6 @@
 package vn.com.tma.emsbackend.common;
 
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.entity.NetworkDevice;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 
 import java.util.HashMap;

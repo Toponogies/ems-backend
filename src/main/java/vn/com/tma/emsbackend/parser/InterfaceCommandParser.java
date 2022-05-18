@@ -1,38 +1,31 @@
 package vn.com.tma.emsbackend.parser;
 
-import vn.com.tma.emsbackend.common.Enum;
-import vn.com.tma.emsbackend.common.SSHColumn;
-import vn.com.tma.emsbackend.entity.NDInterface;
-import vn.com.tma.emsbackend.entity.Port;
-import vn.com.tma.emsbackend.parser.splitter.ListSplitter;
+import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.common.constant.SSHColumn;
+import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InterfaceCommandParser {
-    public static List<String> interfaceShowParse(String executeResult){
-        List<String> interfacesName = new ArrayList<>();
-        TableSplitter tableReader = new TableSplitter(executeResult).split();
-        while(tableReader.next()){
-            interfacesName.add(tableReader.getValue(SSHColumn.NDInterface.NAME));
-        }
-        return interfacesName;
+    private InterfaceCommandParser() {
+        throw new IllegalStateException("Utility class");
     }
 
-    public static NDInterface interfaceShowDetailParse(String executeResult){
-        NDInterface ndInterface = new NDInterface();
-        ListSplitter listSplitter = new ListSplitter(executeResult).split();
-        ndInterface.setName(listSplitter.get(SSHColumn.NDInterface.NAME));
-        ndInterface.setState(Enum.State.valueOf(listSplitter.get(SSHColumn.NDInterface.STATE).toUpperCase()));
-        ndInterface.setDhcp(Enum.InterfaceDHCP.parse(SSHColumn.NDInterface.DHCP));
-        ndInterface.setIpAddress(listSplitter.get(SSHColumn.NDInterface.IPADDRESS));
-        ndInterface.setNetmask(listSplitter.get(SSHColumn.NDInterface.NETMASK));
-        ndInterface.setGateway(listSplitter.get(SSHColumn.NDInterface.GATEWAY));
-
-        Port port = new Port();
-        port.setName(listSplitter.get(SSHColumn.NDInterface.PORT));
-        ndInterface.setPort(port);
-        return ndInterface;
+    public static List<Interface> interfaceShowParse(String executeResult){
+        List<Interface> anInterfaces = new ArrayList<>();
+        TableSplitter tableReader = new TableSplitter(executeResult).split();
+        while(tableReader.next()){
+            Interface anInterface = new Interface();
+            anInterface.setDhcp(Enum.State.valueOf(tableReader.getValue(SSHColumn.Interface.DHCP).toUpperCase()));
+            anInterface.setGateway(tableReader.getValue(SSHColumn.Interface.GATEWAY));
+            anInterface.setIpAddress(tableReader.getValue(SSHColumn.Interface.IPADDRESS));
+            anInterface.setName(tableReader.getValue(SSHColumn.Interface.NAME));
+            anInterface.setNetmask(tableReader.getValue(SSHColumn.Interface.NETMASK));
+            anInterface.setState(Enum.State.valueOf(tableReader.getValue(SSHColumn.Interface.STATE).toUpperCase()));
+            anInterfaces.add(anInterface);
+        }
+        return anInterfaces;
     }
 }

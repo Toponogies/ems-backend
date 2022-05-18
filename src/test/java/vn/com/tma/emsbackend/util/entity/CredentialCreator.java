@@ -1,33 +1,24 @@
 package vn.com.tma.emsbackend.util.entity;
 
-import vn.com.tma.emsbackend.dto.CredentialDto;
-import vn.com.tma.emsbackend.dto.CredentialRequestDto;
-import vn.com.tma.emsbackend.entity.Credential;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
 
 public class CredentialCreator {
-    public static Credential createCredentialBy(CredentialRequestDto credentialRequestDto) {
+    public static Credential createCredentialBy(CredentialDTO credentialDto) {
         Credential credential = new Credential();
-        credential.setId(1L);
-        credential.setUsername(credentialRequestDto.getUsername());
-        credential.setName(credentialRequestDto.getName());
-        credential.setPassword(credentialRequestDto.getPassword());
+        credential.setId(credentialDto.getId());
+        credential.setUsername(credentialDto.getUsername());
+        credential.setName(credentialDto.getName());
+        credential.setPassword(credentialDto.getPassword());
         return credential;
     }
 
-    public static CredentialDto createCredentialDtoBy(Credential credential) {
-        CredentialDto credentialDto = new CredentialDto();
+    public static CredentialDTO createCredentialDtoBy(Credential credential) {
+        CredentialDTO credentialDto = new CredentialDTO();
         credentialDto.setId(credential.getId());
         credentialDto.setUsername(credential.getUsername());
         credentialDto.setName(credential.getName());
+        credentialDto.setPassword(credential.getPassword());
         return credentialDto;
     }
-
-    public static CredentialDto createCredentialDtoBy(CredentialRequestDto credentialRequestDto) {
-        CredentialDto credentialDto = new CredentialDto();
-        credentialDto.setId(1L);
-        credentialDto.setUsername(credentialRequestDto.getUsername());
-        credentialDto.setName(credentialRequestDto.getName());
-        return credentialDto;
-    }
-
 }
