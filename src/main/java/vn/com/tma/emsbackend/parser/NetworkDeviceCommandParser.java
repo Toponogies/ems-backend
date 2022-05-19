@@ -9,7 +9,7 @@ public class NetworkDeviceCommandParser {
     }
 
     public static NetworkDevice boardShowInfoCommandParse(String executeResult) {
-        ListSplitter listReader = new ListSplitter(executeResult).split();
+        ListSplitter listReader = new ListSplitter(executeResult);
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setFirmware(listReader.get(SSHColumn.NetworkDevice.FIRMWARE));
         networkDevice.setMacAddress(listReader.get(SSHColumn.NetworkDevice.MAC_ADDRESS));

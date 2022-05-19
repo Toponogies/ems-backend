@@ -1,7 +1,7 @@
 package vn.com.tma.emsbackend.common.commandgenerator;
 
-import vn.com.tma.emsbackend.entity.NDInterface;
-import vn.com.tma.emsbackend.entity.Port;
+import vn.com.tma.emsbackend.model.entity.Interface;
+import vn.com.tma.emsbackend.model.entity.Port;
 
 public class InterfaceCommandGenerator {
     private static final String COMMAND_PREFIX = "interface";
@@ -14,14 +14,14 @@ public class InterfaceCommandGenerator {
     private static final String GATEWAY_PARAMS = "gateway";
     private static final String PORT_PARAMS = "port";
 
-    public static String add(NDInterface ndInterface, Port port) {
+    public static String add(Interface anInterface, Port port) {
         return COMMAND_PREFIX + " " +
                 ADD_ACTION + " " +
-                ndInterface.getName() + " " +
-                DHCP_PARAMS + " " + ndInterface.getDhcp().getValue() + " " +
-                (ndInterface.getIpAddress() == null || ndInterface.getIpAddress().length() == 0 ? "" : ADDRESS_PARAMS + " " + ndInterface.getIpAddress() + " ") +
-                (ndInterface.getNetmask() == null || ndInterface.getNetmask().length() == 0 ? "" : NETMASK_PARAMS + " " + ndInterface.getNetmask() + " ") +
-                (ndInterface.getGateway() == null || ndInterface.getGateway().length() == 0 ? "" : GATEWAY_PARAMS + " " + ndInterface.getGateway() + " ") +
+                anInterface.getName() + " " +
+                DHCP_PARAMS + " " + anInterface.getDhcp().getValue() + " " +
+                (anInterface.getIpAddress() == null || anInterface.getIpAddress().length() == 0 ? "" : ADDRESS_PARAMS + " " + anInterface.getIpAddress() + " ") +
+                (anInterface.getNetmask() == null || anInterface.getNetmask().length() == 0 ? "" : NETMASK_PARAMS + " " + anInterface.getNetmask() + " ") +
+                (anInterface.getGateway() == null || anInterface.getGateway().length() == 0 ? "" : GATEWAY_PARAMS + " " + anInterface.getGateway() + " ") +
                 PORT_PARAMS + " " + port.getName();
     }
 

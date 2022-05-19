@@ -13,3 +13,5 @@ ems-backend.log
 
 #Visual Code folder
 .vscode
+
+src/main/resources/application.properties

@@ -109,4 +109,18 @@ public class NetworkDeviceController {
     public void deleteDevice(@PathVariable(value = "id") Long deviceId) {
         networkDeviceService.delete(deviceId);
     }
+
+
+    @Operation(summary = "Delete a specific network device by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Deleted network device", content = {
+                    @Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "404", description = "Network device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
+    })
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @GetMapping("/resync/{id}")
+    public void resync(@PathVariable(value = "id") Long deviceId){
+        networkDeviceService.resync(deviceId);
+    }
 }

@@ -12,4 +12,6 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     List<NetworkDeviceDTO> getByDeviceType(Enum.NetworkDeviceType deviceType);
 
     boolean existsById(Long id);
+
+    void resync(Long id);
 }

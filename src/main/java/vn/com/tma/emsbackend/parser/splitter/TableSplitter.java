@@ -5,6 +5,8 @@ import vn.com.tma.emsbackend.model.exception.ApplicationException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static vn.com.tma.emsbackend.parser.ParserUtils.getResultAfterCommandPrompt;
+
 public class TableSplitter {
     private final String[] lines;
     private List<String> keys;
@@ -15,11 +17,13 @@ public class TableSplitter {
 
     private int currentIndex = -1;
 
-    public TableSplitter(String commandResult) {
-        lines = commandResult.split("\n");
+    public TableSplitter(String executeResult) {
+        executeResult = getResultAfterCommandPrompt(executeResult);
+        lines = executeResult.split("\n");
+        this.split();
     }
 
-    public TableSplitter split() {
+    private void split() {
         //get index of end header line and limit data lengths each cell
         endHeaderLineIndex = getEndHeaderLineIndex();
 
@@ -31,8 +35,6 @@ public class TableSplitter {
 
         //split
         rows = splitAllDataLines();
-
-        return this;
     }
 
     /**
@@ -62,16 +64,17 @@ public class TableSplitter {
     }
 
 
-    private List<String> splitLine(String line) {
+    private List<String> splitLine(String line)
+    {
         List<String> result = new ArrayList<>();
         int curIndex = 0;
         for (Integer length : columnLimitLengths) {
             if (curIndex + length < line.length()) {
                 result.add(line.substring(curIndex, curIndex + length).trim());
             } else {
-                result.add(line.substring(curIndex, line.length() - 1).trim());
+                result.add(line.substring(curIndex).trim());
             }
-            curIndex += length + 1;
+            curIndex += length;
         }
         return result;
     }
@@ -98,7 +101,7 @@ public class TableSplitter {
 
     private List<Integer> getColumnLimitLengths() {
         List<Integer> limitLengths = new ArrayList<>();
-        String[] tuple = lines[endHeaderLineIndex].split(" ");
+        String[] tuple = lines[endHeaderLineIndex].split("(?= -)");
         for (String str : tuple) {
             limitLengths.add(str.length());
         }
@@ -112,4 +115,5 @@ public class TableSplitter {
     private boolean isEmptyLine(String line){
         return line.length() < 2;
     }
+
 }

@@ -2,6 +2,7 @@ package vn.com.tma.emsbackend.service.device;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.enums.Enum;
@@ -14,7 +15,15 @@ import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
+import vn.com.tma.emsbackend.repository.PortRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
+import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
+import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
+import vn.com.tma.emsbackend.service.port.PortService;
+import vn.com.tma.emsbackend.service.ssh.InterfaceSSHService;
+import vn.com.tma.emsbackend.service.ssh.NTPServerSSHService;
+import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
+import vn.com.tma.emsbackend.service.ssh.PortSSHService;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +37,15 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceMapper networkDeviceMapper;
 
     private final CredentialService credentialService;
+
+
+    //TODO: delete these ssh service
+    private final PortService portService;
+    private final InterfaceService interfaceService;
+
+    private final NTPServerService ntpServerService;
+
+
 
     @Override
     public List<NetworkDeviceDTO> getAll() {
@@ -103,8 +121,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
-        NetworkDevice deviceDupLable = networkDeviceRepository.findByLabel(networkDeviceDTO.getLabel());
-        if (deviceDupLable != null && !deviceDupLable.getId().equals(id)) {
+        NetworkDevice deviceDupLabel = networkDeviceRepository.findByLabel(networkDeviceDTO.getLabel());
+        if (deviceDupLabel != null && !deviceDupLabel.getId().equals(id)) {
             throw new DeviceLabelExistsException(networkDeviceDTO.getLabel());
         }
 
@@ -150,6 +168,13 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     @Override
     public boolean existsById(Long id) {
         return networkDeviceRepository.existsById(id);
+    }
+
+    @Override
+    public void resync(Long id){
+        portService.resyncPort(id);
+        interfaceService.resyncInterface(id);
+        ntpServerService.resyncNTPServer(id);
     }
 
 }

@@ -1,6 +1,5 @@
 package vn.com.tma.emsbackend.common.constant;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Constant {
@@ -15,5 +14,5 @@ public class Constant {
     public static final String PORT_TABLE = "ports";
     public static final String NTP_SERVER_TABLE = "ntp_server";
 
-    public static final List<String> NEGATIVE_WORK =  new ArrayList<>(List.of(new String[]{"NO", "DISABLE", "DISABLED"}));
+    public static final List<String> NEGATIVE_WORD =  List.of(new String[]{"NO", "DISABLE", "DISABLED"});
 }

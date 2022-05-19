@@ -1,6 +1,8 @@
 package vn.com.tma.emsbackend.exception;
 
 
+import vn.com.tma.emsbackend.model.exception.ApplicationException;
+
 public class SSHExecuteFailException  extends ApplicationException {
     public SSHExecuteFailException() {
     }

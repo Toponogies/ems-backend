@@ -135,6 +135,9 @@ public class SSHExecutor {
     private boolean isEndOfMessage(String result) {
         if (result.length() == 0) return false;
         String trimmedResult = result.trim();
-        return END_DELIM_CHAR.contains(String.valueOf(trimmedResult.charAt(trimmedResult.length() - 1)));
+        if(END_DELIM_CHAR.contains(String.valueOf(trimmedResult.charAt(trimmedResult.length() - 1)))){
+            return trimmedResult.chars().filter(ch -> ch == ':').count() >= 2;
+        }
+        return false;
     }
 }

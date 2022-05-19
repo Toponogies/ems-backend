@@ -48,7 +48,7 @@ public class NTPCommandParser {
 
     private static List<NTPServer> parseListNTPServers(String[] lines, int startIndex, Enum.State state) {
         int index = startIndex;
-        if (lines[startIndex].split(":").length == 1) return new ArrayList<>();
+        if (lines[startIndex].trim().split(":").length == 1) return new ArrayList<>();
         List<NTPServer> ntpServers = new ArrayList<>();
         while (lines[index].trim().length() != 0) {
             ntpServers.add(parseNTPServer(lines[index], state));
