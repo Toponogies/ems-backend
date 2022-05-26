@@ -8,6 +8,7 @@ import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -55,4 +56,21 @@ public class NetworkDevice {
     @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
     private List<Interface> interfaces;
 
+
+    @Transient
+    private boolean isResyncing;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NetworkDevice that = (NetworkDevice) o;
+        return sshPort == that.sshPort && Objects.equals(id, that.id) && Objects.equals(ipAddress, that.ipAddress) && Objects.equals(label, that.label) && Objects.equals(credential.getId(), that.credential.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, ipAddress, label, sshPort, credential.getId());
+    }
 }

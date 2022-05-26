@@ -22,6 +22,7 @@ public class NTPServerServiceImpl implements NTPServerService {
     private final NTPServerRepository ntpServerRepository;
 
     private final NTPServerSSHService ntpServerSSHService;
+
     @Override
     public List<NTPServerDTO> getAll() {
         return null;
@@ -49,37 +50,37 @@ public class NTPServerServiceImpl implements NTPServerService {
 
     @Transactional
     @Override
-    public void  resyncNTPServer(long deviceId){
+    public void resyncNTPServer(long deviceId) {
         List<NTPServer> oldNtpServers = ntpServerRepository.findByNetworkDevice_Id(deviceId);
         List<NTPServer> newNtpServers = ntpServerSSHService.getAllNtpServer(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);
-        for(NTPServer ntpServer: newNtpServers){
+        for (NTPServer ntpServer : newNtpServers) {
             ntpServer.setNetworkDevice(networkDevice);
         }
         syncWithDB(newNtpServers, oldNtpServers, new NTPServiceComparator());
     }
 
-    private void syncWithDB(List<NTPServer> newNtpServers, List<NTPServer> oldNtpServers, Comparator<NTPServer> ntpServerComparator){
+    private void syncWithDB(List<NTPServer> newNtpServers, List<NTPServer> oldNtpServers, Comparator<NTPServer> ntpServerComparator) {
         newNtpServers.sort(ntpServerComparator);
         oldNtpServers.sort(ntpServerComparator);
         if (newNtpServers.equals(oldNtpServers)) return;
 
         HashMap<Integer, NTPServer> integerNTPServerHashMap = new HashMap<>();
-        for(NTPServer newNtpServer: newNtpServers){
+        for (NTPServer newNtpServer : newNtpServers) {
             integerNTPServerHashMap.put(newNtpServer.hashCode(), newNtpServer);
         }
 
-        for(NTPServer oldNtpServer: oldNtpServers){
-            NTPServer newNtpServer =  integerNTPServerHashMap.get(oldNtpServer.hashCode());
-            if(newNtpServer == null) {
+        for (NTPServer oldNtpServer : oldNtpServers) {
+            NTPServer newNtpServer = integerNTPServerHashMap.get(oldNtpServer.hashCode());
+            if (newNtpServer == null) {
                 ntpServerRepository.delete(oldNtpServer);
-            }else{
+            } else {
                 integerNTPServerHashMap.remove(oldNtpServer.hashCode());
             }
         }
 
-        for(Map.Entry<Integer, NTPServer> keyValuePair:integerNTPServerHashMap.entrySet()){
+        for (Map.Entry<Integer, NTPServer> keyValuePair : integerNTPServerHashMap.entrySet()) {
             ntpServerRepository.save(keyValuePair.getValue());
         }
     }

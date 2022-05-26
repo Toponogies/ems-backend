@@ -27,7 +27,7 @@ public class PortServiceImpl implements PortService {
 
     private final PortMapper portMapper;
 
-//    private final NetworkDeviceService networkDeviceService;
+    private final NetworkDeviceService networkDeviceService;
 
     private final PortSSHService portSSHService;
 
@@ -43,10 +43,10 @@ public class PortServiceImpl implements PortService {
     public List<PortDTO> getByNetworkDevice(Long deviceId) {
         log.info("Get all ports by device: {}", deviceId);
 
-//        boolean checkIfDeviceExisted = networkDeviceService.existsById(deviceId);
-//        if (!checkIfDeviceExisted) {
-//            throw new DeviceNotFoundException(String.valueOf(deviceId));
-//        }
+        boolean checkIfDeviceExisted = networkDeviceService.existsById(deviceId);
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(String.valueOf(deviceId));
+        }
 
         List<Port> ports = portRepository.findByNetworkDevice_Id(deviceId);
         return portMapper.entitiesToDTOs(ports);

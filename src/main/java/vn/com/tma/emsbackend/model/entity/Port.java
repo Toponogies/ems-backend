@@ -29,7 +29,7 @@ public class Port {
     @Column(name = "state")
     private Enum.State state;
 
-    @OneToOne(mappedBy = "port")
+    @ManyToOne()
     private Interface anInterface;
 
     @ManyToOne(fetch = FetchType.LAZY)

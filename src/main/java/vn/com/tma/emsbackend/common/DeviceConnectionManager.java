@@ -1,26 +1,26 @@
 package vn.com.tma.emsbackend.common;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
+import vn.com.tma.emsbackend.model.exception.DeviceConnectionException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
+@Slf4j
 public class DeviceConnectionManager {
 
     private final Map<Long, SSHExecutor> sshExecutorHashMap;
 
-    @Autowired
-    NetworkDeviceRepository networkDeviceRepository;
+    private final NetworkDeviceRepository networkDeviceRepository;
 
 
-    public DeviceConnectionManager( NetworkDeviceRepository networkDeviceRepository) {
-        sshExecutorHashMap = new HashMap<>();
+    public DeviceConnectionManager(NetworkDeviceRepository networkDeviceRepository) {
+        sshExecutorHashMap = new ConcurrentHashMap<>();
 
         this.networkDeviceRepository = networkDeviceRepository;
         List<NetworkDevice> networkDevices = this.networkDeviceRepository.findAll();
@@ -32,24 +32,39 @@ public class DeviceConnectionManager {
 
     public void addNewConnection(NetworkDevice networkDevice) {
         SSHExecutor sshExecutor = new SSHExecutor();
-        sshExecutor.open(networkDevice);
-        sshExecutorHashMap.put(networkDevice.getId(), sshExecutor);
+        try {
+            sshExecutor.open(networkDevice);
+            sshExecutorHashMap.put(networkDevice.getId(), sshExecutor);
+        } catch (DeviceConnectionException e) {
+            log.error("Error when establish connection with device id:" + networkDevice.getId(), e);
+        }
     }
 
     public void removeConnection(Long id) {
+        sshExecutorHashMap.get(id).close();
         sshExecutorHashMap.remove(id);
     }
 
-    public SSHExecutor getConnection(Long networkDeviceId){
+    public SSHExecutor getConnection(Long networkDeviceId) {
         SSHExecutor sshExecutor = sshExecutorHashMap.get(networkDeviceId);
-        if(sshExecutor == null){
-            Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(networkDeviceId);
-            if(optionalNetworkDevice.isEmpty()){
-                throw new DeviceNotFoundException(networkDeviceId.toString());
-            }
+        Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(networkDeviceId);
+        if (optionalNetworkDevice.isEmpty()) {
+            sshExecutorHashMap.remove(networkDeviceId);
+            throw new DeviceNotFoundException(networkDeviceId.toString());
+        }
+
+        if (sshExecutor == null) {
             addNewConnection(optionalNetworkDevice.get());
             sshExecutor = sshExecutorHashMap.get(networkDeviceId);
+        } else {
+            if (!optionalNetworkDevice.get().equals(sshExecutor.getCurrentManagedDevice())) {
+                removeConnection(networkDeviceId);
+                addNewConnection(optionalNetworkDevice.get());
+                sshExecutor = sshExecutorHashMap.get(networkDeviceId);
+            }
         }
+
+        if (sshExecutor == null) throw new DeviceConnectionException(networkDeviceId);
         return sshExecutor;
     }
 }

@@ -27,7 +27,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     private final InterfaceMapper interfaceMapper;
 
-//    private final NetworkDeviceService networkDeviceService;
+    private final NetworkDeviceService networkDeviceService;
 
     private final PortService portService;
 
@@ -46,10 +46,10 @@ public class InterfaceServiceImpl implements InterfaceService {
     public List<InterfaceDTO> getByNetworkDevice(Long deviceId) {
         log.info("Get all interface by device");
 
-//        boolean checkIfDeviceExisted = networkDeviceService.existsById(deviceId);
-//        if (!checkIfDeviceExisted) {
-//            throw new DeviceNotFoundException(String.valueOf(deviceId));
-//        }
+        boolean checkIfDeviceExisted = networkDeviceService.existsById(deviceId);
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(String.valueOf(deviceId));
+        }
 
         List<Interface> interfaces = interfaceRepository.findByNetworkDevice_Id(deviceId);
         return interfaceMapper.entitiesToDTOs(interfaces);
@@ -67,6 +67,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
+    @Transactional
     public InterfaceDTO getByPort(Long portId) {
         log.info("Get interface by port with id: {}", portId);
 
@@ -87,10 +88,10 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Transactional
     public InterfaceDTO add(InterfaceDTO interfaceDTO) {
         // Check device exist
-//        boolean checkIfDeviceExisted = networkDeviceService.existsById(interfaceDTO.getNetworkDeviceId());
-//        if (!checkIfDeviceExisted) {
-//            throw new DeviceNotFoundException(String.valueOf(interfaceDTO.getNetworkDeviceId()));
-//        }
+        boolean checkIfDeviceExisted = networkDeviceService.existsById(interfaceDTO.getNetworkDeviceId());
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(String.valueOf(interfaceDTO.getNetworkDeviceId()));
+        }
 
         // Check duplicate name
         boolean checkIfNameExisted = interfaceRepository.existsByName(interfaceDTO.getName());
@@ -98,17 +99,22 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new InterfaceNameExistsException(interfaceDTO.getName());
         }
 
+        //Check port exist
+        Optional<Port> portOptional = portRepository.findByNetworkDevice_IdAndId(interfaceDTO.getNetworkDeviceId(), interfaceDTO.getPortId());
+        if (portOptional.isEmpty()) {
+            throw new PortNotFoundException(interfaceDTO.getPortId());
+        }
+
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(interfaceDTO.getNetworkDeviceId());
-
-        Port port = getValidPort(interfaceDTO);
-
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setNetworkDevice(networkDevice);
-        anInterface.setPort(port);
-        anInterface = interfaceRepository.save(anInterface);
+        anInterface.setPort(portOptional.get());
 
-        return interfaceMapper.entityToDTO(anInterface);
+        interfaceRepository.save(interfaceMapper.dtoToEntity(interfaceDTO));
+        interfaceSSHService.add(anInterface);
+
+        return interfaceDTO;
     }
 
     @Override
@@ -190,26 +196,26 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     }
 
-    private void syncWithDB(List<Interface> newInterfaces, List<Interface> oldInterfaces, Comparator<Interface> interfaceComparator){
+    private void syncWithDB(List<Interface> newInterfaces, List<Interface> oldInterfaces, Comparator<Interface> interfaceComparator) {
         oldInterfaces.sort(interfaceComparator);
         newInterfaces.sort(interfaceComparator);
         if (oldInterfaces.equals(newInterfaces)) return;
 
         HashMap<Integer, Interface> integerNDInterfaceHashMap = new HashMap<>();
-        for(Interface ndInterface: newInterfaces){
+        for (Interface ndInterface : newInterfaces) {
             integerNDInterfaceHashMap.put(ndInterface.hashCode(), ndInterface);
         }
 
-        for(Interface oldInterface: oldInterfaces){
-            Interface newInterface =  integerNDInterfaceHashMap.get(oldInterface.hashCode());
-            if(newInterface == null) {
+        for (Interface oldInterface : oldInterfaces) {
+            Interface newInterface = integerNDInterfaceHashMap.get(oldInterface.hashCode());
+            if (newInterface == null) {
                 interfaceRepository.delete(oldInterface);
-            }else{
+            } else {
                 integerNDInterfaceHashMap.remove(oldInterface.hashCode());
             }
         }
 
-        for(Map.Entry<Integer, Interface> keyValuePair:integerNDInterfaceHashMap.entrySet()){
+        for (Map.Entry<Integer, Interface> keyValuePair : integerNDInterfaceHashMap.entrySet()) {
             interfaceRepository.save(keyValuePair.getValue());
         }
     }

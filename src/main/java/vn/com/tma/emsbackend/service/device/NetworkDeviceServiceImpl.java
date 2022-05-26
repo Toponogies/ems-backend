@@ -2,9 +2,9 @@ package vn.com.tma.emsbackend.service.device;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.common.ResyncQueueManagement;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
@@ -15,15 +15,8 @@ import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
-import vn.com.tma.emsbackend.repository.PortRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
-import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
-import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
-import vn.com.tma.emsbackend.service.port.PortService;
-import vn.com.tma.emsbackend.service.ssh.InterfaceSSHService;
-import vn.com.tma.emsbackend.service.ssh.NTPServerSSHService;
 import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
-import vn.com.tma.emsbackend.service.ssh.PortSSHService;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,17 +27,13 @@ import java.util.Optional;
 public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceRepository networkDeviceRepository;
 
+    private final NetworkDeviceSSHService networkDeviceSSHService;
+
     private final NetworkDeviceMapper networkDeviceMapper;
 
     private final CredentialService credentialService;
 
-
-    //TODO: delete these ssh service
-    private final PortService portService;
-    private final InterfaceService interfaceService;
-
-    private final NTPServerService ntpServerService;
-
+    private final ResyncQueueManagement resyncQueueManagement;
 
 
     @Override
@@ -52,6 +41,9 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         log.info("Get all network device");
 
         List<NetworkDevice> networkDevices = networkDeviceRepository.findAll();
+        for (NetworkDevice networkDevice : networkDevices) {
+            networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
+        }
         return networkDeviceMapper.entitiesToDTOs(networkDevices);
     }
 
@@ -63,7 +55,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDeviceOptional.isEmpty()) {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
-        return networkDeviceMapper.entityToDTO(networkDeviceOptional.get());
+        NetworkDevice networkDevice = networkDeviceOptional.get();
+        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
+
+        return networkDeviceMapper.entityToDTO(networkDevice);
     }
 
     @Override
@@ -75,6 +70,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(ipAddress);
         }
+        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -113,7 +109,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         credential.setId(networkDeviceDTO.getCredentialId());
         networkDevice.setCredential(credential);
 
-        return networkDeviceMapper.entityToDTO(networkDeviceRepository.save(networkDevice));
+        networkDevice = networkDeviceRepository.save(networkDevice);
+        resyncQueueManagement.pushToQueue(networkDevice.getId());
+
+        return networkDeviceMapper.entityToDTO(networkDevice);
     }
 
     @Override
@@ -150,6 +149,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
+        resyncQueueManagement.pushToQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -170,11 +170,39 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         return networkDeviceRepository.existsById(id);
     }
 
+
     @Override
-    public void resync(Long id){
-        portService.resyncPort(id);
-        interfaceService.resyncInterface(id);
-        ntpServerService.resyncNTPServer(id);
+    public void resyncDeviceDetail(Long id) {
+        NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
+        NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
+        networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
+        networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        networkDevice.setCredential(oldNetworkDevice.getCredential());
+        networkDevice.setLabel(oldNetworkDevice.getLabel());
+        networkDevice.setSshPort(oldNetworkDevice.getSshPort());
+        networkDevice.setId(id);
+        networkDeviceRepository.save(networkDevice);
+    }
+
+    @Override
+    public void resync(Long id) {
+        boolean checkIfExistedById = networkDeviceRepository.existsById(id);
+        if (!checkIfExistedById) {
+            throw new DeviceNotFoundException(String.valueOf(id));
+        }
+        resyncQueueManagement.pushToQueue(id);
+    }
+
+    @Override
+    public void updateState(Long id, Enum.NetworkDeviceState state) {
+        Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(id);
+        if (optionalNetworkDevice.isPresent()) {
+            NetworkDevice networkDevice = optionalNetworkDevice.get();
+            networkDevice.setState(state);
+            networkDeviceRepository.save(networkDevice);
+        } else {
+            throw new DeviceNotFoundException(String.valueOf(id));
+        }
     }
 
 }

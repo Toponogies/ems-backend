@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.InterfaceCommandGenerator;
-import vn.com.tma.emsbackend.exception.SSHExecuteFailException;
+import vn.com.tma.emsbackend.common.constant.Constant;
+import vn.com.tma.emsbackend.model.exception.SSHExecuteFailException;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
@@ -34,20 +35,19 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
                     break;
                 }
             }
-            if(anInterface.getPort().getId() == null) anInterface.setPort(null);
+            if (anInterface.getPort().getId() == null) anInterface.setPort(null);
             interfaces.add(anInterface);
         }
         return interfaces;
     }
 
-    public void add(long deviceId, Interface anInterface, Port port) {
-        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
-        String command = InterfaceCommandGenerator.add(anInterface, port);
+    public void add(Interface anInterface) {
+        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(anInterface.getNetworkDevice().getId());
+        String command = InterfaceCommandGenerator.add(anInterface);
         String result = sshExecutor.execute(command);
-        String[] returnValue = result.split(":| >",2);
-        if(returnValue[1].trim().length() > 1)
-        {
-            throw new SSHExecuteFailException(returnValue[1].split("\n")[1].trim());
-        }
+        String errorMessage = getErrorMessage(command, result);
+        if(errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
     }
+
+
 }

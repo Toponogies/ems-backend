@@ -13,7 +13,11 @@ import java.util.List;
 public class InterfaceSSHService {
     private final InterfaceSSHRepository interfaceSSHRepository;
 
-    public List<Interface> getAllInterface(long deviceId, List<Port> ports) {
-        return interfaceSSHRepository.getAll(deviceId, ports);
+    public List<Interface> getAllInterface(long networkDeviceId, List<Port> ports) {
+        return interfaceSSHRepository.getAll(networkDeviceId, ports);
+    }
+
+    public void add(Interface anInterface) {
+        interfaceSSHRepository.add(anInterface);
     }
 }

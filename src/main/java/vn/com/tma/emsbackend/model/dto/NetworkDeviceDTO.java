@@ -38,4 +38,6 @@ public class NetworkDeviceDTO {
 
     @NotNull(message = "Device must have a credential")
     private Long credentialId;
+
+    private boolean isResyncing;
 }

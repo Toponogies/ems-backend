@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.exception.ApplicationException;
+import vn.com.tma.emsbackend.model.exception.DeviceConnectionException;
+import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,13 +64,12 @@ public class SSHExecutor {
     private ClientSession createClientSession() {
         ClientSession newClientSession = null;
         try {
-            var a = currentManagedDevice.getCredential().getUsername();
             newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());
             newClientSession.auth().verify();
             return newClientSession;
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            throw new DeviceConnectionException(currentManagedDevice.getId());
         }
     }
 
@@ -88,8 +89,10 @@ public class SSHExecutor {
         if (errorStream.toByteArray().length != 0) {
             throw new ApplicationException(errorStream.toString());
         }
-        waitUntilEnd(responseStream);
-        return responseStream.toString();
+        if(isCompletelyWaitUntilEnd(responseStream)){
+            return responseStream.toString();
+        }
+        throw new DeviceConnectionException(currentManagedDevice.getId());
     }
 
     private void setCommand(String command) {
@@ -99,7 +102,7 @@ public class SSHExecutor {
             pipedIn.write((command + "\n").getBytes());
             pipedIn.flush();
         } catch (IOException e) {
-            throw new ApplicationException(e);
+            throw new DeviceConnectionException(currentManagedDevice.getId());
         }
     }
 
@@ -126,10 +129,15 @@ public class SSHExecutor {
         }
     }
 
-    private void waitUntilEnd(ByteArrayOutputStream responseStream) {
+    private boolean isCompletelyWaitUntilEnd(ByteArrayOutputStream responseStream) {
+        long startTime = System.currentTimeMillis();
         while (!isEndOfMessage(responseStream.toString())) {
             channelShell.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 100);
+            if(System.currentTimeMillis() - startTime > 10000){
+                return false;
+            }
         }
+        return true;
     }
 
     private boolean isEndOfMessage(String result) {
@@ -139,5 +147,9 @@ public class SSHExecutor {
             return trimmedResult.chars().filter(ch -> ch == ':').count() >= 2;
         }
         return false;
+    }
+
+    public NetworkDevice getCurrentManagedDevice(){
+        return this.currentManagedDevice;
     }
 }

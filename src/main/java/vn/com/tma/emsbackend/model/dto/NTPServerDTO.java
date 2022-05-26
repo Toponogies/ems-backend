@@ -14,4 +14,6 @@ public class NTPServerDTO {
     private String serverAddress;
 
     private Enum.State state;
+
+    private Long networkDeviceId;
 }

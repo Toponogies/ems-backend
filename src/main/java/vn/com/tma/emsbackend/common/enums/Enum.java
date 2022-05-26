@@ -23,7 +23,6 @@ public class Enum {
     public enum NetworkDeviceState {
         IN_SERVICE,
         OUT_OF_SERVICE,
-        IN_PROCESS
     }
 
     public enum NetworkDeviceType {

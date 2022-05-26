@@ -13,5 +13,9 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
 
     boolean existsById(Long id);
 
+    void resyncDeviceDetail(Long id);
+
     void resync(Long id);
+
+    void updateState(Long id, Enum.NetworkDeviceState state);
 }
