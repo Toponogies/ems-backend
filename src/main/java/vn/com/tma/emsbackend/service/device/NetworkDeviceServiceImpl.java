@@ -3,23 +3,20 @@ package vn.com.tma.emsbackend.service.device;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.ResyncQueueManagement;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.exception.*;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
-import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
-import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
-import vn.com.tma.emsbackend.service.port.PortService;
 import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -201,5 +198,14 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         } else {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
+    }
+
+    @Override
+    @Transactional
+    public SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO sshCommandDTO) {
+        String result = networkDeviceSSHService.sendCommand(id, sshCommandDTO.getCommand());
+        SSHCommandResponseDTO sshCommandResponseDTO = new SSHCommandResponseDTO();
+        sshCommandResponseDTO.setResult(result);
+        return sshCommandResponseDTO;
     }
 }

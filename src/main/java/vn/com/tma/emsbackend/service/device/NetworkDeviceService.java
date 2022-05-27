@@ -4,6 +4,8 @@ import java.util.List;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.service.Service;
 
 public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
@@ -18,5 +20,8 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     void resync(List<Long> id);
 
     void updateState(Long id, Enum.NetworkDeviceState state);
+
+    SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO command);
+
 }
 

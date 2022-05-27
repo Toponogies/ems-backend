@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
+import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import javax.validation.Valid;
@@ -124,4 +126,6 @@ public class NetworkDeviceController {
     public void resync(@RequestBody List<Long> ids) {
         networkDeviceService.resync(ids);
     }
+
+
 }

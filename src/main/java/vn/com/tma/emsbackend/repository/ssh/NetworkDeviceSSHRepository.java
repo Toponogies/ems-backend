@@ -11,8 +11,14 @@ import vn.com.tma.emsbackend.parser.NetworkDeviceCommandParser;
 @AllArgsConstructor
 public class NetworkDeviceSSHRepository extends  BaseSSHRepository{
     public NetworkDevice getDetail(long id){
-        SSHExecutor connection = deviceConnectionManager.getConnection(id);
-        String result = connection.execute(NetworkDeviceCommandGenerator.getDetail());
+        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(id);
+        String result = sshExecutor.execute(NetworkDeviceCommandGenerator.getDetail());
         return NetworkDeviceCommandParser.boardShowInfoCommandParse(result);
+    }
+
+    public String sendCommand(Long id, String command) {
+        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(id);
+        String result = sshExecutor.execute(command);
+        return getMainResult(command, result);
     }
 }

@@ -42,15 +42,5 @@ public class PortController {
         return portService.getByNetworkDevice(deviceId);
     }
 
-    @Operation(summary = "Get a specific port by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the port", content = {
-                    @Content(schema = @Schema(implementation = PortDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Port not found", content = {
-                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
-    })
-    @GetMapping("/{id}")
-    public PortDTO getDeviceById(@PathVariable(value = "id") Long portId) {
-        return portService.get(portId);
-    }
+
 }

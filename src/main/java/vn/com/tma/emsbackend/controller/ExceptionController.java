@@ -57,6 +57,12 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler(SSHExecuteException.class)
+    public ResponseEntity<ErrorDTO> handleSSHExecutionException(Exception ex, WebRequest request) {
+        ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> handleUnexpectedException(Exception ex, WebRequest request) {
         log.error("Have an out of control error: ", ex);

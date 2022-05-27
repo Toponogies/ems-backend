@@ -18,4 +18,22 @@ public abstract class BaseSSHRepository {
         }
         return "";
     }
+
+    protected String getMainResult(String command, String result) {
+        String[] lines = result.split("\n");
+        String mainResult = "";
+        int startResultIndex = 0;
+        for (int index = 0; index < lines.length; index++) {
+            if (lines[index].contains(command)) {
+                startResultIndex = index + 1;
+                break;
+            }
+        }
+        for (int index = startResultIndex; index < lines.length - 1; index++) {
+            if (!lines[index].isBlank()) {
+                mainResult = mainResult.concat(lines[index] + "\n");
+            }
+        }
+        return mainResult;
+    }
 }
