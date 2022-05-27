@@ -202,6 +202,4 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
     }
-
-
 }
