@@ -5,8 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.InterfaceCommandGenerator;
-import vn.com.tma.emsbackend.common.constant.Constant;
-import vn.com.tma.emsbackend.model.exception.SSHExecuteFailException;
+import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
@@ -46,7 +45,23 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
         String command = InterfaceCommandGenerator.add(anInterface);
         String result = sshExecutor.execute(command);
         String errorMessage = getErrorMessage(command, result);
-        if(errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
+    }
+
+    public void edit(String oldInterfaceName, Interface anInterface) {
+        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(anInterface.getNetworkDevice().getId());
+        String command = InterfaceCommandGenerator.edit(oldInterfaceName, anInterface);
+        String result = sshExecutor.execute(command);
+        String errorMessage = getErrorMessage(command, result);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
+    }
+
+    public void delete(Interface anInterface) {
+        SSHExecutor sshExecutor = deviceConnectionManager.getConnection(anInterface.getNetworkDevice().getId());
+        String command = InterfaceCommandGenerator.delete(anInterface);
+        String result = sshExecutor.execute(command);
+        String errorMessage = getErrorMessage(command, result);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 
 

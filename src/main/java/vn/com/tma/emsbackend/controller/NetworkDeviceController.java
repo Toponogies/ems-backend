@@ -15,6 +15,7 @@ import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -119,8 +120,8 @@ public class NetworkDeviceController {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))})
     })
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    @GetMapping("/resync/{id}")
-    public void resync(@PathVariable(value = "id") Long deviceId){
-        networkDeviceService.resync(deviceId);
+    @PostMapping("/resync")
+    public void resync(@RequestBody List<Long> ids) {
+        networkDeviceService.resync(ids);
     }
 }

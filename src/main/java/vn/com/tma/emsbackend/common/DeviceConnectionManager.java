@@ -36,7 +36,7 @@ public class DeviceConnectionManager {
             sshExecutor.open(networkDevice);
             sshExecutorHashMap.put(networkDevice.getId(), sshExecutor);
         } catch (DeviceConnectionException e) {
-            log.error("Error when establish connection with device id:" + networkDevice.getId(), e);
+            log.error("", e);
         }
     }
 
@@ -53,7 +53,7 @@ public class DeviceConnectionManager {
             throw new DeviceNotFoundException(networkDeviceId.toString());
         }
 
-        if (sshExecutor == null) {
+        if (sshExecutor == null || !sshExecutor.isOpen()) {
             addNewConnection(optionalNetworkDevice.get());
             sshExecutor = sshExecutorHashMap.get(networkDeviceId);
         } else {

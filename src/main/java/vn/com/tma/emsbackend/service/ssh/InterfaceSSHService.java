@@ -20,4 +20,11 @@ public class InterfaceSSHService {
     public void add(Interface anInterface) {
         interfaceSSHRepository.add(anInterface);
     }
+    public void edit(String oldInterfaceName, Interface anInterface){
+        interfaceSSHRepository.edit(oldInterfaceName, anInterface);
+    }
+
+    public void delete(Interface anInterface){
+        interfaceSSHRepository.delete(anInterface);
+    }
 }

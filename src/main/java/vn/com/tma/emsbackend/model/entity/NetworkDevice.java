@@ -1,5 +1,5 @@
-package vn.com.tma.emsbackend.model.entity;
 
+package vn.com.tma.emsbackend.model.entity;
 import javax.persistence.*;
 
 import lombok.Getter;

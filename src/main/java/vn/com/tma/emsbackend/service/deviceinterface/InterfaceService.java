@@ -10,7 +10,5 @@ public interface InterfaceService extends Service<InterfaceDTO> {
     List<InterfaceDTO> getByNetworkDevice(Long deviceId);
 
     InterfaceDTO getByPort(Long portId);
-
-    @Transactional
-    void resyncInterface(long deviceId);
+    void resyncInterface(Long deviceId);
 }

@@ -9,8 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface PortRepository extends JpaRepository<Port, Long> {
-    List<Port> findByNetworkDevice_Id(Long networkDeviceId);
+    List<Port> findByNetworkDeviceId(Long networkDeviceId);
 
-    Optional<Port> findByNetworkDevice_IdAndId(Long networkDeviceId, Long id);
+    Optional<Port> findByIdAndNetworkDeviceId(Long id, Long deviceId);
 
 }

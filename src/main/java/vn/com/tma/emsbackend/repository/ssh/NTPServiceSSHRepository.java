@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.NTPServerCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.NTPServer;
-import vn.com.tma.emsbackend.model.exception.SSHExecuteFailException;
+import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 import vn.com.tma.emsbackend.parser.NTPCommandParser;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
         String command = NTPServerCommandGenerator.add(ntpServer.getServerAddress());
         String result = connection.execute(command);
         String errorMessage = getErrorMessage(command, result);
-        if (errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 
     public void enable(NTPServer ntpServer){
@@ -32,7 +32,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
         String command = NTPServerCommandGenerator.enable(ntpServer.getServerAddress());
         String result = connection.execute(command);
         String errorMessage = getErrorMessage(command, result);
-        if (errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 
 
@@ -41,7 +41,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
         String command = NTPServerCommandGenerator.disable(ntpServer.getServerAddress());
         String result = connection.execute(command);
         String errorMessage = getErrorMessage(command, result);
-        if (errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 
 
@@ -50,6 +50,6 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
         String command = NTPServerCommandGenerator.delete(ntpServer.getServerAddress());
         String result = connection.execute(command);
         String errorMessage = getErrorMessage(command, result);
-        if (errorMessage.length() > 0) throw new SSHExecuteFailException(errorMessage);
+        if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 }

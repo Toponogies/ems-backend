@@ -3,21 +3,23 @@ package vn.com.tma.emsbackend.service.device;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.ResyncQueueManagement;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
-import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
-import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
-import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
+import vn.com.tma.emsbackend.model.exception.*;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
+import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
+import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
+import vn.com.tma.emsbackend.service.port.PortService;
 import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -185,12 +187,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    public void resync(Long id) {
-        boolean checkIfExistedById = networkDeviceRepository.existsById(id);
-        if (!checkIfExistedById) {
-            throw new DeviceNotFoundException(String.valueOf(id));
-        }
-        resyncQueueManagement.pushToQueue(id);
+    public void resync(List<Long> ids) {
+        resyncQueueManagement.pushToQueue(ids.toArray(new Long[0]));
     }
 
     @Override
@@ -204,5 +202,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
     }
+
 
 }

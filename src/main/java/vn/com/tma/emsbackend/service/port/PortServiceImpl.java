@@ -48,7 +48,7 @@ public class PortServiceImpl implements PortService {
             throw new DeviceNotFoundException(String.valueOf(deviceId));
         }
 
-        List<Port> ports = portRepository.findByNetworkDevice_Id(deviceId);
+        List<Port> ports = portRepository.findByNetworkDeviceId(deviceId);
         return portMapper.entitiesToDTOs(ports);
     }
 
@@ -92,12 +92,26 @@ public class PortServiceImpl implements PortService {
     @Transactional
     public void resyncPort(long deviceId) {
         List<Port> newPorts = portSSHService.getAllPort(deviceId);
-        List<Port> oldPorts = portRepository.findByNetworkDevice_Id(deviceId);
+        List<Port> oldPorts = portRepository.findByNetworkDeviceId(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);
         for(Port port:newPorts) port.setNetworkDevice(networkDevice);
 
         syncWithDB(newPorts, oldPorts, new PortComparator());
+    }
+
+    @Override
+    public Port getById(Long id, Long deviceId) {
+        Optional<Port> portOptional = portRepository.findByIdAndNetworkDeviceId(deviceId, id);
+        if(portOptional.isEmpty()){
+            throw new PortNotFoundException(id);
+        }
+        return portOptional.get();
+    }
+
+    @Override
+    public List<Port> getByDeviceId(Long deviceId) {
+        return portRepository.findByNetworkDeviceId(deviceId);
     }
 
     public void syncWithDB(List<Port> newPortList, List<Port> oldPortList, Comparator<Port> portComparator) {

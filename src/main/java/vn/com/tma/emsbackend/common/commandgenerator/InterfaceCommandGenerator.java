@@ -6,8 +6,9 @@ import vn.com.tma.emsbackend.model.entity.Port;
 public class InterfaceCommandGenerator {
     private static final String COMMAND_PREFIX = "interface";
     private static final String ADD_ACTION = "add";
+    private static final String EDIT_ACTION = "edit";
 
-    private static final String EDIT_ACTION ="edit";
+    private static final String DELETE_ACTION = "delete";
     private static final String STATE_PARAMS = "state";
 
     private static final String NAME_PARAMS = "name";
@@ -29,24 +30,28 @@ public class InterfaceCommandGenerator {
                 PORT_PARAMS + " " + anInterface.getPort().getName();
     }
 
-    public static String edit(String oldInterfaceName, Interface anInterface, Port port){
+    public static String edit(String oldInterfaceName, Interface anInterface) {
         return COMMAND_PREFIX + " " +
                 EDIT_ACTION + " " +
                 oldInterfaceName + " " +
-                NAME_PARAMS + " " +
-                anInterface.getName() + " " +
                 STATE_PARAMS + " " + anInterface.getState().getValue() + " " +
                 DHCP_PARAMS + " " + anInterface.getDhcp().getValue() + " " +
                 (anInterface.getIpAddress() == null || anInterface.getIpAddress().length() == 0 ? "" : ADDRESS_PARAMS + " " + anInterface.getIpAddress() + " ") +
                 (anInterface.getNetmask() == null || anInterface.getNetmask().length() == 0 ? "" : NETMASK_PARAMS + " " + anInterface.getNetmask() + " ") +
                 (anInterface.getGateway() == null || anInterface.getGateway().length() == 0 ? "" : GATEWAY_PARAMS + " " + anInterface.getGateway() + " ") +
-                PORT_PARAMS + " " + port.getName();
+                PORT_PARAMS + " " + anInterface.getPort().getName();
     }
 
-    public static String showAll(){
+    public static String delete(Interface anInterface) {
+        return COMMAND_PREFIX + " " + DELETE_ACTION + " " + anInterface.getName();
+
+    }
+
+    public static String showAll() {
         return COMMAND_PREFIX + " show";
     }
-    public static String showDetail(String interfaceName){
+
+    public static String showDetail(String interfaceName) {
         return COMMAND_PREFIX + " show " + interfaceName;
     }
 

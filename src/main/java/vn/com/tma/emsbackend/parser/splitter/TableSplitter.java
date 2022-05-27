@@ -1,6 +1,7 @@
 package vn.com.tma.emsbackend.parser.splitter;
 
 import vn.com.tma.emsbackend.model.exception.ApplicationException;
+import vn.com.tma.emsbackend.model.exception.ParserException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,7 @@ public class TableSplitter {
                 return index;
             }
         }
-        throw new ApplicationException("Command result has wrong format");
+        throw new ParserException(String.join("\n",lines));
     }
 
     private List<Integer> getColumnLimitLengths() {
