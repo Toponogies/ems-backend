@@ -27,7 +27,7 @@ public class SSHCommandController {
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping("/{id}/generic-command")
-    public SSHCommandResponseDTO sendCommand(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO command) {
-        return networkDeviceService.sendCommand(deviceId, command);
+    public SSHCommandResponseDTO sendCommand(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
+        return networkDeviceService.sendCommand(deviceId, sshCommandDTO);
     }
 }

@@ -21,7 +21,7 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
 
     void updateState(Long id, Enum.NetworkDeviceState state);
 
-    SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO command);
+    SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO sshCommandDTO);
 
 }
 
