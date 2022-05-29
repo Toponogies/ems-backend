@@ -6,6 +6,7 @@ import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -34,11 +35,24 @@ public class Interface {
     @Column(name = "gateway")
     private String gateway;
 
-    @OneToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JoinColumn(name = "port_id", unique = true)
     private Port port;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "managed_device_id")
     private NetworkDevice networkDevice;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Interface that = (Interface) o;
+        return Objects.equals(name, that.name) && state == that.state && dhcp == that.dhcp && Objects.equals(ipAddress, that.ipAddress) && Objects.equals(netmask, that.netmask) && Objects.equals(gateway, that.gateway) && (port == null || Objects.equals(port.getId(), that.port.getId())) && Objects.equals(networkDevice.getId(), that.networkDevice.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, state, dhcp, ipAddress, netmask, gateway, port != null ? port.getId() : 0, networkDevice.getId());
+    }
 }

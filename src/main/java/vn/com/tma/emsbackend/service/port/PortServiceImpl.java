@@ -3,26 +3,33 @@ package vn.com.tma.emsbackend.service.port;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import vn.com.tma.emsbackend.common.comparator.PortComparator;
 import vn.com.tma.emsbackend.model.dto.PortDTO;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.exception.PortNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.PortMapper;
+import vn.com.tma.emsbackend.repository.InterfaceRepository;
 import vn.com.tma.emsbackend.repository.PortRepository;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+import vn.com.tma.emsbackend.service.ssh.PortSSHService;
 
-import java.util.List;
-import java.util.Optional;
+import javax.transaction.Transactional;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class PortServiceImpl implements PortService {
     private final PortRepository portRepository;
+    private final InterfaceRepository interfaceRepository;
 
     private final PortMapper portMapper;
 
     private final NetworkDeviceService networkDeviceService;
+
+    private final PortSSHService portSSHService;
 
     @Override
     public List<PortDTO> getAll() {
@@ -41,7 +48,7 @@ public class PortServiceImpl implements PortService {
             throw new DeviceNotFoundException(String.valueOf(deviceId));
         }
 
-        List<Port> ports = portRepository.findByNetworkDevice_Id(deviceId);
+        List<Port> ports = portRepository.findByNetworkDeviceId(deviceId);
         return portMapper.entitiesToDTOs(ports);
     }
 
@@ -79,6 +86,57 @@ public class PortServiceImpl implements PortService {
     @Override
     public Optional<Port> getById(Long id) {
         return portRepository.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public void resyncPort(long deviceId) {
+        List<Port> newPorts = portSSHService.getAllPort(deviceId);
+        List<Port> oldPorts = portRepository.findByNetworkDeviceId(deviceId);
+        NetworkDevice networkDevice = new NetworkDevice();
+        networkDevice.setId(deviceId);
+        for(Port port:newPorts) port.setNetworkDevice(networkDevice);
+
+        syncWithDB(newPorts, oldPorts, new PortComparator());
+    }
+
+    @Override
+    public Port getById(Long id, Long deviceId) {
+        Optional<Port> portOptional = portRepository.findByIdAndNetworkDeviceId(deviceId, id);
+        if(portOptional.isEmpty()){
+            throw new PortNotFoundException(id);
+        }
+        return portOptional.get();
+    }
+
+    @Override
+    public List<Port> getByDeviceId(Long deviceId) {
+        return portRepository.findByNetworkDeviceId(deviceId);
+    }
+
+    public void syncWithDB(List<Port> newPortList, List<Port> oldPortList, Comparator<Port> portComparator) {
+        oldPortList.sort(portComparator);
+        newPortList.sort(portComparator);
+        if (oldPortList.equals(newPortList)) return;
+
+        HashMap<Integer, Port> integerPortHashMap = new HashMap<>();
+        for(Port newPort: newPortList){
+            integerPortHashMap.put(newPort.hashCode(), newPort);
+        }
+
+        for(Port oldPort: oldPortList){
+            Port newInterface =  integerPortHashMap.get(oldPort.hashCode());
+            if(newInterface == null) {
+                interfaceRepository.deleteByPortId(oldPort.getId());
+                portRepository.delete(oldPort);
+            }else{
+                integerPortHashMap.remove(oldPort.hashCode());
+            }
+        }
+
+        for(Map.Entry<Integer, Port> keyValuePair:integerPortHashMap.entrySet()){
+            portRepository.save(keyValuePair.getValue());
+        }
     }
 
 }

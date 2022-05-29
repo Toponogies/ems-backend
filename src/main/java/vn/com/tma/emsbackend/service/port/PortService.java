@@ -13,4 +13,10 @@ public interface PortService extends Service<PortDTO> {
     boolean existsById(Long id);
 
     Optional<Port> getById(Long id);
+
+    void resyncPort(long deviceId);
+
+    Port getById(Long id, Long deviceId);
+
+    List<Port> getByDeviceId(Long deviceId);
 }

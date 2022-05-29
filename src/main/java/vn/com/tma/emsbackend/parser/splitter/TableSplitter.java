@@ -1,9 +1,12 @@
 package vn.com.tma.emsbackend.parser.splitter;
 
 import vn.com.tma.emsbackend.model.exception.ApplicationException;
+import vn.com.tma.emsbackend.model.exception.ParserException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static vn.com.tma.emsbackend.parser.ParserUtils.getResultAfterCommandPrompt;
 
 public class TableSplitter {
     private final String[] lines;
@@ -15,11 +18,13 @@ public class TableSplitter {
 
     private int currentIndex = -1;
 
-    public TableSplitter(String commandResult) {
-        lines = commandResult.split("\n");
+    public TableSplitter(String executeResult) {
+        executeResult = getResultAfterCommandPrompt(executeResult);
+        lines = executeResult.split("\n");
+        this.split();
     }
 
-    public TableSplitter split() {
+    private void split() {
         //get index of end header line and limit data lengths each cell
         endHeaderLineIndex = getEndHeaderLineIndex();
 
@@ -31,8 +36,6 @@ public class TableSplitter {
 
         //split
         rows = splitAllDataLines();
-
-        return this;
     }
 
     /**
@@ -41,7 +44,7 @@ public class TableSplitter {
      * @return if there is no more row
      */
     public boolean next() {
-        if (currentIndex < rows.size()) {
+        if (currentIndex < rows.size() - 1) {
             currentIndex++;
             return true;
         }
@@ -62,24 +65,25 @@ public class TableSplitter {
     }
 
 
-    private List<String> splitLine(String line) {
+    private List<String> splitLine(String line)
+    {
         List<String> result = new ArrayList<>();
         int curIndex = 0;
         for (Integer length : columnLimitLengths) {
             if (curIndex + length < line.length()) {
                 result.add(line.substring(curIndex, curIndex + length).trim());
             } else {
-                result.add(line.substring(curIndex, line.length() - 1).trim());
+                result.add(line.substring(curIndex).trim());
             }
-            curIndex += length + 1;
+            curIndex += length;
         }
         return result;
     }
 
     private List<List<String>> splitAllDataLines() {
         List<List<String>> rowsData = new ArrayList<>();
-        for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; endHeaderLineIndex++) {
-            if (isEmptyLine(lines[endHeaderLineIndex])){
+        for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; index++) {
+            if (isEmptyLine(lines[index])){
                 break;
             }
             rowsData.add(splitLine(lines[index]));
@@ -89,16 +93,16 @@ public class TableSplitter {
 
     private int getEndHeaderLineIndex() {
         for (int index = 0; index < lines.length; index++) {
-            if (lines[index].matches("^-.*-$")) {
+            if (lines[index].trim().matches("^-.*-$")) {
                 return index;
             }
         }
-        throw new ApplicationException("Command result has wrong format");
+        throw new ParserException(String.join("\n",lines));
     }
 
     private List<Integer> getColumnLimitLengths() {
         List<Integer> limitLengths = new ArrayList<>();
-        String[] tuple = lines[endHeaderLineIndex].split(" ");
+        String[] tuple = lines[endHeaderLineIndex].split("(?= -)");
         for (String str : tuple) {
             limitLengths.add(str.length());
         }
@@ -112,4 +116,5 @@ public class TableSplitter {
     private boolean isEmptyLine(String line){
         return line.length() < 2;
     }
+
 }

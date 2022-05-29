@@ -39,12 +39,15 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
             CredentialLinkedToDeviceException.class
     })
     public ResponseEntity<ErrorDTO> handleBadRequestException(Exception ex, WebRequest request) {
+        log.error("Have an out of control error: ", ex);
+
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        log.error(ex.getMessage());
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getBindingResult().getFieldErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .findFirst()
                 .orElse(ex.getMessage()), request.getDescription(false));
@@ -55,6 +58,12 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorDTO> handleUnsupportedOperationException(Exception ex, WebRequest request) {
         ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDto, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler({SSHExecuteException.class, DeviceConnectionException.class})
+    public ResponseEntity<ErrorDTO> handleSSHExecutionException(Exception ex, WebRequest request) {
+        ErrorDTO errorDto = new ErrorDTO(new Date(), ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDto, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(Exception.class)

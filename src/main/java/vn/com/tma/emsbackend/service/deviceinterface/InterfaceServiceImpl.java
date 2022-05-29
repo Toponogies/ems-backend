@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.common.comparator.InterfaceComparator;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
@@ -13,9 +14,9 @@ import vn.com.tma.emsbackend.model.mapper.InterfaceMapper;
 import vn.com.tma.emsbackend.repository.InterfaceRepository;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.port.PortService;
+import vn.com.tma.emsbackend.service.ssh.InterfaceSSHService;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,6 +29,8 @@ public class InterfaceServiceImpl implements InterfaceService {
     private final NetworkDeviceService networkDeviceService;
 
     private final PortService portService;
+
+    private final InterfaceSSHService interfaceSSHService;
 
     @Override
     public List<InterfaceDTO> getAll() {
@@ -62,6 +65,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
+    @Transactional
     public InterfaceDTO getByPort(Long portId) {
         log.info("Get interface by port with id: {}", portId);
 
@@ -93,17 +97,19 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new InterfaceNameExistsException(interfaceDTO.getName());
         }
 
+        //Check port exist
+        Port port = portService.getById(interfaceDTO.getPortId(), interfaceDTO.getNetworkDeviceId());
+
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(interfaceDTO.getNetworkDeviceId());
-
-        Port port = getValidPort(interfaceDTO);
-
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
-        anInterface = interfaceRepository.save(anInterface);
 
-        return interfaceMapper.entityToDTO(anInterface);
+        interfaceRepository.save(anInterface);
+        interfaceSSHService.add(anInterface);
+
+        return interfaceDTO;
     }
 
     @Override
@@ -128,9 +134,13 @@ public class InterfaceServiceImpl implements InterfaceService {
 
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setId(id);
+        String oldInterfaceName = anInterface.getName();
+        anInterface.setName(interfaceDTO.getName());
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
         anInterface = interfaceRepository.save(anInterface);
+
+        interfaceSSHService.edit(oldInterfaceName, anInterface);
 
         return interfaceMapper.entityToDTO(anInterface);
     }
@@ -138,12 +148,15 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional
     public void delete(long id) {
-        boolean checkIfExistedById = interfaceRepository.existsById(id);
-        if (!checkIfExistedById) {
+        Optional<Interface> interfaceOptional = interfaceRepository.findById(id);
+        if (interfaceOptional.isEmpty()) {
             throw new InterfaceNotFoundException(id);
         }
+        Interface anInterface = interfaceOptional.get();
 
         interfaceRepository.deleteById(id);
+
+        interfaceSSHService.delete(anInterface);
     }
 
     private Port getValidPort(InterfaceDTO interfaceDTO) {
@@ -157,7 +170,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
             port = portOptional.get();
 
-            if (!port.getId().equals(interfaceDTO.getNetworkDeviceId())) {
+            if (!port.getNetworkDevice().getId().equals(interfaceDTO.getNetworkDeviceId())) {
                 throw new PortAndDeviceMismatchException();
             }
 
@@ -166,5 +179,46 @@ public class InterfaceServiceImpl implements InterfaceService {
             }
         }
         return port;
+    }
+
+    @Transactional
+    @Override
+    public void resyncInterface(Long deviceId) {
+        List<Interface> oldInterfaces = interfaceRepository.findByNetworkDeviceId(deviceId);
+        List<Port> ports = portService.getByDeviceId(deviceId);
+        List<Interface> newInterfaces = interfaceSSHService.getAllInterface(deviceId, ports);
+
+        NetworkDevice networkDevice = new NetworkDevice();
+        networkDevice.setId(deviceId);
+        for (Interface ndInterface : newInterfaces) {
+            ndInterface.setNetworkDevice(networkDevice);
+        }
+
+        syncWithDB(newInterfaces, oldInterfaces, new InterfaceComparator());
+
+    }
+
+    private void syncWithDB(List<Interface> newInterfaces, List<Interface> oldInterfaces, Comparator<Interface> interfaceComparator) {
+        oldInterfaces.sort(interfaceComparator);
+        newInterfaces.sort(interfaceComparator);
+        if (oldInterfaces.equals(newInterfaces)) return;
+
+        HashMap<Integer, Interface> integerNDInterfaceHashMap = new HashMap<>();
+        for (Interface ndInterface : newInterfaces) {
+            integerNDInterfaceHashMap.put(ndInterface.hashCode(), ndInterface);
+        }
+
+        for (Interface oldInterface : oldInterfaces) {
+            Interface newInterface = integerNDInterfaceHashMap.get(oldInterface.hashCode());
+            if (newInterface == null) {
+                interfaceRepository.delete(oldInterface);
+            } else {
+                integerNDInterfaceHashMap.remove(oldInterface.hashCode());
+            }
+        }
+
+        for (Map.Entry<Integer, Interface> keyValuePair : integerNDInterfaceHashMap.entrySet()) {
+            interfaceRepository.save(keyValuePair.getValue());
+        }
     }
 }
