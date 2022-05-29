@@ -17,7 +17,6 @@ public interface NetworkDeviceMapper extends IMapper<NetworkDevice, NetworkDevic
     @Mapping(target = "model", ignore = true)
     @Mapping(target = "ports", ignore = true)
     @Mapping(target = "interfaces", ignore = true)
-    @Mapping(target = "resyncing", ignore = true)
     @Mapping(target = "state", source = "state", qualifiedByName = "stringToState")
     NetworkDevice dtoToEntity(NetworkDeviceDTO networkDeviceDTO);
 

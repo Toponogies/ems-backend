@@ -14,7 +14,7 @@ public class PortCommandParser {
 
     public static List<Port> portShowConfigCommand(String executeResult) {
         List<Port> ports = new ArrayList<>();
-        TableSplitter tableReader = new TableSplitter(executeResult);
+        TableSplitter tableReader = new TableSplitter(executeResult).split();
         while (tableReader.next()) {
             Port port = new Port();
             port.setConnector(tableReader.getValue(SSHColumn.Port.CONNECTOR));

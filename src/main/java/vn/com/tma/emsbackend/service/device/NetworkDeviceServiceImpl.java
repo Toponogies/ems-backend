@@ -4,18 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.*;
+import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
+import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
+import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
+import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
-import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,23 +25,15 @@ import java.util.Optional;
 public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceRepository networkDeviceRepository;
 
-    private final NetworkDeviceSSHService networkDeviceSSHService;
-
     private final NetworkDeviceMapper networkDeviceMapper;
 
     private final CredentialService credentialService;
-
-    private final ResyncQueueManager resyncQueueManagement;
-
 
     @Override
     public List<NetworkDeviceDTO> getAll() {
         log.info("Get all network device");
 
         List<NetworkDevice> networkDevices = networkDeviceRepository.findAll();
-        for (NetworkDevice networkDevice : networkDevices) {
-            networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
-        }
         return networkDeviceMapper.entitiesToDTOs(networkDevices);
     }
 
@@ -54,10 +45,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDeviceOptional.isEmpty()) {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
-        NetworkDevice networkDevice = networkDeviceOptional.get();
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
-
-        return networkDeviceMapper.entityToDTO(networkDevice);
+        return networkDeviceMapper.entityToDTO(networkDeviceOptional.get());
     }
 
     @Override
@@ -69,7 +57,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(ipAddress);
         }
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -108,10 +95,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         credential.setId(networkDeviceDTO.getCredentialId());
         networkDevice.setCredential(credential);
 
-        networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToQueue(networkDevice.getId());
-
-        return networkDeviceMapper.entityToDTO(networkDevice);
+        return networkDeviceMapper.entityToDTO(networkDeviceRepository.save(networkDevice));
     }
 
     @Override
@@ -119,8 +103,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
-        NetworkDevice deviceDupLabel = networkDeviceRepository.findByLabel(networkDeviceDTO.getLabel());
-        if (deviceDupLabel != null && !deviceDupLabel.getId().equals(id)) {
+        NetworkDevice deviceDupLable = networkDeviceRepository.findByLabel(networkDeviceDTO.getLabel());
+        if (deviceDupLable != null && !deviceDupLable.getId().equals(id)) {
             throw new DeviceLabelExistsException(networkDeviceDTO.getLabel());
         }
 
@@ -148,7 +132,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -169,43 +152,4 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         return networkDeviceRepository.existsById(id);
     }
 
-
-    @Override
-    public void resyncDeviceDetail(Long id) {
-        NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
-        NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
-        networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
-        networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
-        networkDevice.setCredential(oldNetworkDevice.getCredential());
-        networkDevice.setLabel(oldNetworkDevice.getLabel());
-        networkDevice.setSshPort(oldNetworkDevice.getSshPort());
-        networkDevice.setId(id);
-        networkDeviceRepository.save(networkDevice);
-    }
-
-    @Override
-    public void resync(List<Long> ids) {
-        resyncQueueManagement.pushToQueue(ids.toArray(new Long[0]));
-    }
-
-    @Override
-    public void updateState(Long id, Enum.NetworkDeviceState state) {
-        Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(id);
-        if (optionalNetworkDevice.isPresent()) {
-            NetworkDevice networkDevice = optionalNetworkDevice.get();
-            networkDevice.setState(state);
-            networkDeviceRepository.save(networkDevice);
-        } else {
-            throw new DeviceNotFoundException(String.valueOf(id));
-        }
-    }
-
-    @Override
-    @Transactional
-    public SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO sshCommandDTO) {
-        String result = networkDeviceSSHService.sendCommand(id, sshCommandDTO.getCommand());
-        SSHCommandResponseDTO sshCommandResponseDTO = new SSHCommandResponseDTO();
-        sshCommandResponseDTO.setResult(result);
-        return sshCommandResponseDTO;
-    }
 }

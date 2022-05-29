@@ -1,15 +1,13 @@
-package vn.com.tma.emsbackend.service.ssh.utils;
+package vn.com.tma.emsbackend.common;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ChannelShell;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.PropertyResolverUtils;
-import org.apache.sshd.common.channel.ChannelOutputStream;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.*;
+import vn.com.tma.emsbackend.model.exception.ApplicationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,12 +25,11 @@ public class SSHExecutor {
 
     private SshClient sshClient;
 
-    private static final List<String> END_DELIM_CHAR = Arrays.asList(":", "#", ">");
-
+    private static final List<String> END_DELIM_CHAR = Arrays.asList(":", "#");
 
     public String execute(String command) {
         if (currentManagedDevice == null) {
-            throw new DeviceConnectionException((Long) null);
+            throw new ApplicationException("ManagedDevice is null, please set managed device before execute");
         }
 
         openChannelShell();
@@ -50,7 +47,7 @@ public class SSHExecutor {
         try {
             channelShell = clientSession.createShellChannel();
         } catch (IOException e) {
-            throw new ChannelShellOpenException(e);
+            throw new ApplicationException(e);
         }
     }
 
@@ -58,7 +55,7 @@ public class SSHExecutor {
         try {
             channelShell.close();
         } catch (IOException e) {
-            throw new ChannelShellCloseException(e);
+            throw new ApplicationException(e);
         }
     }
 
@@ -70,7 +67,7 @@ public class SSHExecutor {
             newClientSession.auth().verify();
             return newClientSession;
         } catch (IOException e) {
-            throw new DeviceConnectionException(currentManagedDevice.getId());
+            throw new ApplicationException(e);
         }
     }
 
@@ -88,22 +85,20 @@ public class SSHExecutor {
 
         //if execution have error
         if (errorStream.toByteArray().length != 0) {
-            throw new SSHExecuteException(errorStream.toString());
+            throw new ApplicationException(errorStream.toString());
         }
-        if (isCompletelyWaitUntilEnd(responseStream)) {
-            return responseStream.toString();
-        }
-        throw new DeviceConnectionException(currentManagedDevice.getId());
+        waitUntilEnd(responseStream);
+        return responseStream.toString();
     }
 
     private void setCommand(String command) {
         try {
-            channelShell.open().verify();
+            channelShell.open().verify(10000);
             OutputStream pipedIn = channelShell.getInvertedIn();
             pipedIn.write((command + "\n").getBytes());
             pipedIn.flush();
         } catch (IOException e) {
-            throw new DeviceConnectionException(currentManagedDevice.getId());
+            throw new ApplicationException(e);
         }
     }
 
@@ -130,31 +125,15 @@ public class SSHExecutor {
         }
     }
 
-    private boolean isCompletelyWaitUntilEnd(ByteArrayOutputStream responseStream) {
-        long startTime = System.currentTimeMillis();
+    private void waitUntilEnd(ByteArrayOutputStream responseStream) {
         while (!isEndOfMessage(responseStream.toString())) {
             channelShell.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 100);
-            if (System.currentTimeMillis() - startTime > 10000) {
-                return false;
-            }
         }
-        return true;
     }
 
     private boolean isEndOfMessage(String result) {
         if (result.length() == 0) return false;
         String trimmedResult = result.trim();
-        if (END_DELIM_CHAR.contains(String.valueOf(trimmedResult.charAt(trimmedResult.length() - 1)))) {
-            return trimmedResult.chars().filter(ch -> ch == ':').count() >= 2;
-        }
-        return false;
-    }
-
-    public NetworkDevice getCurrentManagedDevice() {
-        return this.currentManagedDevice;
-    }
-
-    public boolean isOpen() {
-        return !sshClient.isOpen();
+        return END_DELIM_CHAR.contains(String.valueOf(trimmedResult.charAt(trimmedResult.length() - 1)));
     }
 }

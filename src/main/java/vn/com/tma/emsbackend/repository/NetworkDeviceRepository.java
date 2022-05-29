@@ -16,7 +16,7 @@ public interface NetworkDeviceRepository extends JpaRepository<NetworkDevice, Lo
 
     boolean existsByLabel(String label);
 
-    NetworkDevice findByLabel(String label);
+    NetworkDevice findByLabel(String lable);
 
     boolean existsByIpAddress(String ipAddress);
 }
