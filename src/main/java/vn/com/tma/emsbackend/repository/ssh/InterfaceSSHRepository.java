@@ -3,7 +3,7 @@ package vn.com.tma.emsbackend.repository.ssh;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import vn.com.tma.emsbackend.common.SSHExecutor;
+import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.InterfaceCommandGenerator;
 import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 import vn.com.tma.emsbackend.model.entity.Interface;

@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.common;
+package vn.com.tma.emsbackend.service.ssh.utils;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ChannelShell;
@@ -32,7 +32,7 @@ public class SSHExecutor {
 
     public String execute(String command) {
         if (currentManagedDevice == null) {
-            throw new SSHExecuteException("Can not execute command because device is null");
+            throw new DeviceConnectionException((Long) null);
         }
 
         openChannelShell();

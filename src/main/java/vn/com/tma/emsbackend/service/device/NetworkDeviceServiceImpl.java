@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.common.ResyncQueueManagement;
+import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
@@ -32,7 +32,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
     private final CredentialService credentialService;
 
-    private final ResyncQueueManagement resyncQueueManagement;
+    private final ResyncQueueManager resyncQueueManagement;
 
 
     @Override

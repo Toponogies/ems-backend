@@ -1,7 +1,7 @@
 package vn.com.tma.emsbackend.repository.ssh;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import vn.com.tma.emsbackend.common.DeviceConnectionManager;
+import vn.com.tma.emsbackend.service.ssh.utils.DeviceConnectionManager;
 import vn.com.tma.emsbackend.common.constant.Constant;
 
 public abstract class BaseSSHRepository {

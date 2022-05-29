@@ -14,7 +14,7 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/ssh-command")
+@RequestMapping("/api/v1/devices/{id}/generic-command")
 public class SSHCommandController {
     private final NetworkDeviceService networkDeviceService;
 
@@ -26,7 +26,7 @@ public class SSHCommandController {
                     @Content(schema = @Schema(implementation = String.class))}),
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    @PostMapping("/{id}/generic-command")
+    @PostMapping()
     public SSHCommandResponseDTO sendCommand(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
         return networkDeviceService.sendCommand(deviceId, sshCommandDTO);
     }

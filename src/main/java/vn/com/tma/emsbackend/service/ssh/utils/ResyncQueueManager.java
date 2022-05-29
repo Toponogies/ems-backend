@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.common;
+package vn.com.tma.emsbackend.service.ssh.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 @Component
 @Slf4j
-public class ResyncQueueManagement {
+public class ResyncQueueManager {
     private final Set<Long> networkDevicesWaitingForResync = ConcurrentHashMap.newKeySet();
     private Iterator<Long> currentIterator;
 

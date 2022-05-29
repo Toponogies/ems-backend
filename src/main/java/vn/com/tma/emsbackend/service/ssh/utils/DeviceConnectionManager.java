@@ -1,7 +1,6 @@
-package vn.com.tma.emsbackend.common;
+package vn.com.tma.emsbackend.service.ssh.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.exception.DeviceConnectionException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
@@ -36,7 +35,7 @@ public class DeviceConnectionManager {
             sshExecutor.open(networkDevice);
             sshExecutorHashMap.put(networkDevice.getId(), sshExecutor);
         } catch (DeviceConnectionException e) {
-            log.error("", e);
+            log.error(e.getMessage(), e);
         }
     }
 
