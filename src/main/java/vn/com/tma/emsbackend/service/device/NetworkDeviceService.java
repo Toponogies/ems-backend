@@ -23,5 +23,7 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     void updateStateById(Long id, Enum.NetworkDeviceState state);
 
     SSHCommandResponseDTO sendCommandToDeviceById(Long id, SSHCommandDTO sshCommandDTO);
+
+    byte[] downloadDeviceConfigFileById(Long deviceId);
 }
 

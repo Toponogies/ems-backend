@@ -42,18 +42,21 @@ public class DeviceConnectionManager {
             throw new DeviceNotFoundException(networkDeviceId.toString());
         }
 
+        NetworkDevice networkDevice = optionalNetworkDevice.get();
         if (sshExecutor == null || !sshExecutor.isOpen()) {
-            addNewConnection(optionalNetworkDevice.get());
+            addNewConnection(networkDevice);
             sshExecutor = sshExecutorHashMap.get(networkDeviceId);
         } else {
             if (!optionalNetworkDevice.get().equals(sshExecutor.getCurrentManagedDevice())) {
                 removeConnection(networkDeviceId);
-                addNewConnection(optionalNetworkDevice.get());
+                addNewConnection(networkDevice);
                 sshExecutor = sshExecutorHashMap.get(networkDeviceId);
             }
         }
 
-        if (sshExecutor == null) throw new DeviceConnectionException(networkDeviceId);
+        if (sshExecutor == null) {
+            throw new DeviceConnectionException(networkDeviceId);
+        }
         return sshExecutor;
     }
 }

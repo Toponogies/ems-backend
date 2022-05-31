@@ -171,6 +171,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
 
     @Override
+    @Transactional
     public void resyncDeviceDetailById(Long id) {
         NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
         NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
@@ -189,6 +190,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    @Transactional
     public void updateStateById(Long id, Enum.NetworkDeviceState state) {
         Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(id);
         if (optionalNetworkDevice.isPresent()) {
@@ -198,6 +200,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         } else {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
+
     }
 
     @Override
@@ -207,5 +210,16 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         SSHCommandResponseDTO sshCommandResponseDTO = new SSHCommandResponseDTO();
         sshCommandResponseDTO.setResult(result);
         return sshCommandResponseDTO;
+    }
+
+    @Override
+    @Transactional
+    public byte[] downloadDeviceConfigFileById(Long id) {
+        boolean checkIfExistedById = networkDeviceRepository.existsById(id);
+        if (!checkIfExistedById) {
+            throw new DeviceNotFoundException(String.valueOf(id));
+        }
+        String result = networkDeviceSSHService.sendCommand(id, "configuration export");
+        return result.getBytes();
     }
 }
