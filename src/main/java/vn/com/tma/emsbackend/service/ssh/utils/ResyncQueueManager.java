@@ -1,56 +1,64 @@
 package vn.com.tma.emsbackend.service.ssh.utils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
+import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+
+import static vn.com.tma.emsbackend.common.constant.Constant.INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ResyncQueueManager {
-    private final Set<Long> networkDevicesWaitingForResync = ConcurrentHashMap.newKeySet();
+    private final NetworkDeviceRepository networkDeviceRepository;
+
+    private final Set<Long> waitingNetworkDevices = ConcurrentHashMap.newKeySet();
+    private final Set<Long> resynchronizingNetworkDevices = ConcurrentHashMap.newKeySet();
     private Iterator<Long> currentIterator;
 
-    private static final int MAX_RESYNC_CONCURRENCY_DEVICE = 3;
 
-    private int currentInResyncDevice = 0;
-
-
-    public final Executor executor = Executors.newFixedThreadPool(MAX_RESYNC_CONCURRENCY_DEVICE);
-
-
-    public boolean isDeviceResyncing(Long deviceId) {
-        return networkDevicesWaitingForResync.contains(deviceId);
+    @Scheduled(fixedRate = INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE)
+    @Transactional
+    public void addAllDeviceToWaitingQueue() {
+        pushToWaitingQueue(networkDeviceRepository.findAll().stream().map(NetworkDevice::getId).toArray(Long[]::new));
     }
 
-    public void pushToQueue(Long... deviceIds) {
-        networkDevicesWaitingForResync.addAll(List.of(deviceIds));
-    }
-    public void pushAll(Collection<Long> networkDevicesId) {
-        networkDevicesWaitingForResync.addAll(networkDevicesId);
+    public boolean isDeviceResynchronizing(Long deviceId) {
+        return resynchronizingNetworkDevices.contains(deviceId) || waitingNetworkDevices.contains(deviceId);
     }
 
-    public boolean hasNext() {
-        return networkDevicesWaitingForResync.iterator().hasNext() && currentInResyncDevice < MAX_RESYNC_CONCURRENCY_DEVICE;
+    public void pushToWaitingQueue(Long... deviceIds) {
+        waitingNetworkDevices.addAll(List.of(deviceIds));
     }
 
-    public Long next() {
-        currentIterator = networkDevicesWaitingForResync.iterator();
-        currentInResyncDevice++;
-        log.info(String.valueOf(currentInResyncDevice));
+    public boolean isWaitingQueueHasNext() {
+        return waitingNetworkDevices.iterator().hasNext();
+    }
+
+    public Long getNextInWaitingQueue() {
+        currentIterator = waitingNetworkDevices.iterator();
         return currentIterator.next();
     }
 
-    public void pop() {
+    public void popWaitingQueue() {
         currentIterator.remove();
         currentIterator = null;
     }
 
-    public void release() {
-        currentInResyncDevice--;
-        log.info(String.valueOf(currentInResyncDevice));
+    public void pushToResynchronizingQueue(Long id) {
+        resynchronizingNetworkDevices.add(id);
     }
+
+    public void popResynchronizingQueue(Long id) {
+        resynchronizingNetworkDevices.remove(id);
+    }
+
+
 }

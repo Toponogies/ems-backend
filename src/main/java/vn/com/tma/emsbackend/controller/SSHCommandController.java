@@ -22,12 +22,12 @@ public class SSHCommandController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully execute command on the device", content = {
                     @Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "500", description = "Have a error while execute command on device", content = {
+            @ApiResponse(responseCode = "502", description = "Have a error while execute command on device", content = {
                     @Content(schema = @Schema(implementation = String.class))}),
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping()
-    public SSHCommandResponseDTO sendCommand(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
-        return networkDeviceService.sendCommand(deviceId, sshCommandDTO);
+    public SSHCommandResponseDTO sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
+        return networkDeviceService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }
 }

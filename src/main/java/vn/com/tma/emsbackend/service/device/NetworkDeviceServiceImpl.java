@@ -41,7 +41,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
         List<NetworkDevice> networkDevices = networkDeviceRepository.findAll();
         for (NetworkDevice networkDevice : networkDevices) {
-            networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
+            networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
         }
         return networkDeviceMapper.entitiesToDTOs(networkDevices);
     }
@@ -55,7 +55,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
         NetworkDevice networkDevice = networkDeviceOptional.get();
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
+        networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -69,7 +69,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(ipAddress);
         }
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResyncing(networkDevice.getId()));
+        networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -109,7 +109,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToQueue(networkDevice.getId());
+        resyncQueueManagement.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -148,7 +148,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToQueue(networkDevice.getId());
+        resyncQueueManagement.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -171,7 +171,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
 
     @Override
-    public void resyncDeviceDetail(Long id) {
+    public void resyncDeviceDetailById(Long id) {
         NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
         NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
         networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
@@ -184,12 +184,12 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    public void resync(List<Long> ids) {
-        resyncQueueManagement.pushToQueue(ids.toArray(new Long[0]));
+    public void addDevicesToResyncQueueById(List<Long> ids) {
+        resyncQueueManagement.pushToWaitingQueue(ids.toArray(new Long[0]));
     }
 
     @Override
-    public void updateState(Long id, Enum.NetworkDeviceState state) {
+    public void updateStateById(Long id, Enum.NetworkDeviceState state) {
         Optional<NetworkDevice> optionalNetworkDevice = networkDeviceRepository.findById(id);
         if (optionalNetworkDevice.isPresent()) {
             NetworkDevice networkDevice = optionalNetworkDevice.get();
@@ -202,7 +202,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
     @Override
     @Transactional
-    public SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO sshCommandDTO) {
+    public SSHCommandResponseDTO sendCommandToDeviceById(Long id, SSHCommandDTO sshCommandDTO) {
         String result = networkDeviceSSHService.sendCommand(id, sshCommandDTO.getCommand());
         SSHCommandResponseDTO sshCommandResponseDTO = new SSHCommandResponseDTO();
         sshCommandResponseDTO.setResult(result);

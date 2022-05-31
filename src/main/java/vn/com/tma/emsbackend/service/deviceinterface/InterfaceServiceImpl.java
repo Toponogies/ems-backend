@@ -183,7 +183,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Transactional
     @Override
-    public void resyncInterface(Long deviceId) {
+    public void resyncInterfaceByDeviceId(Long deviceId) {
         List<Interface> oldInterfaces = interfaceRepository.findByNetworkDeviceId(deviceId);
         List<Port> ports = portService.getByDeviceId(deviceId);
         List<Interface> newInterfaces = interfaceSSHService.getAllInterface(deviceId, ports);

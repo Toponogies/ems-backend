@@ -4,6 +4,7 @@ import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.service.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface PortService extends Service<PortDTO> {
 
     Optional<Port> getById(Long id);
 
-    void resyncPort(long deviceId);
+    void resyncPortByDeviceId(Long deviceId);
 
     Port getById(Long id, Long deviceId);
 

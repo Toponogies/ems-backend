@@ -50,7 +50,7 @@ public class SSHExecutor {
         try {
             channelShell = clientSession.createShellChannel();
         } catch (IOException e) {
-            throw new ChannelShellOpenException(e);
+            throw new ChannelShellOpenException(currentManagedDevice.getId());
         }
     }
 
@@ -58,7 +58,7 @@ public class SSHExecutor {
         try {
             channelShell.close();
         } catch (IOException e) {
-            throw new ChannelShellCloseException(e);
+            throw new ChannelShellCloseException(currentManagedDevice.getId());
         }
     }
 

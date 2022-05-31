@@ -19,6 +19,6 @@ public class Constant {
     public static final List<String> ERROR_WORD = List.of("error", "invalid");
 
     //resync time
-    public static final long SCHEDULE_RESYNC_ALL_TIME_IN_MILLISECONDS = 15 * 60 * 1000L;
-    public static final long SCHEDULE_CHECK_RESYNC_QUEUE_IN_MILLISECONDS = 100;
+    public static final long INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE = 15 * 60 * 1000L;
+    public static final long INTERVAL_CHECK_RESYNC_QUEUE= 100;
 }
