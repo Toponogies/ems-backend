@@ -32,18 +32,14 @@ public class ResyncExecutor {
     public void resyncAllDevicesInWaitingQueue() {
         while (resyncQueueManager.isWaitingQueueHasNext() && !isThreadPoolIsFull()) {
             Long id = resyncQueueManager.getNextInWaitingQueue();
-            threadPoolExecutor.execute(new Runnable() {
-                @Override
-                @Transactional
-                public void run() {
-                    try {
-                        resyncQueueManager.pushToResynchronizingQueue(id);
-                        resyncService.resyncDeviceById(id);
-                    } catch (Exception e) {
-                        log.error("Resync fail: device id:" + id, e);
-                    } finally {
-                        resyncQueueManager.popResynchronizingQueue(id);
-                    }
+            threadPoolExecutor.execute(() -> {
+                try {
+                    resyncQueueManager.pushToResynchronizingQueue(id);
+                    resyncService.resyncDeviceById(id);
+                } catch (Exception e) {
+                    log.error("Resync fail: device id:" + id, e);
+                } finally {
+                    resyncQueueManager.popResynchronizingQueue(id);
                 }
             });
             resyncQueueManager.popWaitingQueue();

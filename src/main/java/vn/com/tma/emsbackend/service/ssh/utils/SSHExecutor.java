@@ -6,6 +6,8 @@ import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.apache.sshd.common.PropertyResolverUtils;
 import org.apache.sshd.common.channel.ChannelOutputStream;
+import org.apache.sshd.core.CoreModuleProperties;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
@@ -14,6 +16,7 @@ import vn.com.tma.emsbackend.model.exception.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -68,6 +71,7 @@ public class SSHExecutor {
             newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());
             newClientSession.auth().verify();
+            CoreModuleProperties.IDLE_TIMEOUT.set(newClientSession, Duration.ZERO);
             return newClientSession;
         } catch (IOException e) {
             throw new DeviceConnectionException(currentManagedDevice.getId());
