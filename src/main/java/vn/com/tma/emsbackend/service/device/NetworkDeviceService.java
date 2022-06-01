@@ -6,6 +6,7 @@ import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
+import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.service.Service;
 
 public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
@@ -15,13 +16,14 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
 
     boolean existsById(Long id);
 
-    void resyncDeviceDetail(Long id);
+    void resyncDeviceDetailById(Long id);
 
-    void resync(List<Long> id);
+    void addDevicesToResyncQueueById(List<Long> id);
 
-    void updateState(Long id, Enum.NetworkDeviceState state);
+    void updateStateById(Long id, Enum.NetworkDeviceState state);
 
-    SSHCommandResponseDTO sendCommand(Long id, SSHCommandDTO sshCommandDTO);
+    SSHCommandResponseDTO sendCommandToDeviceById(Long id, SSHCommandDTO sshCommandDTO);
 
+    byte[] downloadDeviceConfigFileById(Long deviceId);
 }
 

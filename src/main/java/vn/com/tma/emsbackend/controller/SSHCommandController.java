@@ -8,9 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -22,12 +24,13 @@ public class SSHCommandController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully execute command on the device", content = {
                     @Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "500", description = "Have a error while execute command on device", content = {
-                    @Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "502", description = "Have a error while execute command on device", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping()
-    public SSHCommandResponseDTO sendCommand(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
-        return networkDeviceService.sendCommand(deviceId, sshCommandDTO);
+    public SSHCommandResponseDTO sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
+        return networkDeviceService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }
+
 }

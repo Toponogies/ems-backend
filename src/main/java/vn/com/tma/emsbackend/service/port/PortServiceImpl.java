@@ -90,7 +90,7 @@ public class PortServiceImpl implements PortService {
 
     @Override
     @Transactional
-    public void resyncPort(long deviceId) {
+    public void resyncPortByDeviceId(Long deviceId) {
         List<Port> newPorts = portSSHService.getAllPort(deviceId);
         List<Port> oldPorts = portRepository.findByNetworkDeviceId(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();

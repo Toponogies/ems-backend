@@ -50,7 +50,7 @@ public class NTPServerServiceImpl implements NTPServerService {
 
     @Transactional
     @Override
-    public void resyncNTPServer(long deviceId) {
+    public void resyncNTPServerByDeviceId(long deviceId) {
         List<NTPServer> oldNtpServers = ntpServerRepository.findByNetworkDevice_Id(deviceId);
         List<NTPServer> newNtpServers = ntpServerSSHService.getAllNtpServer(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();

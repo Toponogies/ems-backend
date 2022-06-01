@@ -14,11 +14,14 @@ public class Constant {
     public static final String PORT_TABLE = "ports";
     public static final String NTP_SERVER_TABLE = "ntp_server";
 
+    public static final int MAX_RESYNC_CONCURRENCY_DEVICE = 3;
+
+
     public static final List<String> NEGATIVE_WORD = List.of("NO", "DISABLE", "DISABLED");
 
     public static final List<String> ERROR_WORD = List.of("error", "invalid");
 
     //resync time
-    public static final long SCHEDULE_RESYNC_ALL_TIME_IN_MILLISECONDS = 15 * 60 * 1000L;
-    public static final long SCHEDULE_CHECK_RESYNC_QUEUE_IN_MILLISECONDS = 100;
+    public static final long INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE = 15 * 60 * 1000L;
+    public static final long INTERVAL_CHECK_RESYNC_QUEUE= 100;
 }

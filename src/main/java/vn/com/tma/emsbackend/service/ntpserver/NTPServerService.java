@@ -6,5 +6,5 @@ import vn.com.tma.emsbackend.service.Service;
 
 public interface NTPServerService extends Service<NTPServerDTO> {
     @Transactional
-    void  resyncNTPServer(long deviceId);
+    void resyncNTPServerByDeviceId(long deviceId);
 }

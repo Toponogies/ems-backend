@@ -27,6 +27,6 @@ public class ResyncController {
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping()
     public void resync(@RequestBody List<Long> deviceIds) {
-        networkDeviceService.resync(deviceIds);
+        networkDeviceService.addDevicesToResyncQueueById(deviceIds);
     }
 }
