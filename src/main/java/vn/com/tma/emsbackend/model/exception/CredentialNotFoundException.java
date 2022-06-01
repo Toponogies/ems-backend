@@ -2,7 +2,7 @@ package vn.com.tma.emsbackend.model.exception;
 
 public class CredentialNotFoundException extends RuntimeException {
 
-    public CredentialNotFoundException(Long id) {
-        super("Credential with id '" + id + "' does not exist.");
+    public CredentialNotFoundException(String target) {
+        super("Credential with id or name '" + target + "' does not exist.");
     }
 }

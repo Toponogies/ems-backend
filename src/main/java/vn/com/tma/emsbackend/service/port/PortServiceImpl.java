@@ -84,34 +84,25 @@ public class PortServiceImpl implements PortService {
     }
 
     @Override
-    public Optional<Port> getById(Long id) {
-        return portRepository.findById(id);
-    }
-
-    @Override
     @Transactional
     public void resyncPortByDeviceId(Long deviceId) {
         List<Port> newPorts = portSSHService.getAllPort(deviceId);
         List<Port> oldPorts = portRepository.findByNetworkDeviceId(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);
-        for(Port port:newPorts) port.setNetworkDevice(networkDevice);
+        for (Port port : newPorts) port.setNetworkDevice(networkDevice);
 
         syncWithDB(newPorts, oldPorts, new PortComparator());
     }
 
     @Override
-    public Port getById(Long id, Long deviceId) {
-        Optional<Port> portOptional = portRepository.findByIdAndNetworkDeviceId(deviceId, id);
-        if(portOptional.isEmpty()){
-            throw new PortNotFoundException(id);
+    public PortDTO getByIdAndNetworkDevice(String portName, String deviceLabel) {
+        Port port = portRepository.findByNameAndNetworkDevice_Label(portName, deviceLabel);
+        if (port == null) {
+            throw new PortNotFoundException(portName, deviceLabel);
         }
-        return portOptional.get();
-    }
 
-    @Override
-    public List<Port> getByDeviceId(Long deviceId) {
-        return portRepository.findByNetworkDeviceId(deviceId);
+        return portMapper.entityToDTO(port);
     }
 
     public void syncWithDB(List<Port> newPortList, List<Port> oldPortList, Comparator<Port> portComparator) {
@@ -120,21 +111,21 @@ public class PortServiceImpl implements PortService {
         if (oldPortList.equals(newPortList)) return;
 
         HashMap<Integer, Port> integerPortHashMap = new HashMap<>();
-        for(Port newPort: newPortList){
+        for (Port newPort : newPortList) {
             integerPortHashMap.put(newPort.hashCode(), newPort);
         }
 
-        for(Port oldPort: oldPortList){
-            Port newInterface =  integerPortHashMap.get(oldPort.hashCode());
-            if(newInterface == null) {
+        for (Port oldPort : oldPortList) {
+            Port newInterface = integerPortHashMap.get(oldPort.hashCode());
+            if (newInterface == null) {
                 interfaceRepository.deleteByPortId(oldPort.getId());
                 portRepository.delete(oldPort);
-            }else{
+            } else {
                 integerPortHashMap.remove(oldPort.hashCode());
             }
         }
 
-        for(Map.Entry<Integer, Port> keyValuePair:integerPortHashMap.entrySet()){
+        for (Map.Entry<Integer, Port> keyValuePair : integerPortHashMap.entrySet()) {
             portRepository.save(keyValuePair.getValue());
         }
     }

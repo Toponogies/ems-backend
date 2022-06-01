@@ -1,9 +1,10 @@
 package vn.com.tma.emsbackend.common.commandgenerator;
 
 import vn.com.tma.emsbackend.model.entity.Interface;
-import vn.com.tma.emsbackend.model.entity.Port;
 
 public class InterfaceCommandGenerator {
+    private InterfaceCommandGenerator() {}
+
     private static final String COMMAND_PREFIX = "interface";
     private static final String ADD_ACTION = "add";
     private static final String EDIT_ACTION = "edit";

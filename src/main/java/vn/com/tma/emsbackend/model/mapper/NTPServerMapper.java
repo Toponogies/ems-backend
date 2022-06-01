@@ -10,7 +10,7 @@ public interface NTPServerMapper extends IMapper<NTPServer, NTPServerDTO> {
     @Mapping(target = "networkDevice", ignore = true)
     NTPServer dtoToEntity(NTPServerDTO ntpServerDTO);
 
-    @Mapping(target = "networkDeviceId",  source = "ntpServer.networkDevice.id")
-    NTPServerDTO entityToDto(NTPServer ntpServer);
+    @Mapping(target = "networkDeviceId", source = "ntpServer.networkDevice.id")
+    NTPServerDTO entityToDTO(NTPServer ntpServer);
 
 }

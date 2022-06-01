@@ -2,11 +2,11 @@ package vn.com.tma.emsbackend.repository.ssh;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.NTPServerCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.NTPServer;
 import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 import vn.com.tma.emsbackend.parser.NTPCommandParser;
+import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
         if (errorMessage.length() > 0) throw new SSHExecuteException(errorMessage);
     }
 
-    public void enable(NTPServer ntpServer){
+    public void enable(NTPServer ntpServer) {
         SSHExecutor connection = deviceConnectionManager.getConnection(ntpServer.getNetworkDevice().getId());
         String command = NTPServerCommandGenerator.enable(ntpServer.getServerAddress());
         String result = connection.execute(command);
@@ -36,7 +36,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
     }
 
 
-    public void disable(NTPServer ntpServer){
+    public void disable(NTPServer ntpServer) {
         SSHExecutor connection = deviceConnectionManager.getConnection(ntpServer.getNetworkDevice().getId());
         String command = NTPServerCommandGenerator.disable(ntpServer.getServerAddress());
         String result = connection.execute(command);
@@ -45,7 +45,7 @@ public class NTPServiceSSHRepository extends BaseSSHRepository {
     }
 
 
-    public void delete(NTPServer ntpServer){
+    public void delete(NTPServer ntpServer) {
         SSHExecutor connection = deviceConnectionManager.getConnection(ntpServer.getNetworkDevice().getId());
         String command = NTPServerCommandGenerator.delete(ntpServer.getServerAddress());
         String result = connection.execute(command);

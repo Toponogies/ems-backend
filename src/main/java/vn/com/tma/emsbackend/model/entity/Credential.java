@@ -25,6 +25,6 @@ public class Credential {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "credential")
+    @OneToMany(mappedBy = "credential", fetch = FetchType.EAGER)
     List<NetworkDevice> devices;
 }

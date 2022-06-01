@@ -1,9 +1,9 @@
 package vn.com.tma.emsbackend.parser;
 
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
+import vn.com.tma.emsbackend.common.enums.Enum.NetworkDeviceType;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.parser.splitter.ListSplitter;
-import vn.com.tma.emsbackend.common.enums.Enum.NetworkDeviceType;
 
 public class NetworkDeviceCommandParser {
     private NetworkDeviceCommandParser() {
@@ -18,8 +18,8 @@ public class NetworkDeviceCommandParser {
         networkDevice.setSerial(listReader.get(SSHColumn.NetworkDevice.SERIAL));
 
         networkDevice.setDeviceType(NetworkDeviceType.VCX);
-        for(NetworkDeviceType networkDeviceType: NetworkDeviceType.values()){
-            if(networkDevice.getModel().contains(networkDeviceType.name())){
+        for (NetworkDeviceType networkDeviceType : NetworkDeviceType.values()) {
+            if (networkDevice.getModel().contains(networkDeviceType.name())) {
                 networkDevice.setDeviceType(networkDeviceType);
             }
         }

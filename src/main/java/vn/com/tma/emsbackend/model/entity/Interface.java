@@ -35,11 +35,11 @@ public class Interface {
     @Column(name = "gateway")
     private String gateway;
 
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "port_id")
     private Port port;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "managed_device_id")
     private NetworkDevice networkDevice;
 

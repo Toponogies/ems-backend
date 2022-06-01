@@ -27,8 +27,8 @@ public class InterfaceDTO {
 
     private String gateway;
 
-    Long portId;
+    String port;
 
     @NotNull(message = "Interface must belong to a device")
-    Long networkDeviceId;
+    String networkDevice;
 }

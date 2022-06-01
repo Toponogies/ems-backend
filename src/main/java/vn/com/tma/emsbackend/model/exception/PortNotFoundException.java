@@ -5,7 +5,7 @@ public class PortNotFoundException extends RuntimeException {
         super("Port with id '" + id + "' does not exist.");
     }
 
-    public PortNotFoundException(Long id, Long deviceId) {
-        super("Device with id '" + deviceId + "' does not have port with id '" + id + " '");
+    public PortNotFoundException(String name, String deviceLabel) {
+        super("Port with name '" + name + "' does not belong to device with label '" + deviceLabel + " '");
     }
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public class PortSSHService {
     private final PortSSHRepository portSSHRepository;
 
-    public List<Port> getAllPort(long deviceId){
+    public List<Port> getAllPort(long deviceId) {
         return portSSHRepository.getAll(deviceId);
     }
 }

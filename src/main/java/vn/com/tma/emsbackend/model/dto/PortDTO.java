@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,5 +21,7 @@ public class PortDTO {
     private String state;
 
     @NotBlank(message = "Port must belong to a device")
-    private Long networkDeviceId;
+    private String networkDevice;
+
+    private List<String> interfaces;
 }

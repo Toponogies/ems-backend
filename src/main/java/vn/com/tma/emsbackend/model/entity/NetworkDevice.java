@@ -1,12 +1,11 @@
-
 package vn.com.tma.emsbackend.model.entity;
-import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +45,7 @@ public class NetworkDevice {
     @Column(name = "state", nullable = false, columnDefinition = "int default 0")
     private Enum.NetworkDeviceState state;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "credential_id", nullable = false)
     private Credential credential;
 
@@ -57,7 +56,7 @@ public class NetworkDevice {
     private List<Interface> interfaces;
 
     @Transient
-    private boolean isResyncing;
+    private Enum.ResyncStatus resyncStatus;
 
     @Override
     public boolean equals(Object o) {

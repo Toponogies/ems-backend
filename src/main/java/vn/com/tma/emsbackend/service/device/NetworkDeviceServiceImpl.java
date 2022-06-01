@@ -4,18 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.*;
+import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
+import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
+import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
+import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
+import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +45,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
         List<NetworkDevice> networkDevices = networkDeviceRepository.findAll();
         for (NetworkDevice networkDevice : networkDevices) {
-            networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
+            networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
         }
         return networkDeviceMapper.entitiesToDTOs(networkDevices);
     }
@@ -55,7 +59,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
         NetworkDevice networkDevice = networkDeviceOptional.get();
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
+        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -69,7 +73,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(ipAddress);
         }
-        networkDevice.setResyncing(resyncQueueManagement.isDeviceResynchronizing(networkDevice.getId()));
+        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -82,14 +86,22 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    public NetworkDeviceDTO getByLabel(String label) {
+        NetworkDevice networkDevice = networkDeviceRepository.findByLabel(label);
+
+        if (networkDevice == null) {
+            throw new DeviceNotFoundException(label);
+        }
+        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
+
+        return networkDeviceMapper.entityToDTO(networkDevice);
+    }
+
+
+    @Override
     @Transactional
     public NetworkDeviceDTO add(NetworkDeviceDTO networkDeviceDTO) {
         log.info("Add new device");
-
-        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
-        if (!checkIfCredentialExisted) {
-            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
-        }
 
         boolean checkIfExistedByLabel = networkDeviceRepository.existsByLabel(networkDeviceDTO.getLabel());
         if (checkIfExistedByLabel) {
@@ -101,11 +113,12 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceIPExistsException(networkDeviceDTO.getIpAddress());
         }
 
-        networkDeviceDTO.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE.toString());
-        NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
-
+        CredentialDTO credentialDTO = credentialService.getByName(networkDeviceDTO.getCredential());
         Credential credential = new Credential();
-        credential.setId(networkDeviceDTO.getCredentialId());
+        credential.setId(credentialDTO.getId());
+
+        NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
+        networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
@@ -134,18 +147,14 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
 
-        boolean checkIfCredentialExisted = credentialService.existsById(networkDeviceDTO.getCredentialId());
-        if (!checkIfCredentialExisted) {
-            throw new CredentialNotFoundException(networkDeviceDTO.getCredentialId());
-        }
+        CredentialDTO credentialDTO = credentialService.getByName(networkDeviceDTO.getCredential());
+        Credential credential = new Credential();
+        credential.setId(credentialDTO.getId());
 
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceDTO);
         networkDevice.setId(id);
-
-        // Set new credential
-        Credential credential = new Credential();
-        credential.setId(networkDeviceDTO.getCredentialId());
         networkDevice.setCredential(credential);
+        networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
         resyncQueueManagement.pushToWaitingQueue(networkDevice.getId());
@@ -168,7 +177,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     public boolean existsById(Long id) {
         return networkDeviceRepository.existsById(id);
     }
-
 
     @Override
     @Transactional

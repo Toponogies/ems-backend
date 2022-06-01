@@ -1,7 +1,7 @@
 package vn.com.tma.emsbackend.parser;
 
-import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
+import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
 
