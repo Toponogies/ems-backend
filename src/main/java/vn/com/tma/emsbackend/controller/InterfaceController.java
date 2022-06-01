@@ -19,7 +19,7 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/interfaces")
+@RequestMapping("/interfaces")
 public class InterfaceController {
     private final InterfaceService interfaceService;
 

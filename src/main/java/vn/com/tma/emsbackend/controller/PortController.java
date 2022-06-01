@@ -19,7 +19,7 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/ports")
+@RequestMapping("/ports")
 public class PortController {
     private final PortService portService;
 

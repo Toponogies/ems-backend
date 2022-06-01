@@ -18,7 +18,7 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/credentials")
+@RequestMapping("/credentials")
 public class CredentialController {
     private final CredentialService credentialService;
 
