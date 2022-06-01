@@ -19,7 +19,6 @@ import static vn.com.tma.emsbackend.common.constant.Constant.*;
 public class ResyncExecutor {
     private final ResyncService resyncService;
     private final ResyncQueueManager resyncQueueManager;
-    private static final int MAX_RESYNC_CONCURRENCY_DEVICE = 3;
 
 
     private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(MAX_RESYNC_CONCURRENCY_DEVICE, MAX_RESYNC_CONCURRENCY_DEVICE,

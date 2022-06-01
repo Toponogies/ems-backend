@@ -14,6 +14,9 @@ public class Constant {
     public static final String PORT_TABLE = "ports";
     public static final String NTP_SERVER_TABLE = "ntp_server";
 
+    public static final int MAX_RESYNC_CONCURRENCY_DEVICE = 3;
+
+
     public static final List<String> NEGATIVE_WORD = List.of("NO", "DISABLE", "DISABLED");
 
     public static final List<String> ERROR_WORD = List.of("error", "invalid");
