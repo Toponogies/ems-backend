@@ -56,10 +56,8 @@ public class NetworkDevice {
     @OneToMany(mappedBy = "networkDevice", cascade = CascadeType.REMOVE)
     private List<Interface> interfaces;
 
-
     @Transient
     private boolean isResyncing;
-
 
     @Override
     public boolean equals(Object o) {

@@ -9,7 +9,7 @@ import vn.com.tma.emsbackend.model.entity.Port;
 
 @Mapper(componentModel = "spring")
 public interface PortMapper extends IMapper<Port, PortDTO> {
-    @Mapping(target = "anInterface", ignore = true)
+    @Mapping(target = "interfaces", ignore = true)
     @Mapping(target = "networkDevice", ignore = true)
     @Mapping(target = "state", source = "state", qualifiedByName = "stringToState")
     Port dtoToEntity(PortDTO portDTO);

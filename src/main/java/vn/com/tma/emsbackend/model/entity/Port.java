@@ -6,6 +6,7 @@ import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -29,8 +30,8 @@ public class Port {
     @Column(name = "state")
     private Enum.State state;
 
-    @ManyToOne()
-    private Interface anInterface;
+    @OneToMany(mappedBy = "port")
+    private List<Interface> interfaces;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "device_id")

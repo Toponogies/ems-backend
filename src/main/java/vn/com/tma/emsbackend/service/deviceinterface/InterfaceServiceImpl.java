@@ -173,10 +173,6 @@ public class InterfaceServiceImpl implements InterfaceService {
             if (!port.getNetworkDevice().getId().equals(interfaceDTO.getNetworkDeviceId())) {
                 throw new PortAndDeviceMismatchException();
             }
-
-            if (port.getAnInterface() != null) {
-                throw new PortIsAssignedException(interfaceDTO.getPortId());
-            }
         }
         return port;
     }

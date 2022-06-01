@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = Constant.CREDENTIAL_TABLE)
 public class Credential {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", unique = true, nullable = false)

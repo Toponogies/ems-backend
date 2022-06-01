@@ -36,7 +36,7 @@ public class Interface {
     private String gateway;
 
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "port_id", unique = true)
+    @JoinColumn(name = "port_id")
     private Port port;
 
     @ManyToOne(fetch = FetchType.LAZY)
