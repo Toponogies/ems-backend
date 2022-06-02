@@ -3,22 +3,26 @@ package vn.com.tma.emsbackend.model.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.PortDTO;
+import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface PortMapper extends IMapper<Port, PortDTO> {
-    @Mapping(target = "anInterface", ignore = true)
+    @Mapping(target = "interfaces", ignore = true)
     @Mapping(target = "networkDevice", ignore = true)
-    @Mapping(target = "state", source = "state", qualifiedByName = "stringToState")
+    @Mapping(target = "state", ignore = true)
     Port dtoToEntity(PortDTO portDTO);
 
-    @Mapping(target = "networkDeviceId", source = "port.networkDevice.id")
+    @Mapping(target = "networkDevice", source = "port.networkDevice.label")
+    @Mapping(target = "interfaces", source = "port.interfaces", qualifiedByName = "getInterfaces")
     PortDTO entityToDTO(Port port);
 
-    @Named("stringToState")
-    static Enum.State stringToState(String state) {
-        return java.lang.Enum.valueOf(Enum.State.class, state);
+    @Named("getInterfaces")
+    default List<String> getInterfaces(List<Interface> interfaces) {
+        return interfaces.stream().map(Interface::getName).collect(Collectors.toList());
     }
 }

@@ -1,7 +1,7 @@
 package vn.com.tma.emsbackend.parser;
 
-import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
+import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.parser.splitter.ListSplitter;
@@ -15,10 +15,10 @@ public class InterfaceCommandParser {
         throw new IllegalStateException("Utility class");
     }
 
-    public static List<Interface> interfaceShowParse(String executeResult){
+    public static List<Interface> interfaceShowParse(String executeResult) {
         List<Interface> anInterfaces = new ArrayList<>();
         TableSplitter tableReader = new TableSplitter(executeResult);
-        while(tableReader.next()){
+        while (tableReader.next()) {
             Interface anInterface = new Interface();
             anInterface.setDhcp(Enum.State.valueOf(tableReader.getValue(SSHColumn.Interface.DHCP).toUpperCase()));
             anInterface.setGateway(tableReader.getValue(SSHColumn.Interface.GATEWAY));
@@ -31,7 +31,7 @@ public class InterfaceCommandParser {
         return anInterfaces;
     }
 
-    public static Interface interfaceShowDetailParse(String executeResult){
+    public static Interface interfaceShowDetailParse(String executeResult) {
         Interface anInterface = new Interface();
         ListSplitter listSplitter = new ListSplitter(executeResult);
         anInterface.setName(listSplitter.get(SSHColumn.Interface.NAME));

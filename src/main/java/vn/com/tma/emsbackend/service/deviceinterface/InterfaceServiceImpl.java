@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.comparator.InterfaceComparator;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
+import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
@@ -65,7 +67,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     }
 
     @Override
-    @Transactional
     public InterfaceDTO getByPort(Long portId) {
         log.info("Get interface by port with id: {}", portId);
 
@@ -85,23 +86,23 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional
     public InterfaceDTO add(InterfaceDTO interfaceDTO) {
-        // Check device exist
-        boolean checkIfDeviceExisted = networkDeviceService.existsById(interfaceDTO.getNetworkDeviceId());
-        if (!checkIfDeviceExisted) {
-            throw new DeviceNotFoundException(String.valueOf(interfaceDTO.getNetworkDeviceId()));
-        }
-
         // Check duplicate name
         boolean checkIfNameExisted = interfaceRepository.existsByName(interfaceDTO.getName());
         if (checkIfNameExisted) {
             throw new InterfaceNameExistsException(interfaceDTO.getName());
         }
 
-        //Check port exist
-        Port port = portService.getById(interfaceDTO.getPortId(), interfaceDTO.getNetworkDeviceId());
-
+        // Check device exist
+        NetworkDeviceDTO networkDeviceDTO = networkDeviceService.getByLabel(interfaceDTO.getNetworkDevice());
         NetworkDevice networkDevice = new NetworkDevice();
-        networkDevice.setId(interfaceDTO.getNetworkDeviceId());
+        networkDevice.setId(networkDeviceDTO.getId());
+
+        // Check port exist
+        PortDTO portDTO = portService.getByNameAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
+        Port port = new Port();
+        port.setId(portDTO.getId());
+        port.setName(portDTO.getName());
+
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
@@ -115,10 +116,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional
     public InterfaceDTO update(long id, InterfaceDTO interfaceDTO) {
-        NetworkDevice networkDevice = new NetworkDevice();
-        networkDevice.setId(interfaceDTO.getNetworkDeviceId());
-
-        // Do not update device, can update port
         Optional<Interface> interfaceOptional = interfaceRepository.findById(id);
         if (interfaceOptional.isEmpty()) {
             throw new InterfaceNotFoundException(id);
@@ -130,7 +127,21 @@ public class InterfaceServiceImpl implements InterfaceService {
             throw new InterfaceNameExistsException(interfaceDTO.getName());
         }
 
-        Port port = getValidPort(interfaceDTO);
+        // NOTE: Do not update device, can update port
+        if (!interfaceOptional.get().getNetworkDevice().getLabel().equals(interfaceDTO.getNetworkDevice())) {
+            throw new DeviceCannotBeUpdatedException();
+        }
+
+        // Check device exist
+        NetworkDeviceDTO networkDeviceDTO = networkDeviceService.getByLabel(interfaceDTO.getNetworkDevice());
+        NetworkDevice networkDevice = new NetworkDevice();
+        networkDevice.setId(networkDeviceDTO.getId());
+
+        // Check port exist
+        PortDTO portDTO = portService.getByNameAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
+        Port port = new Port();
+        port.setId(portDTO.getId());
+        port.setName(portDTO.getName());
 
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setId(id);
@@ -159,33 +170,11 @@ public class InterfaceServiceImpl implements InterfaceService {
         interfaceSSHService.delete(anInterface);
     }
 
-    private Port getValidPort(InterfaceDTO interfaceDTO) {
-        Port port = null;
-        if (interfaceDTO.getPortId() != null) {
-            Optional<Port> portOptional = portService.getById(interfaceDTO.getPortId());
-
-            if (portOptional.isEmpty()) {
-                throw new PortNotFoundException(interfaceDTO.getPortId());
-            }
-
-            port = portOptional.get();
-
-            if (!port.getNetworkDevice().getId().equals(interfaceDTO.getNetworkDeviceId())) {
-                throw new PortAndDeviceMismatchException();
-            }
-
-            if (port.getAnInterface() != null) {
-                throw new PortIsAssignedException(interfaceDTO.getPortId());
-            }
-        }
-        return port;
-    }
-
     @Transactional
     @Override
     public void resyncInterfaceByDeviceId(Long deviceId) {
         List<Interface> oldInterfaces = interfaceRepository.findByNetworkDeviceId(deviceId);
-        List<Port> ports = portService.getByDeviceId(deviceId);
+        List<PortDTO> ports = portService.getByNetworkDevice(deviceId);
         List<Interface> newInterfaces = interfaceSSHService.getAllInterface(deviceId, ports);
 
         NetworkDevice networkDevice = new NetworkDevice();

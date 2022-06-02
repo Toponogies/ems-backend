@@ -21,10 +21,10 @@ public class NTPCommandParser {
         int index = 0;
         while (true) {
             if (lines[index].contains(ENABLED_SERVER_LIST_STRING)) {
-                ntpServers.addAll(parseListNTPServers(lines,index,Enum.State.ENABLED));
+                ntpServers.addAll(parseListNTPServers(lines, index, Enum.State.ENABLED));
                 index += ntpServers.size();
             } else if (lines[index].contains(DISABLED_SERVER_LIST_STRING)) {
-                ntpServers.addAll(parseListNTPServers(lines,index,Enum.State.DISABLED));
+                ntpServers.addAll(parseListNTPServers(lines, index, Enum.State.DISABLED));
                 break;
             }
             index++;

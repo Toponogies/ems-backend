@@ -1,13 +1,12 @@
 package vn.com.tma.emsbackend.service.device;
 
-import java.util.List;
-
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
-import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.service.Service;
+
+import java.util.List;
 
 public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     NetworkDeviceDTO getByIpAddress(String ipAddress);
@@ -15,6 +14,8 @@ public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
     List<NetworkDeviceDTO> getByDeviceType(Enum.NetworkDeviceType deviceType);
 
     boolean existsById(Long id);
+
+    NetworkDeviceDTO getByLabel(String label);
 
     void resyncDeviceDetailById(Long id);
 

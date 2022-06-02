@@ -14,6 +14,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface IpAddress {
     String message() default "";
-    Class<?>[] groups() default { };
-    Class<? extends Payload>[] payload() default { };
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }

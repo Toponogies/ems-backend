@@ -1,6 +1,9 @@
 package vn.com.tma.emsbackend.common.commandgenerator;
 
 public class NTPServerCommandGenerator {
+    private NTPServerCommandGenerator() {
+    }
+
     private static final String COMMAND_PREFIX = "ntp";
     private static final String ADD_ACTION = "add";
     private static final String ENABLE_ACTION = "enable";
@@ -16,15 +19,15 @@ public class NTPServerCommandGenerator {
         return COMMAND_PREFIX + " " + ADD_ACTION + " " + serverAddress;
     }
 
-    public static String enable(String serverAddress){
-        return COMMAND_PREFIX +  " " + ENABLE_ACTION + " " + serverAddress;
+    public static String enable(String serverAddress) {
+        return COMMAND_PREFIX + " " + ENABLE_ACTION + " " + serverAddress;
     }
 
-    public static String disable(String serverAddress){
-        return COMMAND_PREFIX +  " " + DISABLE_ACTION + " " + serverAddress;
+    public static String disable(String serverAddress) {
+        return COMMAND_PREFIX + " " + DISABLE_ACTION + " " + serverAddress;
     }
 
-    public static String delete(String serverAddress){
+    public static String delete(String serverAddress) {
         return COMMAND_PREFIX + " " + DELETE_ACTION + " " + serverAddress;
     }
 }

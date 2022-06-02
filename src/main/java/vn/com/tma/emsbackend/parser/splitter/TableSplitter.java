@@ -1,6 +1,5 @@
 package vn.com.tma.emsbackend.parser.splitter;
 
-import vn.com.tma.emsbackend.model.exception.ApplicationException;
 import vn.com.tma.emsbackend.model.exception.ParserException;
 
 import java.util.ArrayList;
@@ -65,8 +64,7 @@ public class TableSplitter {
     }
 
 
-    private List<String> splitLine(String line)
-    {
+    private List<String> splitLine(String line) {
         List<String> result = new ArrayList<>();
         int curIndex = 0;
         for (Integer length : columnLimitLengths) {
@@ -83,7 +81,7 @@ public class TableSplitter {
     private List<List<String>> splitAllDataLines() {
         List<List<String>> rowsData = new ArrayList<>();
         for (int index = endHeaderLineIndex + 1; endHeaderLineIndex < lines.length; index++) {
-            if (isEmptyLine(lines[index])){
+            if (isEmptyLine(lines[index])) {
                 break;
             }
             rowsData.add(splitLine(lines[index]));
@@ -97,7 +95,7 @@ public class TableSplitter {
                 return index;
             }
         }
-        throw new ParserException(String.join("\n",lines));
+        throw new ParserException(String.join("\n", lines));
     }
 
     private List<Integer> getColumnLimitLengths() {
@@ -113,7 +111,7 @@ public class TableSplitter {
         return splitLine(lines[endHeaderLineIndex - 1]);
     }
 
-    private boolean isEmptyLine(String line){
+    private boolean isEmptyLine(String line) {
         return line.length() < 2;
     }
 

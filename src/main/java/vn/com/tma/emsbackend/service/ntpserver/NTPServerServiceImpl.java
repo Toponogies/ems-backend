@@ -5,16 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.comparator.NTPServiceComparator;
 import vn.com.tma.emsbackend.model.dto.NTPServerDTO;
-import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.NTPServer;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.repository.NTPServerRepository;
 import vn.com.tma.emsbackend.service.ssh.NTPServerSSHService;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +21,7 @@ public class NTPServerServiceImpl implements NTPServerService {
 
     @Override
     public List<NTPServerDTO> getAll() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -45,7 +41,7 @@ public class NTPServerServiceImpl implements NTPServerService {
 
     @Override
     public void delete(long id) {
-
+        throw new UnsupportedOperationException();
     }
 
     @Transactional

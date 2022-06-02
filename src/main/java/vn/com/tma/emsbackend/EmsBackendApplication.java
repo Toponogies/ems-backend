@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class EmsBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EmsBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EmsBackendApplication.class, args);
+    }
 }

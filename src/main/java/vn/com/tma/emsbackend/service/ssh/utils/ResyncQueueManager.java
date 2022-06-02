@@ -5,11 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static vn.com.tma.emsbackend.common.constant.Constant.INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE;
 
@@ -30,8 +33,10 @@ public class ResyncQueueManager {
         pushToWaitingQueue(networkDeviceRepository.findAll().stream().map(NetworkDevice::getId).toArray(Long[]::new));
     }
 
-    public boolean isDeviceResynchronizing(Long deviceId) {
-        return resynchronizingNetworkDevices.contains(deviceId) || waitingNetworkDevices.contains(deviceId);
+    public Enum.ResyncStatus getResyncStatus(Long deviceId) {
+        if (resynchronizingNetworkDevices.contains(deviceId) || waitingNetworkDevices.contains(deviceId))
+            return Enum.ResyncStatus.ONGOING;
+        return Enum.ResyncStatus.DONE;
     }
 
     public void pushToWaitingQueue(Long... deviceIds) {

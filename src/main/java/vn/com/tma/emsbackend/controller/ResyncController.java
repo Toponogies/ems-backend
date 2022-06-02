@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
-
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import java.util.List;

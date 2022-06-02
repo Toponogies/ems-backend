@@ -10,11 +10,11 @@ import vn.com.tma.emsbackend.repository.ssh.NetworkDeviceSSHRepository;
 public class NetworkDeviceSSHService {
     private final NetworkDeviceSSHRepository networkDeviceSSHRepository;
 
-    public NetworkDevice getNetworkDeviceDetail(Long id){
+    public NetworkDevice getNetworkDeviceDetail(Long id) {
         return networkDeviceSSHRepository.getDetail(id);
     }
 
-    public String sendCommand(Long id, String command){
+    public String sendCommand(Long id, String command) {
         return networkDeviceSSHRepository.sendCommand(id, command);
     }
 }
