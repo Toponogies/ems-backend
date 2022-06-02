@@ -24,7 +24,7 @@ public class SSHCommandController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully execute command on the device", content = {
                     @Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "502", description = "Have a error while execute command on device", content = {
+            @ApiResponse(responseCode = "422", description = "Have a error while execute command on device", content = {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
