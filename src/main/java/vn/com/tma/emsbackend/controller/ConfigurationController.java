@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
-import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+import vn.com.tma.emsbackend.service.configuration.ConfigurationService;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/devices/{id}/configuration")
 public class ConfigurationController {
-    private final NetworkDeviceService networkDeviceService;
+    private final ConfigurationService configurationService;
 
     @Operation(summary = "Download configuration file from network device")
     @ApiResponses(value = {
@@ -31,7 +31,7 @@ public class ConfigurationController {
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping(produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public byte[] downloadDeviceConfigFileById(@PathVariable(value = "id") Long deviceId, HttpServletResponse response) {
-        byte[] bytes = networkDeviceService.downloadDeviceConfigFileById(deviceId);
+        byte[] bytes = configurationService.downloadDeviceConfigFileById(deviceId);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + "configuration_" + deviceId + "\"");
         return bytes;
     }

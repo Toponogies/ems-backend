@@ -7,18 +7,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
-import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+import vn.com.tma.emsbackend.service.ssh.SSHCommandService;
 
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/devices/{id}/generic-command")
 public class SSHCommandController {
-    private final NetworkDeviceService networkDeviceService;
+    private final SSHCommandService sshCommandService;
 
     @Operation(summary = "Send a command directly to device by id")
     @ApiResponses(value = {
@@ -28,9 +28,9 @@ public class SSHCommandController {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    @PostMapping()
-    public SSHCommandResponseDTO sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
-        return networkDeviceService.sendCommandToDeviceById(deviceId, sshCommandDTO);
+    @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public String sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
+        return sshCommandService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }
 
 }
