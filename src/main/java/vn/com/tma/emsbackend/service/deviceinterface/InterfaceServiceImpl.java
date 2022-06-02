@@ -98,9 +98,10 @@ public class InterfaceServiceImpl implements InterfaceService {
         networkDevice.setId(networkDeviceDTO.getId());
 
         // Check port exist
-        PortDTO portDTO = portService.getByIdAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
+        PortDTO portDTO = portService.getByNameAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
         Port port = new Port();
         port.setId(portDTO.getId());
+        port.setName(portDTO.getName());
 
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setNetworkDevice(networkDevice);
@@ -127,7 +128,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         }
 
         // NOTE: Do not update device, can update port
-        if (interfaceOptional.get().getNetworkDevice().getLabel().equals(interfaceDTO.getNetworkDevice())) {
+        if (!interfaceOptional.get().getNetworkDevice().getLabel().equals(interfaceDTO.getNetworkDevice())) {
             throw new DeviceCannotBeUpdatedException();
         }
 
@@ -137,9 +138,10 @@ public class InterfaceServiceImpl implements InterfaceService {
         networkDevice.setId(networkDeviceDTO.getId());
 
         // Check port exist
-        PortDTO portDTO = portService.getByIdAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
+        PortDTO portDTO = portService.getByNameAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
         Port port = new Port();
         port.setId(portDTO.getId());
+        port.setName(portDTO.getName());
 
         Interface anInterface = interfaceMapper.dtoToEntity(interfaceDTO);
         anInterface.setId(id);

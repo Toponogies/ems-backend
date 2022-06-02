@@ -96,7 +96,7 @@ public class PortServiceImpl implements PortService {
     }
 
     @Override
-    public PortDTO getByIdAndNetworkDevice(String portName, String deviceLabel) {
+    public PortDTO getByNameAndNetworkDevice(String portName, String deviceLabel) {
         Port port = portRepository.findByNameAndNetworkDevice_Label(portName, deviceLabel);
         if (port == null) {
             throw new PortNotFoundException(portName, deviceLabel);

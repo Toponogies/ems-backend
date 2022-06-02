@@ -16,7 +16,7 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/devices/{id}/generic-command")
+@RequestMapping("/devices/{id}/generic-command")
 public class SSHCommandController {
     private final NetworkDeviceService networkDeviceService;
 

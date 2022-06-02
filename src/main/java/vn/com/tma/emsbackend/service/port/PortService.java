@@ -12,5 +12,5 @@ public interface PortService extends Service<PortDTO> {
 
     void resyncPortByDeviceId(Long deviceId);
 
-    PortDTO getByIdAndNetworkDevice(String portName, String deviceLabel);
+    PortDTO getByNameAndNetworkDevice(String portName, String deviceLabel);
 }

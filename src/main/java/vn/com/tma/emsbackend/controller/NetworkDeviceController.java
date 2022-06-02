@@ -20,7 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/devices")
+@RequestMapping("/devices")
 public class NetworkDeviceController {
     private final NetworkDeviceService networkDeviceService;
 

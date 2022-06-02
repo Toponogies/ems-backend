@@ -16,7 +16,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/resynchronization")
+@RequestMapping("/resynchronization")
 public class ResyncController {
 
     private final NetworkDeviceService networkDeviceService;
