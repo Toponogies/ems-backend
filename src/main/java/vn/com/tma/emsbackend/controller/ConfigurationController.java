@@ -25,7 +25,7 @@ public class ConfigurationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully get configuration file from device", content = {
                     @Content(schema = @Schema(implementation = byte[].class))}),
-            @ApiResponse(responseCode = "502", description = "Have a error while get configuration from device", content = {
+            @ApiResponse(responseCode = "422", description = "Have a error while get configuration from device", content = {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
     @ResponseStatus(code = HttpStatus.OK)
