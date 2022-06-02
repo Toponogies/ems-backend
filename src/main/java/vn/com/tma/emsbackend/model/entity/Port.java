@@ -6,6 +6,7 @@ import vn.com.tma.emsbackend.common.constant.Constant;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -29,10 +30,10 @@ public class Port {
     @Column(name = "state")
     private Enum.State state;
 
-    @ManyToOne()
-    private Interface anInterface;
+    @OneToMany(mappedBy = "port", fetch = FetchType.EAGER)
+    private List<Interface> interfaces;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "device_id")
     private NetworkDevice networkDevice;
 
@@ -41,7 +42,7 @@ public class Port {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Port port = (Port) o;
-        return Objects.equals(connector, port.connector) && Objects.equals(macAddress, port.macAddress) && Objects.equals(name, port.name) && state == port.state  && Objects.equals(networkDevice.getId(), port.networkDevice.getId());
+        return Objects.equals(connector, port.connector) && Objects.equals(macAddress, port.macAddress) && Objects.equals(name, port.name) && state == port.state && Objects.equals(networkDevice.getId(), port.networkDevice.getId());
     }
 
     @Override

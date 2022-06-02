@@ -12,8 +12,9 @@ public class Enum {
         DISABLED("disabled"),
         ENABLED("enabled");
         private final String value;
-        public static Enum.State parse(String value){
-            if(NEGATIVE_WORD.contains(value)){
+
+        public static Enum.State parse(String value) {
+            if (NEGATIVE_WORD.contains(value)) {
                 return DISABLED;
             }
             return ENABLED;
@@ -32,4 +33,10 @@ public class Enum {
         LT,
         LX,
     }
+
+    public enum ResyncStatus {
+        ONGOING,
+        DONE,
+    }
+
 }

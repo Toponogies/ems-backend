@@ -2,15 +2,13 @@ package vn.com.tma.emsbackend.service.credential;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.exception.CredentialLinkedToDeviceException;
 import vn.com.tma.emsbackend.model.exception.CredentialNameExistsException;
 import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
-import vn.com.tma.emsbackend.model.dto.CredentialDTO;
-import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.mapper.CredentialMapper;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 
@@ -39,10 +37,21 @@ public class CredentialServiceImpl implements CredentialService {
 
         Optional<Credential> credentialOptional = credentialRepository.findById(id);
         if (credentialOptional.isEmpty()) {
-            throw new CredentialNotFoundException(id);
+            throw new CredentialNotFoundException(String.valueOf(id));
         }
         return credentialMapper.entityToDTO(credentialOptional.get());
     }
+
+    @Override
+    public CredentialDTO getByName(String name) {
+        Credential credential = credentialRepository.findByName(name);
+        if (credential == null) {
+            throw new CredentialNotFoundException(name);
+        }
+
+        return credentialMapper.entityToDTO(credential);
+    }
+
 
     @Override
     @Transactional
@@ -67,7 +76,7 @@ public class CredentialServiceImpl implements CredentialService {
 
         boolean checkIfExistedById = credentialRepository.existsById(id);
         if (!checkIfExistedById) {
-            throw new CredentialNotFoundException(id);
+            throw new CredentialNotFoundException(String.valueOf(id));
         }
 
         Credential credentialWithDupName = credentialRepository.findByName(credentialDto.getName());
@@ -89,7 +98,7 @@ public class CredentialServiceImpl implements CredentialService {
 
         Optional<Credential> credentialOptional = credentialRepository.findById(id);
         if (credentialOptional.isEmpty()) {
-            throw new CredentialNotFoundException(id);
+            throw new CredentialNotFoundException(String.valueOf(id));
         }
 
         Credential credential = credentialOptional.get();
@@ -99,10 +108,5 @@ public class CredentialServiceImpl implements CredentialService {
         }
 
         credentialRepository.deleteById(id);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return credentialRepository.existsById(id);
     }
 }

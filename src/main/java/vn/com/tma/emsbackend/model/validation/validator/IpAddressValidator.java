@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 public class IpAddressValidator implements ConstraintValidator<IpAddress, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if(value == null){
+        if (value == null) {
             return false;
         }
 

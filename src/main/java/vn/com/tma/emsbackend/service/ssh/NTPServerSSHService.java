@@ -12,7 +12,7 @@ import java.util.List;
 public class NTPServerSSHService {
     private final NTPServiceSSHRepository ntpServiceSSHRepository;
 
-    public List<NTPServer> getAllNtpServer(long deviceId){
+    public List<NTPServer> getAllNtpServer(long deviceId) {
         return ntpServiceSSHRepository.getAll(deviceId);
     }
 }

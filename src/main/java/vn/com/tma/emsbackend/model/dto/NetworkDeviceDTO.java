@@ -37,7 +37,7 @@ public class NetworkDeviceDTO {
     private String state;
 
     @NotNull(message = "Device must have a credential")
-    private Long credentialId;
+    private String credential;
 
-    private boolean isResyncing;
+    private String resyncStatus;
 }

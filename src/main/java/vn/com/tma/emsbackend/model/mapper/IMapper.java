@@ -10,12 +10,12 @@ public interface IMapper<E, D> {
     D entityToDTO(E entity);
 
     default List<E> dtosToEntities(List<D> dtos) {
-        if(dtos == null) return Collections.emptyList();
+        if (dtos == null) return Collections.emptyList();
         return dtos.stream().map(this::dtoToEntity).collect(Collectors.toList());
     }
 
     default List<D> entitiesToDTOs(List<E> entities) {
-        if(entities == null) return Collections.emptyList();
+        if (entities == null) return Collections.emptyList();
         return entities.stream().map(this::entityToDTO).collect(Collectors.toList());
     }
 }

@@ -3,12 +3,13 @@ package vn.com.tma.emsbackend.repository.ssh;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
-import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 import vn.com.tma.emsbackend.common.commandgenerator.InterfaceCommandGenerator;
-import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
+import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
+import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
+import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class InterfaceSSHRepository extends BaseSSHRepository {
 
-    public List<Interface> getAll(long deviceId, List<Port> devicePorts) {
+    public List<Interface> getAll(long deviceId, List<PortDTO> devicePorts) {
         SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
         String result = sshExecutor.execute(InterfaceCommandGenerator.showAll());
 
@@ -28,8 +29,10 @@ public class InterfaceSSHRepository extends BaseSSHRepository {
         for (String interfaceName : interfacesName) {
             String detailResult = sshExecutor.execute(InterfaceCommandGenerator.showDetail(interfaceName));
             Interface anInterface = InterfaceCommandParser.interfaceShowDetailParse(detailResult);
-            for (Port port : devicePorts) {
-                if (port.getName().equals(anInterface.getPort().getName())) {
+            for (PortDTO portDTO : devicePorts) {
+                if (portDTO.getName().equals(anInterface.getPort().getName())) {
+                    Port port = new Port();
+                    port.setId(portDTO.getId());
                     anInterface.setPort(port);
                     break;
                 }

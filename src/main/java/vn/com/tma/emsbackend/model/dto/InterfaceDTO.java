@@ -5,7 +5,6 @@ import lombok.Setter;
 import vn.com.tma.emsbackend.model.validation.IpAddress;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -27,8 +26,9 @@ public class InterfaceDTO {
 
     private String gateway;
 
-    Long portId;
+    @NotBlank(message = "Port field can not empty")
+    String port;
 
-    @NotNull(message = "Interface must belong to a device")
-    Long networkDeviceId;
+    @NotBlank(message = "Interface must belong to a device")
+    String networkDevice;
 }

@@ -9,5 +9,6 @@ public interface InterfaceService extends Service<InterfaceDTO> {
     List<InterfaceDTO> getByNetworkDevice(Long deviceId);
 
     InterfaceDTO getByPort(Long portId);
+
     void resyncInterfaceByDeviceId(Long deviceId);
 }

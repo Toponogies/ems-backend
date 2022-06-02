@@ -11,7 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static vn.com.tma.emsbackend.common.constant.Constant.*;
+import static vn.com.tma.emsbackend.common.constant.Constant.INTERVAL_CHECK_RESYNC_QUEUE;
+import static vn.com.tma.emsbackend.common.constant.Constant.MAX_RESYNC_CONCURRENCY_DEVICE;
 
 @Slf4j
 @Component

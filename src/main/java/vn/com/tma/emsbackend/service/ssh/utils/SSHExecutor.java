@@ -4,10 +4,7 @@ import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ChannelShell;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.PropertyResolverUtils;
-import org.apache.sshd.common.channel.ChannelOutputStream;
 import org.apache.sshd.core.CoreModuleProperties;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
@@ -66,7 +63,7 @@ public class SSHExecutor {
     }
 
     private ClientSession createClientSession() {
-        ClientSession newClientSession = null;
+        ClientSession newClientSession;
         try {
             newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());

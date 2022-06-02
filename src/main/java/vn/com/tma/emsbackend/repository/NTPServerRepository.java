@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface NTPServerRepository extends JpaRepository<NTPServer, Long> {
-    public List<NTPServer> findByNetworkDevice_Id(long deviceId);
+    List<NTPServer> findByNetworkDevice_Id(long deviceId);
 }

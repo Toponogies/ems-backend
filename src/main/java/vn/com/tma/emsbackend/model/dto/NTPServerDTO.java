@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import vn.com.tma.emsbackend.common.enums.Enum;
 
-import javax.persistence.Column;
-
 @Getter
 @Setter
 public class NTPServerDTO {
