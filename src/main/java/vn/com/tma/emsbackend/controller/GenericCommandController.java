@@ -6,19 +6,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
-import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+import vn.com.tma.emsbackend.service.ssh.GenericCommandService;
 
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/devices/{id}/generic-command")
-public class SSHCommandController {
-    private final NetworkDeviceService networkDeviceService;
+public class GenericCommandController {
+    private final GenericCommandService genericCommandService;
 
     @Operation(summary = "Send a command directly to device by id")
     @ApiResponses(value = {
@@ -27,10 +26,9 @@ public class SSHCommandController {
             @ApiResponse(responseCode = "422", description = "Have a error while execute command on device", content = {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    @PostMapping()
-    public SSHCommandResponseDTO sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
-        return networkDeviceService.sendCommandToDeviceById(deviceId, sshCommandDTO);
+    @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE)
+    public String sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
+        return genericCommandService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }
 
 }

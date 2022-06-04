@@ -9,6 +9,9 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
 import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
 import vn.com.tma.emsbackend.service.port.PortService;
+import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ public class ResyncService {
     private final PortService portService;
     private final InterfaceService interfaceService;
     private final NTPServerService ntpServerService;
+    private final ResyncQueueManager resyncQueueManager;
 
     public void resyncDeviceById(Long id) {
         try {
@@ -32,5 +36,9 @@ public class ResyncService {
             networkDeviceService.updateStateById(id, Enum.NetworkDeviceState.OUT_OF_SERVICE);
             throw e;
         }
+    }
+
+    public void addDevicesToResyncQueueById(List<Long> ids) {
+        resyncQueueManager.pushToWaitingQueue(ids.toArray(new Long[0]));
     }
 }

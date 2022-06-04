@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
-import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
+import vn.com.tma.emsbackend.service.ssh.ResyncService;
 
 import java.util.List;
 
@@ -19,13 +19,14 @@ import java.util.List;
 @RequestMapping("/resynchronization")
 public class ResyncController {
 
-    private final NetworkDeviceService networkDeviceService;
+    private final ResyncService resyncService;
 
     @Operation(summary = "Resync a list of network devices")
-    @ApiResponses(value = {@ApiResponse(responseCode = "202", description = "Successfully add device to resync queue", content = {@Content(schema = @Schema())}), @ApiResponse(responseCode = "404", description = "Network device not found", content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),})
+    @ApiResponses(value = {@ApiResponse(responseCode = "202", description = "Successfully add devices to resync queue", content = {@Content(schema = @Schema())}), @ApiResponse(responseCode = "404", description = "Network device not found", content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),})
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping()
     public void resync(@RequestBody List<Long> deviceIds) {
-        networkDeviceService.addDevicesToResyncQueueById(deviceIds);
+        resyncService.addDevicesToResyncQueueById(deviceIds);
     }
+
 }

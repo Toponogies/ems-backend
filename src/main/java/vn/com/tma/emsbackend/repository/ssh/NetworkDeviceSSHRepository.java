@@ -6,7 +6,6 @@ import vn.com.tma.emsbackend.common.commandgenerator.NetworkDeviceCommandGenerat
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.parser.NetworkDeviceCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
-
 @Repository
 @AllArgsConstructor
 public class NetworkDeviceSSHRepository extends BaseSSHRepository {

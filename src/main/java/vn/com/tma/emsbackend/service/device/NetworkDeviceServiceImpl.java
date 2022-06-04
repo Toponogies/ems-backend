@@ -7,11 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
-import vn.com.tma.emsbackend.model.dto.SSHCommandResponseDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
@@ -36,7 +33,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
     private final CredentialService credentialService;
 
-    private final ResyncQueueManager resyncQueueManagement;
+    private final ResyncQueueManager resyncQueueManager;
 
 
     @Override
@@ -45,7 +42,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
         List<NetworkDevice> networkDevices = networkDeviceRepository.findAll();
         for (NetworkDevice networkDevice : networkDevices) {
-            networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
+            networkDevice.setResyncStatus(resyncQueueManager.getResyncStatus(networkDevice.getId()));
         }
         return networkDeviceMapper.entitiesToDTOs(networkDevices);
     }
@@ -59,7 +56,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
         NetworkDevice networkDevice = networkDeviceOptional.get();
-        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
+        networkDevice.setResyncStatus(resyncQueueManager.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -73,7 +70,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(ipAddress);
         }
-        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
+        networkDevice.setResyncStatus(resyncQueueManager.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -92,7 +89,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (networkDevice == null) {
             throw new DeviceNotFoundException(label);
         }
-        networkDevice.setResyncStatus(resyncQueueManagement.getResyncStatus(networkDevice.getId()));
+        networkDevice.setResyncStatus(resyncQueueManager.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -122,7 +119,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToWaitingQueue(networkDevice.getId());
+        resyncQueueManager.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -157,7 +154,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
-        resyncQueueManagement.pushToWaitingQueue(networkDevice.getId());
+        resyncQueueManager.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
     }
@@ -181,7 +178,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     @Override
     @Transactional
     public void resyncDeviceDetailById(Long id) {
-        NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
+        Optional<NetworkDevice> oldNetworkDeviceOptional = networkDeviceRepository.findById(id);
+        if (oldNetworkDeviceOptional.isEmpty()) throw new DeviceNotFoundException(id.toString());
+        NetworkDevice oldNetworkDevice = oldNetworkDeviceOptional.get();
+
         NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
         networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
         networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
@@ -190,11 +190,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setSshPort(oldNetworkDevice.getSshPort());
         networkDevice.setId(id);
         networkDeviceRepository.save(networkDevice);
-    }
-
-    @Override
-    public void addDevicesToResyncQueueById(List<Long> ids) {
-        resyncQueueManagement.pushToWaitingQueue(ids.toArray(new Long[0]));
     }
 
     @Override
@@ -208,26 +203,5 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         } else {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
-
-    }
-
-    @Override
-    @Transactional
-    public SSHCommandResponseDTO sendCommandToDeviceById(Long id, SSHCommandDTO sshCommandDTO) {
-        String result = networkDeviceSSHService.sendCommand(id, sshCommandDTO.getCommand());
-        SSHCommandResponseDTO sshCommandResponseDTO = new SSHCommandResponseDTO();
-        sshCommandResponseDTO.setResult(result);
-        return sshCommandResponseDTO;
-    }
-
-    @Override
-    @Transactional
-    public byte[] downloadDeviceConfigFileById(Long id) {
-        boolean checkIfExistedById = networkDeviceRepository.existsById(id);
-        if (!checkIfExistedById) {
-            throw new DeviceNotFoundException(String.valueOf(id));
-        }
-        String result = networkDeviceSSHService.sendCommand(id, "configuration export");
-        return result.getBytes();
     }
 }
