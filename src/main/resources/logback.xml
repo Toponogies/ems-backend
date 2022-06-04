@@ -1,9 +1,13 @@
 <configuration>
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>ems-backend.log</file>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>%date %level %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>logs/ems-backend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>4MB</maxFileSize>
+        </rollingPolicy>
     </appender>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
