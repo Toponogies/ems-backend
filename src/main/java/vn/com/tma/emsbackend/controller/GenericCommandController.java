@@ -10,14 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
-import vn.com.tma.emsbackend.service.ssh.SSHCommandService;
+import vn.com.tma.emsbackend.service.ssh.GenericCommandService;
 
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/devices/{id}/generic-command")
-public class SSHCommandController {
-    private final SSHCommandService sshCommandService;
+public class GenericCommandController {
+    private final GenericCommandService genericCommandService;
 
     @Operation(summary = "Send a command directly to device by id")
     @ApiResponses(value = {
@@ -28,7 +28,7 @@ public class SSHCommandController {
     })
     @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public String sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
-        return sshCommandService.sendCommandToDeviceById(deviceId, sshCommandDTO);
+        return genericCommandService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }
 
 }

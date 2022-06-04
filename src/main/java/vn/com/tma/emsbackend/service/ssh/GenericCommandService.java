@@ -7,7 +7,7 @@ import vn.com.tma.emsbackend.model.dto.SSHCommandDTO;
 
 @Service
 @RequiredArgsConstructor
-public class SSHCommandService  {
+public class GenericCommandService {
     private final NetworkDeviceSSHService networkDeviceSSHService;
 
     @Transactional
