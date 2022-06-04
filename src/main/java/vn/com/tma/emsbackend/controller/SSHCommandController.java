@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
@@ -27,8 +26,7 @@ public class SSHCommandController {
             @ApiResponse(responseCode = "422", description = "Have a error while execute command on device", content = {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    @PostMapping(produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public String sendCommandToDeviceById(@PathVariable(value = "id") Long deviceId, @RequestBody SSHCommandDTO sshCommandDTO) {
         return sshCommandService.sendCommandToDeviceById(deviceId, sshCommandDTO);
     }

@@ -178,7 +178,10 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     @Override
     @Transactional
     public void resyncDeviceDetailById(Long id) {
-        NetworkDevice oldNetworkDevice = networkDeviceRepository.getById(id);
+        Optional<NetworkDevice> oldNetworkDeviceOptional = networkDeviceRepository.findById(id);
+        if (oldNetworkDeviceOptional.isEmpty()) throw new DeviceNotFoundException(id.toString());
+        NetworkDevice oldNetworkDevice = oldNetworkDeviceOptional.get();
+
         NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
         networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
         networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);

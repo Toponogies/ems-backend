@@ -37,7 +37,7 @@ public class ResyncExecutor {
                     resyncQueueManager.pushToResynchronizingQueue(id);
                     resyncService.resyncDeviceById(id);
                 } catch (Exception e) {
-                    log.error("Resync fail: device id:" + id, e);
+                    log.error("Resync fail: device id:" + id + " " + e.getMessage());
                 } finally {
                     resyncQueueManager.popResynchronizingQueue(id);
                 }

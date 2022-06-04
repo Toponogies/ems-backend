@@ -22,7 +22,7 @@ public class ResyncController {
     private final ResyncService resyncService;
 
     @Operation(summary = "Resync a list of network devices")
-    @ApiResponses(value = {@ApiResponse(responseCode = "202", description = "Successfully add device to resync queue", content = {@Content(schema = @Schema())}), @ApiResponse(responseCode = "404", description = "Network device not found", content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),})
+    @ApiResponses(value = {@ApiResponse(responseCode = "202", description = "Successfully add devices to resync queue", content = {@Content(schema = @Schema())}), @ApiResponse(responseCode = "404", description = "Network device not found", content = {@Content(schema = @Schema(implementation = ErrorDTO.class))}),})
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     @PostMapping()
     public void resync(@RequestBody List<Long> deviceIds) {

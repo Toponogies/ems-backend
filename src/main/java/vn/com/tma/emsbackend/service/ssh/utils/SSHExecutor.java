@@ -1,23 +1,26 @@
 package vn.com.tma.emsbackend.service.ssh.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.channel.ChannelShell;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.core.CoreModuleProperties;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.*;
+import vn.com.tma.emsbackend.model.exception.ChannelShellCloseException;
+import vn.com.tma.emsbackend.model.exception.ChannelShellOpenException;
+import vn.com.tma.emsbackend.model.exception.DeviceConnectionException;
+import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+@Slf4j
 public class SSHExecutor {
     private ChannelShell channelShell;
 
@@ -68,7 +71,6 @@ public class SSHExecutor {
             newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());
             newClientSession.auth().verify();
-            CoreModuleProperties.IDLE_TIMEOUT.set(newClientSession, Duration.ZERO);
             return newClientSession;
         } catch (IOException e) {
             throw new DeviceConnectionException(currentManagedDevice.getId());
@@ -84,7 +86,6 @@ public class SSHExecutor {
         channelShell.setOut(responseStream);
         channelShell.setErr(errorStream);
 
-
         setCommand(command);
 
         //if execution have error
@@ -96,6 +97,7 @@ public class SSHExecutor {
         }
         throw new DeviceConnectionException(currentManagedDevice.getId());
     }
+
 
     private void setCommand(String command) {
         try {
@@ -119,16 +121,10 @@ public class SSHExecutor {
     }
 
     public void close() {
-        try {
-            currentManagedDevice = null;
-            channelShell.close();
-            clientSession.close();
-            sshClient.close();
-
-            clientSession = null;
-        } catch (IOException e) {
-            throw new ApplicationException(e);
-        }
+        clientSession.close(true);
+        channelShell.close(true);
+        sshClient.close(true);
+        sshClient.stop();
     }
 
     private boolean isCompletelyWaitUntilEnd(ByteArrayOutputStream responseStream) {
@@ -136,6 +132,7 @@ public class SSHExecutor {
         while (!isEndOfMessage(responseStream.toString())) {
             channelShell.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 100);
             if (System.currentTimeMillis() - startTime > 10000) {
+                close();
                 return false;
             }
         }
@@ -156,6 +153,10 @@ public class SSHExecutor {
     }
 
     public boolean isOpen() {
-        return !sshClient.isOpen();
+        return sshClient.isOpen();
+    }
+
+    public boolean isClosed() {
+        return clientSession.isClosed() || sshClient.isClosed();
     }
 }

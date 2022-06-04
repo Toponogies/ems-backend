@@ -44,7 +44,8 @@ public class DeviceConnectionManager {
         }
 
         NetworkDevice networkDevice = optionalNetworkDevice.get();
-        if (sshExecutor == null || !sshExecutor.isOpen()) {
+        if (sshExecutor == null || sshExecutor.isClosed()) {
+            if(sshExecutor != null) removeConnection(networkDeviceId);
             addNewConnection(networkDevice);
             sshExecutor = sshExecutorHashMap.get(networkDeviceId);
         } else {
