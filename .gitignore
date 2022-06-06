@@ -9,7 +9,7 @@
 application.yaml
 
 #log file
-ems-backend.log
+/logs
 
 #Visual Code folder
 .vscode
