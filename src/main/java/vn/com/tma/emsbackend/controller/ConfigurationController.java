@@ -6,9 +6,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.service.configuration.ConfigurationService;
 
@@ -28,7 +30,6 @@ public class ConfigurationController {
             @ApiResponse(responseCode = "422", description = "Have a error while get configuration from device", content = {
                     @Content(schema = @Schema(implementation = ErrorDTO.class))}),
     })
-    @ResponseStatus(code = HttpStatus.OK)
     @GetMapping(produces = {MediaType.TEXT_PLAIN_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public byte[] downloadDeviceConfigFileById(@PathVariable(value = "id") Long deviceId, HttpServletResponse response) {
         byte[] bytes = configurationService.downloadDeviceConfigFileById(deviceId);
