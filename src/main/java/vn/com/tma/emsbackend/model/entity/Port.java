@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = Constant.PORT_TABLE)
+@Table(name = Constant.PORT_TABLE, uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "device_id"})})
 public class Port {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Port {
     @Column(name = "mac_address")
     private String macAddress;
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "state")

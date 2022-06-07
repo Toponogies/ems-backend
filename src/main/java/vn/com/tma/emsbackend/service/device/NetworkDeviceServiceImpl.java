@@ -96,7 +96,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
 
     @Override
-    @Transactional
     public NetworkDeviceDTO add(NetworkDeviceDTO networkDeviceDTO) {
         log.info("Add new device");
 
@@ -125,7 +124,6 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
-    @Transactional
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
@@ -152,6 +150,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setId(id);
         networkDevice.setCredential(credential);
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
+
 
         networkDevice = networkDeviceRepository.save(networkDevice);
         resyncQueueManager.pushToWaitingQueue(networkDevice.getId());
