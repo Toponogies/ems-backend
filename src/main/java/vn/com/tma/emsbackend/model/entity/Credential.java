@@ -5,6 +5,7 @@ import lombok.Setter;
 import vn.com.tma.emsbackend.common.constant.Constant;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -26,5 +27,5 @@ public class Credential {
     private String password;
 
     @OneToMany(mappedBy = "credential", fetch = FetchType.EAGER)
-    List<NetworkDevice> devices;
+    List<NetworkDevice> devices = new ArrayList<>();
 }

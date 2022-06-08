@@ -11,13 +11,13 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = Constant.INTERFACE_TABLE)
+@Table(name = Constant.INTERFACE_TABLE, uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "device_id"})})
 public class Interface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "state", nullable = false)
@@ -40,7 +40,7 @@ public class Interface {
     private Port port;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "managed_device_id")
+    @JoinColumn(name = "device_id")
     private NetworkDevice networkDevice;
 
     @Override
