@@ -26,6 +26,7 @@ public class ResyncQueueManager {
     private final Set<Long> resynchronizingNetworkDevices = ConcurrentHashMap.newKeySet();
     private Iterator<Long> currentIterator;
 
+    private ResyncExecutor resyncExecutorListener;
 
     @Scheduled(fixedRate = INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE)
     @Transactional
@@ -41,6 +42,9 @@ public class ResyncQueueManager {
 
     public void pushToWaitingQueue(Long... deviceIds) {
         waitingNetworkDevices.addAll(List.of(deviceIds));
+        if (resyncExecutorListener != null) {
+            resyncExecutorListener.resyncAllDevicesInWaitingQueue();
+        }
     }
 
     public boolean isWaitingQueueHasNext() {
@@ -66,4 +70,7 @@ public class ResyncQueueManager {
     }
 
 
+    public void setResyncExecutorListener(ResyncExecutor resyncExecutorListener) {
+        this.resyncExecutorListener = resyncExecutorListener;
+    }
 }

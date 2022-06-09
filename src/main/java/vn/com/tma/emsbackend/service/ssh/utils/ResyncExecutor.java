@@ -1,8 +1,6 @@
 package vn.com.tma.emsbackend.service.ssh.utils;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.service.ssh.ResyncService;
@@ -11,12 +9,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static vn.com.tma.emsbackend.common.constant.Constant.INTERVAL_CHECK_RESYNC_QUEUE;
-import static vn.com.tma.emsbackend.common.constant.Constant.MAX_RESYNC_CONCURRENCY_DEVICE;
+import static vn.com.tma.emsbackend.common.constant.Constant.*;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class ResyncExecutor {
     private final ResyncService resyncService;
     private final ResyncQueueManager resyncQueueManager;
@@ -26,20 +22,31 @@ public class ResyncExecutor {
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>());
 
+    public ResyncExecutor(ResyncService resyncService, ResyncQueueManager resyncQueueManager) {
+        this.resyncService = resyncService;
+        this.resyncQueueManager = resyncQueueManager;
+        this.resyncQueueManager.setResyncExecutorListener(this);
+    }
 
-    @Scheduled(fixedRate = INTERVAL_CHECK_RESYNC_QUEUE)
+
     @Transactional
     public void resyncAllDevicesInWaitingQueue() {
         while (resyncQueueManager.isWaitingQueueHasNext() && !isThreadPoolIsFull()) {
             Long id = resyncQueueManager.getNextInWaitingQueue();
             threadPoolExecutor.execute(() -> {
-                try {
-                    resyncQueueManager.pushToResynchronizingQueue(id);
-                    resyncService.resyncDeviceById(id);
-                } catch (Exception e) {
-                    log.error("Resync fail: device id:" + id + " " + e.getMessage());
-                } finally {
-                    resyncQueueManager.popResynchronizingQueue(id);
+                for (int retryTime = 1; retryTime <= LIMIT_RETRIES_NUMBER; retryTime++) {
+                    try {
+                        log.info("Try to resync device id: " + id + " Retry: " + retryTime + "/" + LIMIT_RETRIES_NUMBER);
+                        resyncQueueManager.pushToResynchronizingQueue(id);
+                        resyncService.resyncDeviceById(id);
+                        retryTime = LIMIT_RETRIES_NUMBER;
+                    } catch (Exception e) {
+                        log.error("Resync fail: device id:" + id + " " + e.getMessage());
+                        calmDown();
+                    } finally {
+                        resyncQueueManager.popResynchronizingQueue(id);
+                        resyncAllDevicesInWaitingQueue();
+                    }
                 }
             });
             resyncQueueManager.popWaitingQueue();
@@ -48,6 +55,14 @@ public class ResyncExecutor {
 
     private boolean isThreadPoolIsFull() {
         return threadPoolExecutor.getActiveCount() >= threadPoolExecutor.getCorePoolSize();
+    }
+
+    private void calmDown() {
+        try {
+            Thread.sleep(SLOW_DOWN_TIME);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException("Fail to make thread sleep");
+        }
     }
 
 }
