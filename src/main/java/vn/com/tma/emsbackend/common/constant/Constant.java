@@ -23,5 +23,6 @@ public class Constant {
 
     //resync time
     public static final long INTERVAL_ADD_ALL_DEVICES_TO_RESYNC_QUEUE = 15 * 60 * 1000L;
-    public static final long INTERVAL_CHECK_RESYNC_QUEUE = 100;
+    public static final int LIMIT_RETRIES_NUMBER = 3;
+    public static final long SLOW_DOWN_TIME= 1000L;
 }
