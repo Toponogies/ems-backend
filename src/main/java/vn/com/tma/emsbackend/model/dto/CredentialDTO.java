@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -21,6 +19,6 @@ public class CredentialDTO {
     @NotBlank(message = "Credential must not have empty password.")
     private String password;
 
-    private List<String> devices = new ArrayList<>();
+    private String devices;
 
 }

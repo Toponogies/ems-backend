@@ -19,7 +19,7 @@ public interface CredentialMapper extends IMapper<Credential, CredentialDTO> {
     CredentialDTO entityToDTO(Credential credential);
 
     @Named("getDevices")
-    default List<String> getDevices(List<NetworkDevice> devices) {
-        return devices.stream().map(NetworkDevice::getLabel).collect(Collectors.toList());
+    default String getDevices(List<NetworkDevice> devices) {
+        return devices.stream().map(NetworkDevice::getLabel).collect(Collectors.joining(", "));
     }
 }

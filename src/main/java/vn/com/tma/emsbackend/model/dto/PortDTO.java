@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -24,5 +22,5 @@ public class PortDTO {
     @NotBlank(message = "Port must belong to a device")
     private String networkDevice;
 
-    private List<String> interfaces = new ArrayList<>();
+    private String interfaces;
 }
