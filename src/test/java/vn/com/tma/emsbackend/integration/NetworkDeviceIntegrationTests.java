@@ -15,7 +15,6 @@ import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
@@ -28,11 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithMockUser
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class NetworkDeviceIntegrationTests {
-
     @Autowired
     ResyncQueueManager resyncQueueManager;
-
-
     @Autowired
     CredentialRepository credentialRepository;
     @Autowired
@@ -43,9 +39,9 @@ class NetworkDeviceIntegrationTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    String baseUrl;
+    private String baseUrl;
 
-    Credential genericCredential;
+    private Credential genericCredential;
 
     @BeforeEach
     void setUp() {
@@ -65,6 +61,7 @@ class NetworkDeviceIntegrationTests {
         networkDevice.setCredential(genericCredential);
         networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
         networkDevice.setSshPort(22);
+        networkDevice.setDeviceType(Enum.NetworkDeviceType.VCX);
         networkDevice.setResyncStatus(Enum.ResyncStatus.DONE);
         genericCredential.setId(1L);
 
@@ -152,7 +149,7 @@ class NetworkDeviceIntegrationTests {
     }
 
     @Test
-    void shouldReturn404WhenDeleteNotExistNetworkDevice(){
+    void shouldReturn404WhenDeleteNotExistNetworkDevice() {
         //When
         String url = baseUrl + "/api/devices/10";
         ResponseEntity<Void> deleteResponseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
@@ -279,8 +276,8 @@ class NetworkDeviceIntegrationTests {
 
     @Test
     void shouldReturn400WhenAddDeviceWithExistedIp() {
-        //Given
         String url = baseUrl + "/api/v1/devices";
+        //Given
         NetworkDeviceDTO newWrongIpNetworkDevice = new NetworkDeviceDTO();
         newWrongIpNetworkDevice.setIpAddress("10.220.4.10");
         newWrongIpNetworkDevice.setLabel("new_label");
@@ -299,5 +296,25 @@ class NetworkDeviceIntegrationTests {
         assertThat(networkDevice).isNull();
     }
 
+    @Test
+    void shouldReturn200AndDevicesWithTypeWhenGetDeviceByType() {
+        String url = baseUrl + "/api/v1/devices/type/VCX";
+        //Give
+        NetworkDevice networkDevice = new NetworkDevice();
+        networkDevice.setIpAddress("10.220.4.5");
+        networkDevice.setLabel("10.220.4.5");
+        networkDevice.setCredential(genericCredential);
+        networkDevice.setState(Enum.NetworkDeviceState.OUT_OF_SERVICE);
+        networkDevice.setSshPort(22);
+        networkDevice.setDeviceType(Enum.NetworkDeviceType.GT);
+        networkDevice.setResyncStatus(Enum.ResyncStatus.DONE);
+        networkDeviceRepository.save(networkDevice);
+        //When
+        ResponseEntity<List<NetworkDeviceDTO>> responseEntity = testRestTemplate.exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+        });
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody()).hasSize(1);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
+    }
 }
