@@ -96,6 +96,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
 
     @Override
+    @Transactional
     public NetworkDeviceDTO add(NetworkDeviceDTO networkDeviceDTO) {
         log.info("Add new device");
 
@@ -124,6 +125,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     }
 
     @Override
+    @Transactional
     public NetworkDeviceDTO update(long id, NetworkDeviceDTO networkDeviceDTO) {
         log.info("Update network device with id: {}", id);
 
