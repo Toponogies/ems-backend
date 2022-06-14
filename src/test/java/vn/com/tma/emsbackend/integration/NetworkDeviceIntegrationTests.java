@@ -15,6 +15,7 @@ import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
+import vn.com.tma.emsbackend.model.exception.CredentialNotFoundException;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
@@ -143,13 +144,20 @@ class NetworkDeviceIntegrationTests {
         assertThat(responseEntity.getBody()).isNotNull();
 
 
-        ResponseEntity<Void> responseDeleteEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
+        ResponseEntity<Void> deleteResponseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
 
         //then
-        assertThat(responseDeleteEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(deleteResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         ResponseEntity<Void> responseEntityGetDevice = testRestTemplate.exchange(url, HttpMethod.GET, null, Void.class);
-        assertThat(responseEntityGetDevice.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 
+    @Test
+    void shouldReturn404WhenDeleteNotExistNetworkDevice(){
+        //When
+        String url = baseUrl + "/api/devices/10";
+        ResponseEntity<Void> deleteResponseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, null, Void.class);
+        //Then
+        assertThat(deleteResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -203,4 +211,93 @@ class NetworkDeviceIntegrationTests {
         ResponseEntity<ErrorDTO> responseEntity = testRestTemplate.exchange(url, HttpMethod.GET, null, ErrorDTO.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void shouldReturn400WhenAddDeviceWithWrongIpAddressFormat() {
+        //Given
+        String url = baseUrl + "/api/v1/devices";
+        NetworkDeviceDTO newWrongIpNetworkDevice = new NetworkDeviceDTO();
+        newWrongIpNetworkDevice.setIpAddress("10.220.4.20676423");
+        newWrongIpNetworkDevice.setLabel("10.220.4.5");
+        newWrongIpNetworkDevice.setCredential(genericCredential.getName());
+        newWrongIpNetworkDevice.setSshPort(22);
+
+        //When
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<NetworkDeviceDTO> requestBody = new HttpEntity<>(newWrongIpNetworkDevice, headers);
+
+        //Then
+        ResponseEntity<ErrorDTO> addResponseEntity = testRestTemplate.exchange(url, HttpMethod.POST, requestBody, ErrorDTO.class);
+        assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturn400WhenAddDeviceWithNotExistCredential() {
+        //Given
+        String url = baseUrl + "/api/v1/devices";
+        NetworkDeviceDTO newWrongIpNetworkDevice = new NetworkDeviceDTO();
+        newWrongIpNetworkDevice.setIpAddress("10.220.4.5");
+        newWrongIpNetworkDevice.setLabel("10.220.4.5");
+        newWrongIpNetworkDevice.setCredential("not_exist_credential");
+        newWrongIpNetworkDevice.setSshPort(22);
+
+        //When
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<NetworkDeviceDTO> requestBody = new HttpEntity<>(newWrongIpNetworkDevice, headers);
+
+        ResponseEntity<ErrorDTO> addResponseEntity = testRestTemplate.exchange(url, HttpMethod.POST, requestBody, ErrorDTO.class);
+
+        //Then
+        assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        NetworkDevice networkDevice = networkDeviceRepository.findByIpAddress("10.220.4.5");
+        assertThat(networkDevice).isNull();
+    }
+
+    @Test
+    void shouldReturn400WhenAddDeviceWithExistedLabel() {
+        //Given
+        String url = baseUrl + "/api/v1/devices";
+        NetworkDeviceDTO newWrongIpNetworkDevice = new NetworkDeviceDTO();
+        newWrongIpNetworkDevice.setIpAddress("10.220.4.5");
+        newWrongIpNetworkDevice.setLabel("10.220.4.10");
+        newWrongIpNetworkDevice.setCredential(genericCredential.getName());
+        newWrongIpNetworkDevice.setSshPort(22);
+
+        //When
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<NetworkDeviceDTO> requestBody = new HttpEntity<>(newWrongIpNetworkDevice, headers);
+
+        ResponseEntity<ErrorDTO> addResponseEntity = testRestTemplate.exchange(url, HttpMethod.POST, requestBody, ErrorDTO.class);
+        //Then
+        assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        NetworkDevice networkDevice = networkDeviceRepository.findByIpAddress("10.220.4.5");
+        assertThat(networkDevice).isNull();
+    }
+
+    @Test
+    void shouldReturn400WhenAddDeviceWithExistedIp() {
+        //Given
+        String url = baseUrl + "/api/v1/devices";
+        NetworkDeviceDTO newWrongIpNetworkDevice = new NetworkDeviceDTO();
+        newWrongIpNetworkDevice.setIpAddress("10.220.4.10");
+        newWrongIpNetworkDevice.setLabel("new_label");
+        newWrongIpNetworkDevice.setCredential(genericCredential.getName());
+        newWrongIpNetworkDevice.setSshPort(22);
+
+        //When
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<NetworkDeviceDTO> requestBody = new HttpEntity<>(newWrongIpNetworkDevice, headers);
+        ResponseEntity<ErrorDTO> addResponseEntity = testRestTemplate.exchange(url, HttpMethod.POST, requestBody, ErrorDTO.class);
+
+        //Then
+        assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        NetworkDevice networkDevice = networkDeviceRepository.findByIpAddress("10.220.4.10");
+        assertThat(networkDevice).isNull();
+    }
+
+
 }
