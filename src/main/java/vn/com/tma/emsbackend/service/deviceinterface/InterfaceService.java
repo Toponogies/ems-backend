@@ -11,4 +11,6 @@ public interface InterfaceService extends Service<InterfaceDTO> {
     InterfaceDTO getByPort(Long portId);
 
     void resyncInterfaceByDeviceId(Long deviceId);
+
+    List<InterfaceDTO> getByNetworkDeviceLabel(String deviceLabel);
 }
