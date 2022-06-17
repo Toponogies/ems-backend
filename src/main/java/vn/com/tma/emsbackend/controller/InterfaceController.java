@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -107,5 +109,17 @@ public class InterfaceController {
     public InterfaceDTO updateDevice(@PathVariable(value = "id") Long interfaceId,
                                      @Valid @RequestBody InterfaceDTO interfaceDTO) {
         return interfaceService.update(interfaceId, interfaceDTO);
+    }
+
+    @Operation(summary = "Get interfaces by device label")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get all interface", content = {
+                    @Content(schema = @Schema(implementation = PortDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
+    })
+    @GetMapping("/devices/label/{label}")
+    public List<InterfaceDTO> getByDeviceLabel(@PathVariable(value = "label") String deviceLabel) {
+        return interfaceService.getByNetworkDeviceLabel(deviceLabel);
     }
 }

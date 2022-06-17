@@ -119,6 +119,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setCredential(credential);
 
         networkDevice = networkDeviceRepository.save(networkDevice);
+        networkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
         resyncQueueManager.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
@@ -174,6 +175,11 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     @Override
     public boolean existsById(Long id) {
         return networkDeviceRepository.existsById(id);
+    }
+
+    @Override
+    public boolean existByLabel(String label) {
+        return networkDeviceRepository.existsByLabel(label);
     }
 
     @Override

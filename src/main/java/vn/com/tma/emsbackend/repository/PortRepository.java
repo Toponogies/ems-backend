@@ -11,4 +11,6 @@ public interface PortRepository extends JpaRepository<Port, Long> {
     List<Port> findByNetworkDeviceId(Long networkDeviceId);
 
     Port findByNameAndNetworkDevice_Label(String name, String deviceLabel);
+
+    List<Port> findByNetworkDeviceLabel(String label);
 }

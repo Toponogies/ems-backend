@@ -187,6 +187,19 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     }
 
+    @Override
+    public List<InterfaceDTO> getByNetworkDeviceLabel(String deviceLabel) {
+        log.info("Get all interfaces by device label: {}", deviceLabel);
+
+        boolean checkIfDeviceExisted = networkDeviceService.existByLabel(deviceLabel);
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(deviceLabel);
+        }
+
+        List<Interface> interfaces = interfaceRepository.findByNetworkDeviceLabel(deviceLabel);
+        return interfaceMapper.entitiesToDTOs(interfaces);
+    }
+
     private void syncWithDB(List<Interface> newInterfaces, List<Interface> oldInterfaces, Comparator<Interface> interfaceComparator) {
         oldInterfaces.sort(interfaceComparator);
         newInterfaces.sort(interfaceComparator);

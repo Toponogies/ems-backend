@@ -105,6 +105,19 @@ public class PortServiceImpl implements PortService {
         return portMapper.entityToDTO(port);
     }
 
+    @Override
+    public List<PortDTO> getByNetworkDeviceLabel(String deviceLabel) {
+        log.info("Get all ports by device label: {}", deviceLabel);
+
+        boolean checkIfDeviceExisted = networkDeviceService.existByLabel(deviceLabel);
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(deviceLabel);
+        }
+
+        List<Port> ports = portRepository.findByNetworkDeviceLabel(deviceLabel);
+        return portMapper.entitiesToDTOs(ports);
+    }
+
     public void syncWithDB(List<Port> newPortList, List<Port> oldPortList, Comparator<Port> portComparator) {
         oldPortList.sort(portComparator);
         newPortList.sort(portComparator);
@@ -129,5 +142,4 @@ public class PortServiceImpl implements PortService {
             portRepository.save(keyValuePair.getValue());
         }
     }
-
 }
