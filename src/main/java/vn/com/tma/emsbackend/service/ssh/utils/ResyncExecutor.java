@@ -1,8 +1,10 @@
 package vn.com.tma.emsbackend.service.ssh.utils;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.tma.emsbackend.model.dto.ResyncNotification;
 import vn.com.tma.emsbackend.service.ssh.ResyncService;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -17,15 +19,16 @@ public class ResyncExecutor {
     private final ResyncService resyncService;
     private final ResyncQueueManager resyncQueueManager;
 
-
+    private final SocketIOServer socketIOServer;
     private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(MAX_RESYNC_CONCURRENCY_DEVICE, MAX_RESYNC_CONCURRENCY_DEVICE,
             0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>());
 
-    public ResyncExecutor(ResyncService resyncService, ResyncQueueManager resyncQueueManager) {
+    public ResyncExecutor(ResyncService resyncService, ResyncQueueManager resyncQueueManager, SocketIOServer socketIOServer) {
         this.resyncService = resyncService;
         this.resyncQueueManager = resyncQueueManager;
         this.resyncQueueManager.setResyncExecutorListener(this);
+        this.socketIOServer = socketIOServer;
     }
 
 
@@ -43,11 +46,13 @@ public class ResyncExecutor {
                     } catch (Exception e) {
                         log.error("Resync fail: device id:" + id + " " + e.getMessage());
                         calmDown();
-                    } finally {
-                        resyncQueueManager.popResynchronizingQueue(id);
-                        resyncAllDevicesInWaitingQueue();
                     }
                 }
+                resyncQueueManager.popResynchronizingQueue(id);
+                resyncAllDevicesInWaitingQueue();
+                ResyncNotification resyncNotification = new ResyncNotification();
+                resyncNotification.setDeviceId(id);
+                socketIOServer.getBroadcastOperations().sendEvent("resync", resyncNotification);
             });
             resyncQueueManager.popWaitingQueue();
         }
