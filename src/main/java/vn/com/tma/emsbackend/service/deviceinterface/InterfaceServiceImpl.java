@@ -107,7 +107,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
 
-        interfaceRepository.save(anInterface);
+        interfaceDTO = interfaceMapper.entityToDTO(interfaceRepository.save(anInterface));
         interfaceSSHService.add(anInterface);
 
         return interfaceDTO;
