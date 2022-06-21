@@ -125,10 +125,20 @@
             <artifactId>keycloak-spring-boot-starter</artifactId>
             <version>18.0.0</version>
         </dependency>
+
         <dependency>
-            <groupId>com.corundumstudio.socketio</groupId>
-            <artifactId>netty-socketio</artifactId>
-            <version>1.7.19</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-messaging</artifactId>
+            <version>5.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-security-adapter</artifactId>
+            <version>18.0.1</version>
         </dependency>
     </dependencies>
 
@@ -185,5 +195,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>
