@@ -109,4 +109,16 @@ public class NetworkDeviceController {
     public void deleteDevice(@PathVariable(value = "id") Long deviceId) {
         networkDeviceService.delete(deviceId);
     }
+
+    @Operation(summary = "Get a specific network device by label")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the network device", content = {
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Network device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
+    })
+    @GetMapping("/label/{label}")
+    public NetworkDeviceDTO getDeviceByLabel(@PathVariable(value = "label") String label) {
+        return networkDeviceService.getByLabel(label);
+    }
 }

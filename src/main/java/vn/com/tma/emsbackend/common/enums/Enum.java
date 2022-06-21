@@ -39,4 +39,8 @@ public class Enum {
         DONE,
     }
 
+    public enum SocketAction{
+        RESYNC_DONE
+    }
+
 }
