@@ -131,7 +131,7 @@ public class SSHExecutor {
         long startTime = System.currentTimeMillis();
         while (!isEndOfMessage(responseStream.toString())) {
             channelShell.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), 100);
-            if (System.currentTimeMillis() - startTime > 10000) {
+            if (System.currentTimeMillis() - startTime > 2000) {
                 close();
                 return false;
             }
