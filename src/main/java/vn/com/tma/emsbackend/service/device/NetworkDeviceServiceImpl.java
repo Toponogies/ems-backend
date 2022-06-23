@@ -156,6 +156,8 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
 
 
         networkDevice = networkDeviceRepository.save(networkDevice);
+        networkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
+
         resyncQueueManager.pushToWaitingQueue(networkDevice.getId());
 
         return networkDeviceMapper.entityToDTO(networkDevice);
