@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.com.tma.emsbackend.common.commandgenerator.ConfigurationCommandGenerator;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
-import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
+import vn.com.tma.emsbackend.service.ssh.ConfigurationSSHService;
 
 @Service
 @Slf4j
@@ -15,17 +14,17 @@ import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final NetworkDeviceService networkDeviceService;
 
-    private final NetworkDeviceSSHService networkDeviceSSHService;
+    private final ConfigurationSSHService networkDeviceSSHService;
 
 
     @Override
     @Transactional
-    public byte[] downloadDeviceConfigFileById(Long id) {
+    public byte[] downloadDeviceConfigFileById(Long id) throws DeviceNotFoundException {
         boolean checkIfExistedById = networkDeviceService.existsById(id);
         if (!checkIfExistedById) {
             throw new DeviceNotFoundException(String.valueOf(id));
         }
-        String result = networkDeviceSSHService.sendCommand(id, ConfigurationCommandGenerator.export());
+        String result = networkDeviceSSHService.exportDeviceConfig(id);
         return result.getBytes();
     }
 }
