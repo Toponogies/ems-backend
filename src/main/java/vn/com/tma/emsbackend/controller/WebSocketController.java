@@ -1,7 +1,6 @@
 package vn.com.tma.emsbackend.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.com.tma.emsbackend.model.dto.ResyncNotificationDTO;
 
 @RestController
-@Slf4j
 @RequiredArgsConstructor
 public class WebSocketController {
 
