@@ -44,8 +44,9 @@ public class ResyncExecutor {
                 for (int retryTime = 1; retryTime <= LIMIT_RETRIES_NUMBER; retryTime++) {
                     try {
                         log.info("Try to resync device id: " + id + " Retry: " + retryTime + "/" + LIMIT_RETRIES_NUMBER);
-                        resyncQueueManager.pushToResynchronizingQueue(id);
+
                         resyncService.resyncDeviceById(id);
+
                         retryTime = LIMIT_RETRIES_NUMBER;
                     } catch (Exception e) {
                         log.error("Resync fail: device id:" + id + " " + e.getMessage());
@@ -61,7 +62,8 @@ public class ResyncExecutor {
                 resyncNotificationDTO.setDevice(networkDevice.get().getLabel());
                 webSocketTextController.sendResyncDoneMessage(resyncNotificationDTO);
             });
-            resyncQueueManager.popWaitingQueue();
+            resyncQueueManager.pushToResynchronizingQueue(id);
+            resyncQueueManager.popWaitingQueue(id);
         }
     }
 
