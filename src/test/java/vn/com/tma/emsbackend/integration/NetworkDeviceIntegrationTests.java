@@ -292,8 +292,6 @@ class NetworkDeviceIntegrationTests {
 
         //Then
         assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        NetworkDevice networkDevice = networkDeviceRepository.findByIpAddress("10.220.4.10");
-        assertThat(networkDevice).isNull();
     }
 
     @Test

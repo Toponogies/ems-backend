@@ -166,9 +166,7 @@ class NetworkDeviceControllerTests {
 
         given().get("/devices/type/some-invalid-type")
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(testNetworkDevice))));
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
 }
