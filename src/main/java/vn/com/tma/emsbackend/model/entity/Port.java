@@ -42,7 +42,11 @@ public class Port {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Port port = (Port) o;
-        return Objects.equals(connector, port.connector) && Objects.equals(macAddress, port.macAddress) && Objects.equals(name, port.name) && state == port.state && Objects.equals(networkDevice.getId(), port.networkDevice.getId());
+        return Objects.equals(connector, port.connector)
+                && Objects.equals(macAddress, port.macAddress)
+                && Objects.equals(name, port.name)
+                && state == port.state
+                && Objects.equals(networkDevice.getId(), port.networkDevice.getId());
     }
 
     @Override
