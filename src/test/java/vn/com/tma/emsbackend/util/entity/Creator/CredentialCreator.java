@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.util.entity;
+package vn.com.tma.emsbackend.util.entity.Creator;
 
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;

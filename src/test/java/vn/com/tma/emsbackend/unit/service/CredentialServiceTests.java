@@ -5,9 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
@@ -19,13 +16,13 @@ import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
 import vn.com.tma.emsbackend.service.credential.CredentialServiceImpl;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static vn.com.tma.emsbackend.util.entity.CredentialCreator.createCredentialBy;
+import static vn.com.tma.emsbackend.util.entity.Creator.CredentialCreator.createCredentialBy;
 
 @ExtendWith(MockitoExtension.class)
 class CredentialServiceTests {
