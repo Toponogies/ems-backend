@@ -23,8 +23,8 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceServiceImpl;
 import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 import vn.com.tma.emsbackend.service.ssh.utils.DeviceConnectionManager;
 import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
-import vn.com.tma.emsbackend.util.entity.CredentialCreator;
-import vn.com.tma.emsbackend.util.entity.NetworkDeviceCreator;
+import vn.com.tma.emsbackend.util.entity.Creator.CredentialCreator;
+import vn.com.tma.emsbackend.util.entity.Creator.NetworkDeviceCreator;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +91,7 @@ class NetworkDeviceServiceTests {
         networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
         networkDevice.setCredential(genericCredential);
 
-        networkDeviceDTO = NetworkDeviceCreator.createNetworkDeviceDTO(networkDevice);
+        networkDeviceDTO = NetworkDeviceCreator.createDTOBy(networkDevice);
     }
 
     @Test
@@ -174,7 +174,7 @@ class NetworkDeviceServiceTests {
         when(credentialService.getByName(networkDevice.getCredential().getName())).thenReturn(CredentialCreator.createCredentialDtoBy(genericCredential));
 
         //when
-        networkDeviceDTO = NetworkDeviceCreator.createNetworkDeviceDTO(networkDevice);
+        networkDeviceDTO = NetworkDeviceCreator.createDTOBy(networkDevice);
         NetworkDeviceDTO networkDeviceDTOResult = networkDeviceService.add(networkDeviceDTO);
 
         assertThat(resyncQueueManager.getResyncStatus(networkDevice.getId())).isEqualTo(Enum.ResyncStatus.ONGOING);
@@ -188,7 +188,7 @@ class NetworkDeviceServiceTests {
         when(networkDeviceRepository.existsByLabel(networkDevice.getLabel())).thenReturn(true);
 
         //when
-        networkDeviceDTO = NetworkDeviceCreator.createNetworkDeviceDTO(networkDevice);
+        networkDeviceDTO = NetworkDeviceCreator.createDTOBy(networkDevice);
         assertThatThrownBy(() -> networkDeviceService.add(networkDeviceDTO)).isInstanceOf(DeviceLabelExistsException.class);
 
     }
@@ -199,7 +199,7 @@ class NetworkDeviceServiceTests {
         when(networkDeviceRepository.existsByIpAddress(networkDevice.getLabel())).thenReturn(true);
 
         //when
-        networkDeviceDTO = NetworkDeviceCreator.createNetworkDeviceDTO(networkDevice);
+        networkDeviceDTO = NetworkDeviceCreator.createDTOBy(networkDevice);
         assertThatThrownBy(() -> networkDeviceService.add(networkDeviceDTO)).isInstanceOf(DeviceIPExistsException.class);
 
     }

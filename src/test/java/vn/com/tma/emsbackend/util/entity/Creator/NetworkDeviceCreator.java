@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.util.entity;
+package vn.com.tma.emsbackend.util.entity.Creator;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
@@ -6,7 +6,7 @@ import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 
 public class NetworkDeviceCreator {
-    public static NetworkDevice createNetworkDevice(NetworkDeviceDTO networkDeviceDTO) {
+    public static NetworkDevice createEntityBy(NetworkDeviceDTO networkDeviceDTO) {
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(networkDevice.getId());
         networkDevice.setSshPort(networkDeviceDTO.getSshPort());
@@ -24,7 +24,7 @@ public class NetworkDeviceCreator {
         return networkDevice;
     }
 
-    public static NetworkDeviceDTO createNetworkDeviceDTO(NetworkDevice networkDevice){
+    public static NetworkDeviceDTO createDTOBy(NetworkDevice networkDevice){
         NetworkDeviceDTO networkDeviceDTO = new NetworkDeviceDTO();
         networkDeviceDTO.setId(networkDevice.getId());
         networkDeviceDTO.setFirmware(networkDevice.getFirmware());
