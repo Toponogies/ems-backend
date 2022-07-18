@@ -4,9 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import vn.com.tma.emsbackend.common.comparator.PortComparator;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.PortDTO;
@@ -20,7 +18,7 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.port.PortService;
 import vn.com.tma.emsbackend.service.port.PortServiceImpl;
 import vn.com.tma.emsbackend.service.ssh.PortSSHService;
-import vn.com.tma.emsbackend.util.entity.Creator.PortCreator;
+import vn.com.tma.emsbackend.util.entity.creator.PortCreator;
 
 import java.util.ArrayList;
 import java.util.List;

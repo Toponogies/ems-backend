@@ -23,7 +23,7 @@ import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.exception.PortNotFoundException;
 import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
-import vn.com.tma.emsbackend.util.entity.Creator.InterfaceCreator;
+import vn.com.tma.emsbackend.util.entity.creator.InterfaceCreator;
 
 import java.util.List;
 
@@ -100,28 +100,28 @@ public class InterfaceControllerTests {
     @WithMockUser(roles = "admin")
     void shouldReturn200AndAllInterfaceWhenGetAllInterface() throws JsonProcessingException {
         //give
-        when(interfaceService.getAll()).thenReturn(List.of(InterfaceCreator.createCredentialDtoBy(genericInterface)));
+        when(interfaceService.getAll()).thenReturn(List.of(InterfaceCreator.createDtoBy(genericInterface)));
 
         //when
         given().get("/interfaces")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(InterfaceCreator.createCredentialDtoBy(genericInterface)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(InterfaceCreator.createDtoBy(genericInterface)))));
     }
 
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndInterfacesWhenGetInterfaceByDeviceId() throws JsonProcessingException {
         //give
-        when(interfaceService.getByNetworkDevice(genericInterface.getId())).thenReturn(List.of(InterfaceCreator.createCredentialDtoBy(genericInterface)));
+        when(interfaceService.getByNetworkDevice(genericInterface.getId())).thenReturn(List.of(InterfaceCreator.createDtoBy(genericInterface)));
 
         //when
         given().get("/interfaces/devices/" + genericInterface.getNetworkDevice().getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(InterfaceCreator.createCredentialDtoBy(genericInterface)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(InterfaceCreator.createDtoBy(genericInterface)))));
     }
 
     @Test
@@ -141,14 +141,14 @@ public class InterfaceControllerTests {
     @WithMockUser(roles = "viewer")
     void shouldReturn200AndSpecificInterfaceWhenGetInterfaceByPort() throws JsonProcessingException {
         //give
-        when(interfaceService.getByPort(genericInterface.getPort().getId())).thenReturn(InterfaceCreator.createCredentialDtoBy(genericInterface));
+        when(interfaceService.getByPort(genericInterface.getPort().getId())).thenReturn(InterfaceCreator.createDtoBy(genericInterface));
 
         //when
         given().get("/interfaces/ports/" + genericInterface.getPort().getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(InterfaceCreator.createCredentialDtoBy(genericInterface))));
+                .body(is(jsonMapper.writeValueAsString(InterfaceCreator.createDtoBy(genericInterface))));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class InterfaceControllerTests {
     @WithMockUser(roles = "admin")
     void shouldReturn201AndNewInterfaceWhenGetInterfaceById() throws JsonProcessingException {
         //give
-        InterfaceDTO interfaceDTO = InterfaceCreator.createCredentialDtoBy(genericInterface);
+        InterfaceDTO interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
         when(interfaceService.add(any(InterfaceDTO.class))).thenReturn(interfaceDTO);
 
         //when
@@ -185,13 +185,13 @@ public class InterfaceControllerTests {
     @WithMockUser(roles = "viewer")
     void shouldReturn200AndInterfaceWhenUpdateInterface() throws JsonProcessingException {
         //give
-        InterfaceDTO interfaceDTO = InterfaceCreator.createCredentialDtoBy(genericInterface);
+        InterfaceDTO interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
         interfaceDTO.setName("new name");
         when(interfaceService.update(anyLong(), any(InterfaceDTO.class))).thenReturn(interfaceDTO);
 
         //when
         given().contentType(ContentType.JSON)
-                .body(InterfaceCreator.createCredentialDtoBy(genericInterface))
+                .body(InterfaceCreator.createDtoBy(genericInterface))
                 .put("/interfaces/" + genericInterface.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
@@ -207,7 +207,7 @@ public class InterfaceControllerTests {
 
         //when
         given().contentType(ContentType.JSON)
-                .body(InterfaceCreator.createCredentialDtoBy(genericInterface))
+                .body(InterfaceCreator.createDtoBy(genericInterface))
                 .put("/interfaces/" + genericInterface.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value());

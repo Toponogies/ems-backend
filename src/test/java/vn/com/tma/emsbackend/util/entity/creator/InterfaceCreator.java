@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.util.entity.Creator;
+package vn.com.tma.emsbackend.util.entity.creator;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
@@ -17,7 +17,7 @@ public class InterfaceCreator {
         return anInterface;
     }
 
-    public static InterfaceDTO createCredentialDtoBy(Interface anInterface) {
+    public static InterfaceDTO createDtoBy(Interface anInterface) {
         InterfaceDTO interfaceDTO = new InterfaceDTO();
         interfaceDTO.setId(anInterface.getId());
         interfaceDTO.setDhcp(anInterface.getDhcp().toString());

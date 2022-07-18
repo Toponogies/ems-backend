@@ -4,16 +4,12 @@ package vn.com.tma.emsbackend.unit.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.restassured.http.ContentType;
-import io.restassured.http.Header;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +19,7 @@ import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.service.port.PortService;
-import vn.com.tma.emsbackend.util.auth.LoginUtil;
-import vn.com.tma.emsbackend.util.entity.Creator.PortCreator;
+import vn.com.tma.emsbackend.util.entity.creator.PortCreator;
 
 import java.util.List;
 

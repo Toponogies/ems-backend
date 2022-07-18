@@ -1,11 +1,11 @@
-package vn.com.tma.emsbackend.util.entity.Creator;
+package vn.com.tma.emsbackend.util.entity.creator;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Port;
 
 public class PortCreator {
-    public static Port createCredentialBy(PortDTO portDTO) {
+    public static Port createEntityBy(PortDTO portDTO) {
         Port port = new Port();
         port.setId(portDTO.getId());
         port.setConnector(portDTO.getConnector());

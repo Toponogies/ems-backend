@@ -20,7 +20,7 @@ import vn.com.tma.emsbackend.repository.InterfaceRepository;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.repository.PortRepository;
 import vn.com.tma.emsbackend.util.auth.LoginUtil;
-import vn.com.tma.emsbackend.util.entity.Creator.InterfaceCreator;
+import vn.com.tma.emsbackend.util.entity.creator.InterfaceCreator;
 import vn.com.tma.emsbackend.util.entity.DTO.LoginDTO;
 
 import java.util.List;
@@ -120,7 +120,7 @@ public class InterfaceIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         InterfaceDTO interfaceDTOsResult = responseEntity.getBody().get(0);
-        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createCredentialDtoBy(genericInterface));
+        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createDtoBy(genericInterface));
     }
 
     @Test
@@ -137,7 +137,7 @@ public class InterfaceIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         InterfaceDTO interfaceDTOsResult = responseEntity.getBody();
-        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createCredentialDtoBy(genericInterface));
+        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createDtoBy(genericInterface));
     }
 
     @Test
@@ -154,7 +154,7 @@ public class InterfaceIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         InterfaceDTO interfaceDTOsResult = responseEntity.getBody();
-        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createCredentialDtoBy(genericInterface));
+        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createDtoBy(genericInterface));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class InterfaceIntegrationTests {
         //add
         String url = baseUrl + "/api/v1/interfaces";
 
-        InterfaceDTO interfaceDTO = InterfaceCreator.createCredentialDtoBy(genericInterface);
+        InterfaceDTO interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
@@ -178,7 +178,7 @@ public class InterfaceIntegrationTests {
         InterfaceDTO interfaceDTOsResult = responseEntity.getBody();
 
         assertThat(deleteResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
-        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createCredentialDtoBy(genericInterface));
+        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createDtoBy(genericInterface));
     }
 
     @Test
@@ -186,7 +186,7 @@ public class InterfaceIntegrationTests {
         //add
         String url = baseUrl + "/api/v1/interfaces";
 
-        InterfaceDTO interfaceDTO = InterfaceCreator.createCredentialDtoBy(genericInterface);
+        InterfaceDTO interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
@@ -195,12 +195,12 @@ public class InterfaceIntegrationTests {
         assertThat(addResponseEntity.getBody()).isNotNull();
         assertThat(addResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         InterfaceDTO interfaceDTOsResult = addResponseEntity.getBody();
-        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createCredentialDtoBy(genericInterface));
+        assertInterfacesIsEqual(interfaceDTOsResult, InterfaceCreator.createDtoBy(genericInterface));
 
         //update
         url = baseUrl + "/api/v1/interfaces/" + interfaceDTOsResult.getId();
         genericInterface.setName("UpdatedName");
-        interfaceDTO = InterfaceCreator.createCredentialDtoBy(genericInterface);
+        interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
         ResponseEntity<InterfaceDTO> updateResponseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(interfaceDTO,headers), InterfaceDTO.class);
         assertThat(updateResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
