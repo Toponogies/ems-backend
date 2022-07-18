@@ -80,55 +80,55 @@ public class PortControllerTests {
     @WithMockUser(roles = "admin")
     void shouldReturn200AndAllPortWhenGetAllPort() throws JsonProcessingException {
         //give
-        when(portService.getAll()).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getAll()).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndSpecificPortWhenGetPortById() throws JsonProcessingException {
         //given
-        when(portService.get(genericPort.getId())).thenReturn(PortCreator.createCredentialDtoBy(genericPort));
+        when(portService.get(genericPort.getId())).thenReturn(PortCreator.createDtoBy(genericPort));
 
         //when
         given().get("/ports/" + genericPort.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(PortCreator.createCredentialDtoBy(genericPort))));
+                .body(is(jsonMapper.writeValueAsString(PortCreator.createDtoBy(genericPort))));
     }
 
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndPortBelongToDeviceWhenGetPortByIdDevice() throws JsonProcessingException {
         //given
-        when(portService.getByNetworkDevice(genericPort.getNetworkDevice().getId())).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getByNetworkDevice(genericPort.getNetworkDevice().getId())).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports/devices/" + genericPort.getNetworkDevice().getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
 
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndPortBelongToDeviceWhenGetPortByDeviceLabel() throws JsonProcessingException {
         //given
-        when(portService.getByNetworkDeviceLabel(genericPort.getNetworkDevice().getLabel())).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getByNetworkDeviceLabel(genericPort.getNetworkDevice().getLabel())).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports/devices/label/" + genericPort.getNetworkDevice().getLabel())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
 
     @Test

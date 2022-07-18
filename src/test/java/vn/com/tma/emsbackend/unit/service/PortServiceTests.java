@@ -89,7 +89,7 @@ public class PortServiceTests {
         genericPort.setNetworkDevice(genericNetworkDevice);
         genericPort.setState(Enum.State.ENABLED);
 
-        genericPortDTO = PortCreator.createCredentialDtoBy(genericPort);
+        genericPortDTO = PortCreator.createDtoBy(genericPort);
 
         mockPortsInDB = new ArrayList<>();
         mockPortsInDB.add(genericPort);

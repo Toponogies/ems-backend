@@ -105,7 +105,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         PortDTO portDTOResult = responseEntity.getBody().get(0);
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
 
@@ -121,7 +121,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         PortDTO portDTOResult = responseEntity.getBody();
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
     @Test
@@ -149,7 +149,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         PortDTO portDTOResult = responseEntity.getBody().get(0);
 
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
     @Test
