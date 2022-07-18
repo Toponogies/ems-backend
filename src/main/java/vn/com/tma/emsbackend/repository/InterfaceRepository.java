@@ -19,4 +19,6 @@ public interface InterfaceRepository extends JpaRepository<Interface, Long> {
     void deleteByPortId(Long portId);
 
     List<Interface> findByNetworkDeviceId(long deviceId);
+
+    List<Interface> findByNetworkDeviceLabel(String label);
 }

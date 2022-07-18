@@ -22,7 +22,7 @@ public interface PortMapper extends IMapper<Port, PortDTO> {
     PortDTO entityToDTO(Port port);
 
     @Named("getInterfaces")
-    default List<String> getInterfaces(List<Interface> interfaces) {
-        return interfaces.stream().map(Interface::getName).collect(Collectors.toList());
+    default String getInterfaces(List<Interface> interfaces) {
+        return interfaces.stream().map(Interface::getName).collect(Collectors.joining(", "));
     }
 }

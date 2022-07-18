@@ -107,7 +107,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setNetworkDevice(networkDevice);
         anInterface.setPort(port);
 
-        interfaceRepository.save(anInterface);
+        interfaceDTO = interfaceMapper.entityToDTO(interfaceRepository.save(anInterface));
         interfaceSSHService.add(anInterface);
 
         return interfaceDTO;
@@ -185,6 +185,19 @@ public class InterfaceServiceImpl implements InterfaceService {
 
         syncWithDB(newInterfaces, oldInterfaces, new InterfaceComparator());
 
+    }
+
+    @Override
+    public List<InterfaceDTO> getByNetworkDeviceLabel(String deviceLabel) {
+        log.info("Get all interfaces by device label: {}", deviceLabel);
+
+        boolean checkIfDeviceExisted = networkDeviceService.existByLabel(deviceLabel);
+        if (!checkIfDeviceExisted) {
+            throw new DeviceNotFoundException(deviceLabel);
+        }
+
+        List<Interface> interfaces = interfaceRepository.findByNetworkDeviceLabel(deviceLabel);
+        return interfaceMapper.entitiesToDTOs(interfaces);
     }
 
     private void syncWithDB(List<Interface> newInterfaces, List<Interface> oldInterfaces, Comparator<Interface> interfaceComparator) {

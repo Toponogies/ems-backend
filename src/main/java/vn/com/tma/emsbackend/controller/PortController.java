@@ -16,6 +16,7 @@ import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.service.port.PortService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -52,5 +53,17 @@ public class PortController {
     @GetMapping("/{id}")
     public PortDTO getDeviceById(@PathVariable(value = "id") Long portId) {
         return portService.get(portId);
+    }
+
+    @Operation(summary = "Get ports by device label")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get all port", content = {
+                    @Content(schema = @Schema(implementation = PortDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Device not found", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})
+    })
+    @GetMapping("/devices/label/{label}")
+    public List<PortDTO> getByDeviceLabel(@PathVariable(value = "label") String deviceLabel) {
+        return portService.getByNetworkDeviceLabel(deviceLabel);
     }
 }
