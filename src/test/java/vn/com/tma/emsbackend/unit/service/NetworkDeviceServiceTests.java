@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +51,8 @@ class NetworkDeviceServiceTests {
     private DeviceConnectionManager deviceConnectionManager = new DeviceConnectionManager(networkDeviceRepository);
 
     private final NetworkDeviceSSHRepository networkDeviceSSHRepository = new NetworkDeviceSSHRepository();
-    private final NetworkDeviceSSHService networkDeviceSSHService = new NetworkDeviceSSHService(networkDeviceSSHRepository);
+    @Mock
+    private NetworkDeviceSSHService networkDeviceSSHService;
 
     private NetworkDeviceService networkDeviceService;
 
@@ -205,6 +207,42 @@ class NetworkDeviceServiceTests {
     }
 
 
+    @Test
+    void shouldResyncDevice() {
+        NetworkDevice networkDeviceFromDevice = new NetworkDevice();
+        networkDeviceFromDevice.setId(1L);
+        networkDeviceFromDevice.setDeviceType(Enum.NetworkDeviceType.LT);
+        networkDeviceFromDevice.setFirmware("AMO-10000-LT_7.9.4_24860");
+        networkDeviceFromDevice.setIpAddress("10.220.4.5");
+        networkDeviceFromDevice.setLabel("10.220.4.5");
+        networkDeviceFromDevice.setMacAddress("00:15:AD:50:FD:B0");
+        networkDeviceFromDevice.setModel("AMO-10000-LT");
+        networkDeviceFromDevice.setSerial("C410-4492");
+        networkDeviceFromDevice.setSshPort(22);
+        networkDeviceFromDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+
+        networkDevice = new NetworkDevice();
+        networkDevice.setIpAddress("10.220.4.5");
+        networkDevice.setLabel("10.220.4.5");
+        networkDevice.setSshPort(22);
+        networkDevice.setCredential(genericCredential);
+
+        when(networkDeviceRepository.findById(anyLong())).thenReturn(Optional.of(networkDevice));
+        when(networkDeviceSSHService.getNetworkDeviceDetail(anyLong())).thenReturn(networkDeviceFromDevice);
+        doAnswer(invocation -> {
+            networkDevice = invocation.getArgument(0);
+            return null;
+        }).when(networkDeviceRepository).save(any(NetworkDevice.class));
+
+        networkDeviceService.resyncDeviceDetailById(1L);
+
+        assertThat(networkDevice.getIpAddress()).isEqualTo(networkDeviceFromDevice.getIpAddress());
+        assertThat(networkDevice.getMacAddress()).isEqualTo(networkDeviceFromDevice.getMacAddress());
+        assertThat(networkDevice.getCredential().getId()).isEqualTo(networkDeviceFromDevice.getCredential().getId());
+        assertThat(networkDevice.getSshPort()).isEqualTo(networkDeviceFromDevice.getSshPort());
+        assertThat(networkDevice.getResyncStatus()).isEqualTo(networkDeviceFromDevice.getResyncStatus());
+        assertThat(networkDevice.getLabel()).isEqualTo(networkDeviceFromDevice.getLabel());
+    }
 
     void assertThatNetworkDeviceIsEqual(NetworkDeviceDTO networkDeviceDTOResult, NetworkDeviceDTO networkDeviceDTO) {
         assertThat(networkDeviceDTOResult.getId()).isEqualTo(networkDeviceDTO.getId());
@@ -226,6 +264,4 @@ class NetworkDeviceServiceTests {
         assertThat(networkDeviceDTOResult.getResyncStatus()).isEqualTo(networkDeviceDTO.getResyncStatus());
         assertThat(networkDeviceDTOResult.getLabel()).isEqualTo(networkDeviceDTO.getLabel());
     }
-
-
 }
