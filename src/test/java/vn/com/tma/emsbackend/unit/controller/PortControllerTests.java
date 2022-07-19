@@ -4,16 +4,12 @@ package vn.com.tma.emsbackend.unit.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.restassured.http.ContentType;
-import io.restassured.http.Header;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +19,7 @@ import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.service.port.PortService;
-import vn.com.tma.emsbackend.util.auth.LoginUtil;
-import vn.com.tma.emsbackend.util.entity.Creator.PortCreator;
+import vn.com.tma.emsbackend.util.entity.creator.PortCreator;
 
 import java.util.List;
 
@@ -85,55 +80,55 @@ public class PortControllerTests {
     @WithMockUser(roles = "admin")
     void shouldReturn200AndAllPortWhenGetAllPort() throws JsonProcessingException {
         //give
-        when(portService.getAll()).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getAll()).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndSpecificPortWhenGetPortById() throws JsonProcessingException {
         //given
-        when(portService.get(genericPort.getId())).thenReturn(PortCreator.createCredentialDtoBy(genericPort));
+        when(portService.get(genericPort.getId())).thenReturn(PortCreator.createDtoBy(genericPort));
 
         //when
         given().get("/ports/" + genericPort.getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(PortCreator.createCredentialDtoBy(genericPort))));
+                .body(is(jsonMapper.writeValueAsString(PortCreator.createDtoBy(genericPort))));
     }
 
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndPortBelongToDeviceWhenGetPortByIdDevice() throws JsonProcessingException {
         //given
-        when(portService.getByNetworkDevice(genericPort.getNetworkDevice().getId())).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getByNetworkDevice(genericPort.getNetworkDevice().getId())).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports/devices/" + genericPort.getNetworkDevice().getId())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
 
     @Test
     @WithMockUser(roles = "admin")
     void shouldReturn200AndPortBelongToDeviceWhenGetPortByDeviceLabel() throws JsonProcessingException {
         //given
-        when(portService.getByNetworkDeviceLabel(genericPort.getNetworkDevice().getLabel())).thenReturn(List.of(PortCreator.createCredentialDtoBy(genericPort)));
+        when(portService.getByNetworkDeviceLabel(genericPort.getNetworkDevice().getLabel())).thenReturn(List.of(PortCreator.createDtoBy(genericPort)));
 
         //when
         given().get("/ports/devices/label/" + genericPort.getNetworkDevice().getLabel())
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createCredentialDtoBy(genericPort)))));
+                .body(is(jsonMapper.writeValueAsString(List.of(PortCreator.createDtoBy(genericPort)))));
     }
 
     @Test

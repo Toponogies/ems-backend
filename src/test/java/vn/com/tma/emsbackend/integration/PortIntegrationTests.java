@@ -19,7 +19,7 @@ import vn.com.tma.emsbackend.repository.CredentialRepository;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
 import vn.com.tma.emsbackend.repository.PortRepository;
 import vn.com.tma.emsbackend.util.auth.LoginUtil;
-import vn.com.tma.emsbackend.util.entity.Creator.PortCreator;
+import vn.com.tma.emsbackend.util.entity.creator.PortCreator;
 import vn.com.tma.emsbackend.util.entity.DTO.LoginDTO;
 
 import java.util.List;
@@ -105,7 +105,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         PortDTO portDTOResult = responseEntity.getBody().get(0);
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
 
@@ -121,7 +121,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         PortDTO portDTOResult = responseEntity.getBody();
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
     @Test
@@ -149,7 +149,7 @@ class PortIntegrationTests {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         PortDTO portDTOResult = responseEntity.getBody().get(0);
 
-        assertPortsIsEqual(portDTOResult, PortCreator.createCredentialDtoBy(genericPort));
+        assertPortsIsEqual(portDTOResult, PortCreator.createDtoBy(genericPort));
     }
 
     @Test

@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.util.entity.Creator;
+package vn.com.tma.emsbackend.util.entity.creator;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
