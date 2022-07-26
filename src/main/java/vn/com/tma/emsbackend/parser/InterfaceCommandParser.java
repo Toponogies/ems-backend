@@ -36,7 +36,7 @@ public class InterfaceCommandParser {
         ListSplitter listSplitter = new ListSplitter(executeResult);
         anInterface.setName(listSplitter.get(SSHColumn.Interface.NAME));
         anInterface.setState(Enum.State.valueOf(listSplitter.get(SSHColumn.Interface.STATE_DETAIL).toUpperCase()));
-        anInterface.setDhcp(Enum.State.parse(SSHColumn.Interface.DHCP));
+        anInterface.setDhcp(Enum.State.parse(listSplitter.get(SSHColumn.Interface.DHCP)));
         anInterface.setIpAddress(listSplitter.get(SSHColumn.Interface.IPADDRESS));
         anInterface.setNetmask(listSplitter.get(SSHColumn.Interface.NETMASK));
         anInterface.setGateway(listSplitter.get(SSHColumn.Interface.GATEWAY));

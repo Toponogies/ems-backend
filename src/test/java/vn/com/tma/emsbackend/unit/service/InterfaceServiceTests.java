@@ -82,6 +82,8 @@ public class InterfaceServiceTests {
         genericNetworkDevice.setSerial("C410-4492");
         genericNetworkDevice.setSshPort(22);
         genericNetworkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        genericNetworkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
+
         genericNetworkDevice.setCredential(genericCredential);
 
         genericPort = new Port();
@@ -129,7 +131,7 @@ public class InterfaceServiceTests {
         //given
         when(interfaceRepository.findByPort_Id(genericInterface.getPort().getId())).thenReturn(genericInterface);
         when(portService.existsById(genericInterface.getPort().getId())).thenReturn(true);
-        when(interfaceMapper.entitiesToDTOs(anyList())).thenReturn(List.of(genericInterfaceDTO));
+        when(interfaceMapper.entityToDTO(any(Interface.class))).thenReturn(genericInterfaceDTO);
 
         //when
         InterfaceDTO interfaceDTOResult = interfaceService.getByPort(genericInterface.getPort().getId());

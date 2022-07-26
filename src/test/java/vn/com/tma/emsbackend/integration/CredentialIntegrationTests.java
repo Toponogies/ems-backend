@@ -1,28 +1,30 @@
 package vn.com.tma.emsbackend.integration;
 
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.response.Response;
+;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
+import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
+import vn.com.tma.emsbackend.model.mapper.CredentialMapper;
+import vn.com.tma.emsbackend.model.mapper.CredentialMapperImpl;
 import vn.com.tma.emsbackend.repository.CredentialRepository;
-import vn.com.tma.emsbackend.util.database.ResetDatabase;
+import vn.com.tma.emsbackend.util.auth.LoginUtil;
+import vn.com.tma.emsbackend.util.entity.DTO.LoginDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WithMockUser
-@ResetDatabase
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CredentialIntegrationTests {
     @LocalServerPort
     private Integer port;
@@ -32,55 +34,122 @@ class CredentialIntegrationTests {
     @Autowired
     private CredentialRepository credentialRepository;
 
-    private Credential credential;
+    private CredentialMapper credentialMapper = new CredentialMapperImpl();
+    private Credential genericCredential;
+    private CredentialDTO genericCredentialDTO;
+
+    @Autowired
+    private TestRestTemplate testRestTemplate;
+
+    private String accessToken;
+    private LoginUtil loginUtil= new LoginUtil();
+
 
     @BeforeEach
     void setUp() {
         baseURL = "http://localhost:" + port;
 
-        credential = new Credential();
-        credential.setId(1L);
-        credential.setName("name1");
-        credential.setUsername("username1");
-        credential.setPassword("password1");
+        genericCredential = new Credential();
+        genericCredential.setName("admin");
+        genericCredential.setPassword("admin");
+        genericCredential.setUsername("admin");
+        genericCredential.setId(1L);
+
+
+        LoginDTO loginDTO = loginUtil.loginAsAdmin(testRestTemplate);
+        accessToken = loginDTO.getAccess_token();
+
+        genericCredentialDTO = credentialMapper.entityToDTO(genericCredential);
     }
 
     @Test
     void shouldReturn200AndValidCredentialsWhenGetAllCredentials() {
         // Given
-        Credential credential1 = new Credential();
-        credential1.setId(2L);
-        credential1.setName("name2");
-        credential1.setUsername("username2");
-        credential1.setPassword("password2");
+        credentialRepository.save(genericCredential);
 
-        List<Credential> credentialList = new ArrayList<>();
-        credentialList.add(credential);
-        credentialList.add(credential1);
+        String url = baseURL + "/api/v1/credentials";
 
-        credentialList = credentialRepository.saveAll(credentialList);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
 
-        // When
-        Response response = given()
-                .get(baseURL + "/api/v1/credentials");
+        ResponseEntity<List<CredentialDTO>> responseEntity = testRestTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<>() {
+        });
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().size()).isOne();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK.value());
+        assertCredentialsIsEqual(responseEntity.getBody().get(0), genericCredentialDTO);
+    }
 
-        List<CredentialDTO> credentialsResponse = response.getBody().as(new TypeRef<>() {});
-        assertThat(credentialsResponse).hasSize(2);
-        CredentialDTO credentialResult1 = credentialsResponse.get(0);
-        Credential credentialBase1 = credentialList.get(0);
-        assertThat(credentialResult1.getId()).isEqualTo(credentialBase1.getId());
-        assertThat(credentialResult1.getName()).isEqualTo(credentialBase1.getName());
-        assertThat(credentialResult1.getUsername()).isEqualTo(credentialBase1.getUsername());
-        assertThat(credentialResult1.getPassword()).isEqualTo(credentialBase1.getPassword());
+    @Test
+    void shouldReturn201AndCredentialWhenAddNewCredential() {
+        // Given
+        String url = baseURL + "/api/v1/credentials";
 
-        CredentialDTO credentialResult2 = credentialsResponse.get(1);
-        Credential credentialBase2 = credentialList.get(1);
-        assertThat(credentialResult2.getId()).isEqualTo(credentialBase2.getId());
-        assertThat(credentialResult2.getName()).isEqualTo(credentialBase2.getName());
-        assertThat(credentialResult2.getUsername()).isEqualTo(credentialBase2.getUsername());
-        assertThat(credentialResult2.getPassword()).isEqualTo(credentialBase2.getPassword());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        genericCredentialDTO.setDevices(null);
+        HttpEntity<CredentialDTO> credentialDTOHttpEntity = new HttpEntity<>(genericCredentialDTO, headers);
+
+        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate.exchange(url, HttpMethod.POST, credentialDTOHttpEntity, CredentialDTO.class);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+
+        assertCredentialsIsEqual(responseEntity.getBody(), genericCredentialDTO);
+
+    }
+
+    @Test
+    void shouldReturn201AndCredentialWhenUpdateCredential() {
+        // Given
+        credentialRepository.save(genericCredential);
+
+        String url = baseURL + "/api/v1/credentials/" + genericCredential.getId();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        genericCredentialDTO.setDevices(null);
+        genericCredentialDTO.setUsername("admin1");
+
+        HttpEntity<CredentialDTO> credentialDTOHttpEntity = new HttpEntity<>(genericCredentialDTO, headers);
+
+        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, credentialDTOHttpEntity, CredentialDTO.class);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertCredentialsIsEqual(responseEntity.getBody(), genericCredentialDTO);
+
+    }
+
+
+    @Test
+    void shouldReturn4AndCredentialWhenDeleteCredential() {
+        // Given
+        credentialRepository.save(genericCredential);
+
+        String url = baseURL + "/api/v1/credentials/" + genericCredential.getId();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        HttpEntity<CredentialDTO> credentialDTOHttpEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Void> responseEntity = testRestTemplate.exchange(url, HttpMethod.DELETE, credentialDTOHttpEntity, Void.class);
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+    }
+
+    void assertCredentialsIsEqual(CredentialDTO thisCredential, CredentialDTO thatCredential){
+        assertThat(thisCredential.getId()).isEqualTo(thatCredential.getId());
+        assertThat(thisCredential.getUsername()).isEqualTo(thatCredential.getUsername());
+        assertThat(thisCredential.getName()).isEqualTo(thatCredential.getName());
+        assertThat(thisCredential.getPassword()).isEqualTo(thatCredential.getPassword());
     }
 
 //    @Test
@@ -89,17 +158,17 @@ class CredentialIntegrationTests {
 //        credentialRepository.save(credential);
 //
 //        // When
-//        ResponseEntity<CredentialDto> responseEntity = testRestTemplate
-//                .exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDto.class);
+//        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate
+//                .exchange("/api/v1/credentials/1", HttpMethod.GET, null, CredentialDTO.class);
 //
 //        // Then
 //        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.OK.value());
 //
-//        CredentialDto credentialDtoResult = responseEntity.getBody();
-//        assertThat(credentialDtoResult).isNotNull();
-//        assertThat(credentialDtoResult.getId()).isEqualTo(credential.getId());
-//        assertThat(credentialDtoResult.getUsername()).isEqualTo(credential.getUsername());
-//        assertThat(credentialDtoResult.getName()).isEqualTo(credential.getName());
+//        CredentialDTO CredentialDTOResult = responseEntity.getBody();
+//        assertThat(CredentialDTOResult).isNotNull();
+//        assertThat(CredentialDTOResult.getId()).isEqualTo(credential.getId());
+//        assertThat(CredentialDTOResult.getUsername()).isEqualTo(credential.getUsername());
+//        assertThat(CredentialDTOResult.getName()).isEqualTo(credential.getName());
 //    }
 //
 //    @Test
@@ -117,39 +186,38 @@ class CredentialIntegrationTests {
 //        assertThat(jsonObject.has("message")).isTrue();
 //        assertThat(jsonObject.has("details")).isTrue();
 //    }
-//
+
 //    @Test
 //    void shouldReturn201AndAddedCredentialWhenAddCredentialWithValidData() {
 //        // Given
-//        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-//        credentialRequestDto.setName("name1");
-//        credentialRequestDto.setUsername("username1");
-//        credentialRequestDto.setPassword("password1");
+//        CredentialDTO credentialDTO = new CredentialDTO();
+//        credentialDTO.setName("name1");
+//        credentialDTO.setUsername("username1");
+//        credentialDTO.setPassword("password1");
 //
-//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //
-//        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+//        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(credentialDTO, null);
 //
 //        // When
-//        ResponseEntity<CredentialDto> responseEntity = testRestTemplate
-//                .exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDto.class);
+//        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate
+//                .exchange("/api/v1/credentials", HttpMethod.POST, httpEntity, CredentialDTO.class);
 //
 //        // Then
 //        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.CREATED.value());
 //
-//        CredentialDto credentialDtoResult = responseEntity.getBody();
-//        assertThat(credentialDtoResult).isNotNull();
-//        assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-//        assertThat(credentialDtoResult.getName()).isEqualTo(credentialRequestDto.getName());
+//        CredentialDTO CredentialDTOResult = responseEntity.getBody();
+//        assertThat(CredentialDTOResult).isNotNull();
+//        assertThat(CredentialDTOResult.getUsername()).isEqualTo(credentialDTO.getUsername());
+//        assertThat(CredentialDTOResult.getName()).isEqualTo(credentialDTO.getName());
 //
 //        List<Credential> credentialList = credentialRepository.findAll();
 //        assertThat(credentialList.size()).isEqualTo(1);
 //
 //        Credential credentialResult = credentialList.get(0);
-//        assertThat(credentialResult.getId()).isEqualTo(credentialDtoResult.getId());
-//        assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-//        assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
-//        assertThat(passwordEncoder.matches(credentialRequestDto.getPassword(), credentialResult.getPassword())).isTrue();
+//        assertThat(credentialResult.getId()).isEqualTo(CredentialDTOResult.getId());
+//        assertThat(credentialResult.getUsername()).isEqualTo(credentialDTO.getUsername());
+//        assertThat(credentialResult.getName()).isEqualTo(credentialDTO.getName());
+//        assertThat(credentialDTO.getPassword()).isEqualTo(credentialResult.getPassword());
 //    }
 //
 //    @Test
@@ -157,12 +225,12 @@ class CredentialIntegrationTests {
 //        // Given
 //        credentialRepository.save(credential);
 //
-//        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-//        credentialRequestDto.setName("name1");
-//        credentialRequestDto.setUsername("username2");
-//        credentialRequestDto.setPassword("password2");
+//        CredentialDTO CredentialDTO = new CredentialDTO();
+//        CredentialDTO.setName("name1");
+//        CredentialDTO.setUsername("username2");
+//        CredentialDTO.setPassword("password2");
 //
-//        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+//        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(CredentialDTO, null);
 //
 //        // When
 //        ResponseEntity<String> responseEntity = testRestTemplate
@@ -190,47 +258,47 @@ class CredentialIntegrationTests {
 //        // Given
 //        credentialRepository.save(credential);
 //
-//        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-//        credentialRequestDto.setName("nameUpdated");
-//        credentialRequestDto.setUsername("usernameUpdated");
-//        credentialRequestDto.setPassword("passwordUpdated");
+//        CredentialDTO CredentialDTO = new CredentialDTO();
+//        CredentialDTO.setName("nameUpdated");
+//        CredentialDTO.setUsername("usernameUpdated");
+//        CredentialDTO.setPassword("passwordUpdated");
 //
 //        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //
-//        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+//        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(CredentialDTO, null);
 //
 //        // When
-//        ResponseEntity<CredentialDto> responseEntity = testRestTemplate
-//                .exchange("/api/v1/credentials/1", HttpMethod.PUT, httpEntity, CredentialDto.class);
+//        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate
+//                .exchange("/api/v1/credentials/1", HttpMethod.PUT, httpEntity, CredentialDTO.class);
 //
 //        // Then
 //        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.OK.value());
 //
-//        CredentialDto credentialDtoResult = responseEntity.getBody();
-//        assertThat(credentialDtoResult).isNotNull();
-//        assertThat(credentialDtoResult.getId()).isEqualTo(credential.getId());
-//        assertThat(credentialDtoResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-//        assertThat(credentialDtoResult.getName()).isEqualTo(credentialRequestDto.getName());
+//        CredentialDTO CredentialDTOResult = responseEntity.getBody();
+//        assertThat(CredentialDTOResult).isNotNull();
+//        assertThat(CredentialDTOResult.getId()).isEqualTo(credential.getId());
+//        assertThat(CredentialDTOResult.getUsername()).isEqualTo(CredentialDTO.getUsername());
+//        assertThat(CredentialDTOResult.getName()).isEqualTo(CredentialDTO.getName());
 //
 //        List<Credential> credentialList = credentialRepository.findAll();
 //        assertThat(credentialList.size()).isEqualTo(1);
 //
 //        Credential credentialResult = credentialList.get(0);
 //        assertThat(credentialResult.getId()).isEqualTo(credential.getId());
-//        assertThat(credentialResult.getUsername()).isEqualTo(credentialRequestDto.getUsername());
-//        assertThat(credentialResult.getName()).isEqualTo(credentialRequestDto.getName());
-//        assertThat(passwordEncoder.matches(credentialRequestDto.getPassword(), credentialResult.getPassword())).isTrue();
+//        assertThat(credentialResult.getUsername()).isEqualTo(CredentialDTO.getUsername());
+//        assertThat(credentialResult.getName()).isEqualTo(CredentialDTO.getName());
+//        assertThat(passwordEncoder.matches(CredentialDTO.getPassword(), credentialResult.getPassword())).isTrue();
 //    }
 //
 //    @Test
 //    void shouldReturn404AndErrorWhenUpdateCredentialWithNotExistedId() throws JSONException {
 //        // Given
-//        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-//        credentialRequestDto.setName("name");
-//        credentialRequestDto.setUsername("username");
-//        credentialRequestDto.setPassword("password");
+//        CredentialDTO CredentialDTO = new CredentialDTO();
+//        CredentialDTO.setName("name");
+//        CredentialDTO.setUsername("username");
+//        CredentialDTO.setPassword("password");
 //
-//        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+//        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(CredentialDTO, null);
 //
 //        // When
 //        ResponseEntity<String> responseEntity = testRestTemplate
@@ -263,12 +331,12 @@ class CredentialIntegrationTests {
 //
 //        credentialRepository.saveAll(credentialList);
 //
-//        CredentialRequestDto credentialRequestDto = new CredentialRequestDto();
-//        credentialRequestDto.setName("name2");
-//        credentialRequestDto.setUsername("username2");
-//        credentialRequestDto.setPassword("password2");
+//        CredentialDTO CredentialDTO = new CredentialDTO();
+//        CredentialDTO.setName("name2");
+//        CredentialDTO.setUsername("username2");
+//        CredentialDTO.setPassword("password2");
 //
-//        HttpEntity<CredentialRequestDto> httpEntity = new HttpEntity<>(credentialRequestDto, null);
+//        HttpEntity<CredentialDTO> httpEntity = new HttpEntity<>(CredentialDTO, null);
 //
 //        // When
 //        ResponseEntity<String> responseEntity = testRestTemplate
@@ -297,14 +365,14 @@ class CredentialIntegrationTests {
 //        credentialRepository.save(credential);
 //
 //        // When
-//        ResponseEntity<CredentialDto> responseEntity = testRestTemplate
-//                .exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDto.class);
+//        ResponseEntity<CredentialDTO> responseEntity = testRestTemplate
+//                .exchange("/api/v1/credentials/1", HttpMethod.DELETE, null, CredentialDTO.class);
 //
 //        // Then
 //        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(HttpStatus.NO_CONTENT.value());
 //
-//        CredentialDto credentialDtoResult = responseEntity.getBody();
-//        assertThat(credentialDtoResult).isNull();
+//        CredentialDTO CredentialDTOResult = responseEntity.getBody();
+//        assertThat(CredentialDTOResult).isNull();
 //
 //        List<Credential> credentialList = credentialRepository.findAll();
 //        assertThat(credentialList.size()).isEqualTo(0);

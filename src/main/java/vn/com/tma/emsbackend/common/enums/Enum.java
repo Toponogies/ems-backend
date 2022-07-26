@@ -14,7 +14,7 @@ public class Enum {
         private final String value;
 
         public static Enum.State parse(String value) {
-            if (NEGATIVE_WORD.contains(value)) {
+            if (NEGATIVE_WORD.contains(value.toUpperCase())) {
                 return DISABLED;
             }
             return ENABLED;

@@ -137,7 +137,7 @@ public class NetworkDeviceRepositoryTests {
         boolean isExisted  = networkDeviceRepository.existsByLabel(networkDevice.getLabel());
 
         //then
-        assertThat(isExisted).isFalse();
+        assertThat(isExisted).isTrue();
     }
 
     @Test
