@@ -10,6 +10,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import vn.com.tma.emsbackend.common.enums.Enum;
+import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.Interface;
@@ -75,6 +76,8 @@ public class InterfaceIntegrationTests {
         genericNetworkDevice.setSerial("C410-4492");
         genericNetworkDevice.setSshPort(12022);
         genericNetworkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        genericNetworkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
+
         genericNetworkDevice.setCredential(genericCredential);
         networkDeviceRepository.save(genericNetworkDevice);
 
@@ -83,7 +86,7 @@ public class InterfaceIntegrationTests {
         genericPort.setId(1L);
         genericPort.setConnector("SFP-1");
         genericPort.setMacAddress("00:15:AD:50:FD:B1");
-        genericPort.setName("LOCAL-1");
+        genericPort.setName("LAG-1");
         genericPort.setState(Enum.State.ENABLED);
         genericPort.setNetworkDevice(genericNetworkDevice);
         portRepository.save(genericPort);
@@ -184,7 +187,7 @@ public class InterfaceIntegrationTests {
     @Test
     void shouldReturn209AndNewInterfaceWhenUpdateNewInterfaceAndDeleteThatInterface(){
         //add
-        String url = baseUrl + "/api/v1/interfaces";
+        String url = baseUrl + "/api/v1/interfaces/";
 
         InterfaceDTO interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
 
@@ -199,7 +202,7 @@ public class InterfaceIntegrationTests {
 
         //update
         url = baseUrl + "/api/v1/interfaces/" + interfaceDTOsResult.getId();
-        genericInterface.setName("UpdatedName");
+        genericInterface.setState(Enum.State.DISABLED);
         interfaceDTO = InterfaceCreator.createDtoBy(genericInterface);
         ResponseEntity<InterfaceDTO> updateResponseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(interfaceDTO,headers), InterfaceDTO.class);
         assertThat(updateResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
