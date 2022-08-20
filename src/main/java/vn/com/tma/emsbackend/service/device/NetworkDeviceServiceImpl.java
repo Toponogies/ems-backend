@@ -14,8 +14,8 @@ import vn.com.tma.emsbackend.model.exception.DeviceLabelExistsException;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.NetworkDeviceRepository;
+import vn.com.tma.emsbackend.service.common.NetworkDeviceCommonExternalService;
 import vn.com.tma.emsbackend.service.credential.CredentialService;
-import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class NetworkDeviceServiceImpl implements NetworkDeviceService {
     private final NetworkDeviceRepository networkDeviceRepository;
 
-    private final NetworkDeviceSSHService networkDeviceSSHService;
+    private final NetworkDeviceCommonExternalService networkDeviceCommonExternalService;
 
     private final NetworkDeviceMapper networkDeviceMapper;
 
@@ -191,7 +191,7 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         if (oldNetworkDeviceOptional.isEmpty()) throw new DeviceNotFoundException(id.toString());
         NetworkDevice oldNetworkDevice = oldNetworkDeviceOptional.get();
 
-        NetworkDevice networkDevice = networkDeviceSSHService.getNetworkDeviceDetail(id);
+        NetworkDevice networkDevice = networkDeviceCommonExternalService.getNetworkDeviceDetail(oldNetworkDevice);
         networkDevice.setIpAddress(oldNetworkDevice.getIpAddress());
         networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
         networkDevice.setCredential(oldNetworkDevice.getCredential());

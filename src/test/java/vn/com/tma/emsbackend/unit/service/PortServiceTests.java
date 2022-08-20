@@ -22,6 +22,7 @@ import vn.com.tma.emsbackend.util.entity.creator.PortCreator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -79,6 +80,7 @@ public class PortServiceTests {
         genericNetworkDevice.setSerial("C410-4492");
         genericNetworkDevice.setSshPort(22);
         genericNetworkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        genericNetworkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
         genericNetworkDevice.setCredential(genericCredential);
 
         genericPort = new Port();
@@ -114,14 +116,14 @@ public class PortServiceTests {
     @Test
     void shouldGetSpecificPortWhenGetById() {
         //given
-        when(portRepository.getById(anyLong())).thenReturn(genericPort);
+        when(portRepository.findById(anyLong())).thenReturn(Optional.ofNullable(genericPort));
         when(portMapper.entityToDTO(any(Port.class))).thenReturn(genericPortDTO);
 
         //when
         PortDTO portDTOResult = portService.get(genericPort.getId());
 
         //then
-        verify(portRepository).findAll();
+        verify(portRepository).findById(anyLong());
         assertPortDTOsIsEquals(portDTOResult, genericPortDTO);
     }
 
@@ -135,7 +137,7 @@ public class PortServiceTests {
         PortDTO portDTOResult = portService.getByNameAndNetworkDevice(genericPort.getName(), genericPort.getNetworkDevice().getLabel());
 
         //then
-        verify(portRepository).findAll();
+        verify(portRepository).findByNameAndNetworkDevice_Label(genericPort.getName(), genericPort.getNetworkDevice().getLabel());
         assertPortDTOsIsEquals(portDTOResult, genericPortDTO);
     }
 

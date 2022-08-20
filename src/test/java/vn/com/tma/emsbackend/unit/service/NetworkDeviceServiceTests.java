@@ -91,6 +91,7 @@ class NetworkDeviceServiceTests {
         networkDevice.setSerial("C410-4492");
         networkDevice.setSshPort(22);
         networkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        networkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
         networkDevice.setCredential(genericCredential);
 
         networkDeviceDTO = NetworkDeviceCreator.createDTOBy(networkDevice);

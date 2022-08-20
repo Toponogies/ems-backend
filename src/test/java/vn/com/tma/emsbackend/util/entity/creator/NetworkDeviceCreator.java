@@ -36,6 +36,7 @@ public class NetworkDeviceCreator {
         networkDeviceDTO.setCredential(networkDevice.getCredential().getName());
         networkDeviceDTO.setSshPort(networkDevice.getSshPort());
         networkDeviceDTO.setState(networkDevice.getState().toString());
+        networkDeviceDTO.setResyncStatus(networkDevice.getResyncStatus().toString());
         networkDeviceDTO.setDeviceType(networkDevice.getDeviceType().toString());
         return networkDeviceDTO;
     }

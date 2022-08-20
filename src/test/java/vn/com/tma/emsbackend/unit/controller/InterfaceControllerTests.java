@@ -75,6 +75,7 @@ public class InterfaceControllerTests {
         genericNetworkDevice.setSerial("C410-4492");
         genericNetworkDevice.setSshPort(22);
         genericNetworkDevice.setState(Enum.NetworkDeviceState.IN_SERVICE);
+        genericNetworkDevice.setResyncStatus(Enum.ResyncStatus.ONGOING);
         genericNetworkDevice.setCredential(genericCredential);
 
         genericPort = new Port();
