@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import vn.com.tma.emsbackend.model.entity.Alarm;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.service.external.AlarmBaseExternalService;
-import vn.com.tma.emsbackend.service.external.InterfaceBaseExternalService;
 import vn.com.tma.emsbackend.service.ssh.AlarmSSHService;
 
 import java.util.List;
