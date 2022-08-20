@@ -39,8 +39,24 @@ public class Enum {
         DONE,
     }
 
-    public enum SocketAction{
+    public enum SocketAction {
         RESYNC_DONE
+    }
+
+    public enum Severity {
+        MINOR,
+        CRITICAL,
+        MAJOR;
+        public static Enum.Severity parse(String value) {
+            switch (value){
+                case "MJ":
+                    return Severity.MAJOR;
+                case "CR":
+                    return Severity.CRITICAL;
+                default:
+                    return Severity.MINOR;
+            }
+        }
     }
 
 }
