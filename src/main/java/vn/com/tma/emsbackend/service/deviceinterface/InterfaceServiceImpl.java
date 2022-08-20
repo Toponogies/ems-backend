@@ -13,10 +13,11 @@ import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.model.exception.*;
 import vn.com.tma.emsbackend.model.mapper.InterfaceMapper;
+import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.InterfaceRepository;
+import vn.com.tma.emsbackend.service.common.InterfaceCommonExternalService;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.port.PortService;
-import vn.com.tma.emsbackend.service.ssh.InterfaceSSHService;
 
 import java.util.*;
 
@@ -32,7 +33,9 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     private final PortService portService;
 
-    private final InterfaceSSHService interfaceSSHService;
+    private final InterfaceCommonExternalService interfaceCommonExternalService;
+
+    private final NetworkDeviceMapper networkDeviceMapper;
 
     @Override
     public List<InterfaceDTO> getAll() {
@@ -108,7 +111,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setPort(port);
 
         interfaceDTO = interfaceMapper.entityToDTO(interfaceRepository.save(anInterface));
-        interfaceSSHService.add(anInterface);
+        interfaceCommonExternalService.add(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
 
         return interfaceDTO;
     }
@@ -151,7 +154,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setPort(port);
         anInterface = interfaceRepository.save(anInterface);
 
-        interfaceSSHService.edit(oldInterfaceName, anInterface);
+        interfaceCommonExternalService.edit(networkDeviceMapper.dtoToEntity(networkDeviceDTO),oldInterfaceName, anInterface);
 
         return interfaceMapper.entityToDTO(anInterface);
     }
@@ -166,8 +169,9 @@ public class InterfaceServiceImpl implements InterfaceService {
         Interface anInterface = interfaceOptional.get();
 
         interfaceRepository.deleteById(id);
+        NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(anInterface.getNetworkDevice().getId());
 
-        interfaceSSHService.delete(anInterface);
+        interfaceCommonExternalService.delete(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
     }
 
     @Transactional
@@ -175,7 +179,8 @@ public class InterfaceServiceImpl implements InterfaceService {
     public void resyncInterfaceByDeviceId(Long deviceId) {
         List<Interface> oldInterfaces = interfaceRepository.findByNetworkDeviceId(deviceId);
         List<PortDTO> ports = portService.getByNetworkDevice(deviceId);
-        List<Interface> newInterfaces = interfaceSSHService.getAllInterface(deviceId, ports);
+        NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(deviceId);
+        List<Interface> newInterfaces = interfaceCommonExternalService.getAllInterface(networkDeviceMapper.dtoToEntity(networkDeviceDTO), ports);
 
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);

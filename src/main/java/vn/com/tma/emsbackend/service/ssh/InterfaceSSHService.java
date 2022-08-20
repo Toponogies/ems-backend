@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.repository.ssh.InterfaceSSHRepository;
+import vn.com.tma.emsbackend.service.external.InterfaceBaseExternalService;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class InterfaceSSHService {
+public class InterfaceSSHService implements InterfaceBaseExternalService {
     private final InterfaceSSHRepository interfaceSSHRepository;
 
     public List<Interface> getAllInterface(long networkDeviceId, List<PortDTO> ports) {
