@@ -8,7 +8,7 @@ import vn.com.tma.emsbackend.service.ssh.NetworkDeviceSSHService;
 
 @Service
 @RequiredArgsConstructor
-public class NetworkDeviceCommonService {
+public class NetworkDeviceCommonExternalService {
     private final NetworkDeviceSSHService networkDeviceSSHService;
 
     public NetworkDevice getNetworkDeviceDetail(NetworkDevice networkDevice){

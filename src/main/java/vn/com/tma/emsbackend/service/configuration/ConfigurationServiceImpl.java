@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.exception.DeviceNotFoundException;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
-import vn.com.tma.emsbackend.service.common.ConfigurationCommonService;
+import vn.com.tma.emsbackend.service.common.ConfigurationCommonExternalService;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import java.io.BufferedOutputStream;
@@ -25,7 +25,7 @@ import java.util.zip.ZipOutputStream;
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final NetworkDeviceService networkDeviceService;
 
-    private final ConfigurationCommonService configurationCommonService;
+    private final ConfigurationCommonExternalService configurationCommonExternalService;
 
     private final NetworkDeviceMapper networkDeviceMapper;
 
@@ -41,7 +41,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             for (Long id : ids) {
                 NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(id);
 
-                String result = configurationCommonService.exportDeviceConfig(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
+                String result = configurationCommonExternalService.exportDeviceConfig(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
                 // New zip entry and copying InputStream with file to ZipOutputStream, after all closing streams
                 zipOutputStream.putNextEntry(new ZipEntry("random"));
                 FileInputStream fileInputStream = new FileInputStream(result);

@@ -15,7 +15,7 @@ import vn.com.tma.emsbackend.model.exception.*;
 import vn.com.tma.emsbackend.model.mapper.InterfaceMapper;
 import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.repository.InterfaceRepository;
-import vn.com.tma.emsbackend.service.common.InterfaceCommonService;
+import vn.com.tma.emsbackend.service.common.InterfaceCommonExternalService;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.port.PortService;
 
@@ -33,7 +33,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     private final PortService portService;
 
-    private final InterfaceCommonService interfaceCommonService;
+    private final InterfaceCommonExternalService interfaceCommonExternalService;
 
     private final NetworkDeviceMapper networkDeviceMapper;
 
@@ -111,7 +111,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setPort(port);
 
         interfaceDTO = interfaceMapper.entityToDTO(interfaceRepository.save(anInterface));
-        interfaceCommonService.add(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
+        interfaceCommonExternalService.add(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
 
         return interfaceDTO;
     }
@@ -154,7 +154,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         anInterface.setPort(port);
         anInterface = interfaceRepository.save(anInterface);
 
-        interfaceCommonService.edit(networkDeviceMapper.dtoToEntity(networkDeviceDTO),oldInterfaceName, anInterface);
+        interfaceCommonExternalService.edit(networkDeviceMapper.dtoToEntity(networkDeviceDTO),oldInterfaceName, anInterface);
 
         return interfaceMapper.entityToDTO(anInterface);
     }
@@ -171,7 +171,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         interfaceRepository.deleteById(id);
         NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(anInterface.getNetworkDevice().getId());
 
-        interfaceCommonService.delete(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
+        interfaceCommonExternalService.delete(networkDeviceMapper.dtoToEntity(networkDeviceDTO),anInterface);
     }
 
     @Transactional
@@ -180,7 +180,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         List<Interface> oldInterfaces = interfaceRepository.findByNetworkDeviceId(deviceId);
         List<PortDTO> ports = portService.getByNetworkDevice(deviceId);
         NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(deviceId);
-        List<Interface> newInterfaces = interfaceCommonService.getAllInterface(networkDeviceMapper.dtoToEntity(networkDeviceDTO), ports);
+        List<Interface> newInterfaces = interfaceCommonExternalService.getAllInterface(networkDeviceMapper.dtoToEntity(networkDeviceDTO), ports);
 
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);

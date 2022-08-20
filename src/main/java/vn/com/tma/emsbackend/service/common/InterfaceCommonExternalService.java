@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class InterfaceCommonService {
+public class InterfaceCommonExternalService {
     private final InterfaceSSHService interfaceSSHService;
 
     public List<Interface> getAllInterface(NetworkDevice networkDevice, List<PortDTO> ports) {

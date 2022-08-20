@@ -14,7 +14,7 @@ import vn.com.tma.emsbackend.model.mapper.NetworkDeviceMapper;
 import vn.com.tma.emsbackend.model.mapper.PortMapper;
 import vn.com.tma.emsbackend.repository.InterfaceRepository;
 import vn.com.tma.emsbackend.repository.PortRepository;
-import vn.com.tma.emsbackend.service.common.PortCommonService;
+import vn.com.tma.emsbackend.service.common.PortCommonExternalService;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import javax.transaction.Transactional;
@@ -33,7 +33,7 @@ public class PortServiceImpl implements PortService {
 
     private final NetworkDeviceService networkDeviceService;
 
-    private final PortCommonService portCommonService;
+    private final PortCommonExternalService portCommonExternalService;
 
     @Override
     public List<PortDTO> getAll() {
@@ -91,7 +91,7 @@ public class PortServiceImpl implements PortService {
     @Transactional
     public void resyncPortByDeviceId(Long deviceId) {
         NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(deviceId);
-        List<Port> newPorts = portCommonService.getAllPort(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
+        List<Port> newPorts = portCommonExternalService.getAllPort(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
         List<Port> oldPorts = portRepository.findByNetworkDeviceId(deviceId);
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(deviceId);
