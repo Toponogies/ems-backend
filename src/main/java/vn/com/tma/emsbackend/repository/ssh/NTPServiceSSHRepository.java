@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.commandgenerator.NTPServerCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.NTPServer;
 import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
-import vn.com.tma.emsbackend.parser.NTPCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.NTPCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.List;

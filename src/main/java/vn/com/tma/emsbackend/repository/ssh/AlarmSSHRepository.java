@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.commandgenerator.AlarmCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.Alarm;
-import vn.com.tma.emsbackend.parser.AlarmCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.AlarmCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.List;

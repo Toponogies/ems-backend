@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.commandgenerator.NetworkDeviceCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.parser.NetworkDeviceCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.NetworkDeviceCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 @Repository
 @AllArgsConstructor

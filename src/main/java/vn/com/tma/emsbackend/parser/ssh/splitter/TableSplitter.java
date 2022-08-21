@@ -1,11 +1,11 @@
-package vn.com.tma.emsbackend.parser.splitter;
+package vn.com.tma.emsbackend.parser.ssh.splitter;
 
 import vn.com.tma.emsbackend.model.exception.ParserException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static vn.com.tma.emsbackend.parser.ParserUtils.getResultAfterCommandPrompt;
+import static vn.com.tma.emsbackend.parser.ssh.ParserUtils.getResultAfterCommandPrompt;
 
 public class TableSplitter {
     private final String[] lines;

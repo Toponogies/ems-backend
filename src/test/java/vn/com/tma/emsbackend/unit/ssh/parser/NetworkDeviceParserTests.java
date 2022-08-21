@@ -3,9 +3,8 @@ package vn.com.tma.emsbackend.unit.ssh.parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import vn.com.tma.emsbackend.common.enums.Enum;
-import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.parser.NetworkDeviceCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.NetworkDeviceCommandParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

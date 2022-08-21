@@ -8,7 +8,7 @@ import vn.com.tma.emsbackend.model.dto.PortDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
 import vn.com.tma.emsbackend.model.exception.SSHExecuteException;
-import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.InterfaceCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.ArrayList;

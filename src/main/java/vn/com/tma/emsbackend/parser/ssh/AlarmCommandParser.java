@@ -1,11 +1,10 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.ssh;
 
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.Alarm;
-import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
+import vn.com.tma.emsbackend.parser.ssh.splitter.TableSplitter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class AlarmCommandParser {
                 alarm.setDate(tableReader.getValue(SSHColumn.AlarmDetail.TIME));
                 alarm.setCondition(tableReader.getValue(SSHColumn.AlarmDetail.CONDITION));
                 alarm.setAlarmNumber(tableReader.getValue(SSHColumn.AlarmDetail.ALARM_NUMBER));
-                alarm.setSeverity(Enum.Severity.parse(tableReader.getValue(SSHColumn.AlarmDetail.SEVERITY)));
+                alarm.setAlarmSeverity(Enum.AlarmSeverity.parse(tableReader.getValue(SSHColumn.AlarmDetail.SEVERITY)));
                 alarm.setDescription(tableReader.getValue(SSHColumn.AlarmDetail.DESCRIPTION));
                 alarms.add(alarm);
             }catch(Exception e){
