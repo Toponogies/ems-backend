@@ -31,7 +31,7 @@ create table if not exists network_devices
 );
 
 --changeset mysql:3
-CREATE TABLE ports
+create table if not exists ports
 (
     id int NOT NULL AUTO_INCREMENT,
     connector varchar(255) DEFAULT NULL,

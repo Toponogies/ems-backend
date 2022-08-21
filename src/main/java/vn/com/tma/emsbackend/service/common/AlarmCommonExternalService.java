@@ -13,9 +13,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AlarmCommonExternalService {
     private final AlarmSSHService alarmSSHService;
-    public List<Alarm> getAllAlarm(NetworkDevice networkDevice) {
+    public List<Alarm> getAllAlarmByDevice(NetworkDevice networkDevice) {
         AlarmBaseExternalService alarmExternalService = getAlarmBaseExternalService(networkDevice);
-        return alarmExternalService.getAllAlarm(networkDevice.getId());
+        return alarmExternalService.getAllAlarmByDevice(networkDevice.getId());
     }
     private AlarmBaseExternalService getAlarmBaseExternalService(NetworkDevice networkDevice){
 //        switch (networkDevice.getConnectionType()){

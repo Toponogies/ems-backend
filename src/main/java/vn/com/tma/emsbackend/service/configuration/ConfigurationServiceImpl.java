@@ -38,11 +38,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         try {
             // Creating byteArray stream, make it bufferable and passing this buffer to ZipOutputStream
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(byteArrayOutputStream);
             ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
             String postFix = UUID.randomUUID().toString();
             for (Long id : ids) {
                 try {
+                    log.info("Create configuration file from device with id: " + id);
                     NetworkDeviceDTO networkDeviceDTO = networkDeviceService.get(id);
                     String result = configurationCommonExternalService.exportDeviceConfig(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
 
