@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AlarmSSHRepository extends BaseSSHRepository {
 
-    public List<Alarm> getAllAlarm(long deviceId){
+    public List<Alarm> getAllAlarmByDevice(long deviceId){
         SSHExecutor sshExecutor = deviceConnectionManager.getConnection(deviceId);
         String result = sshExecutor.execute(AlarmCommandGenerator.getAllAlarmWithDetail());
         return AlarmCommandParser.alarmShowStatusMore(result);
