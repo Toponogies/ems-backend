@@ -2,11 +2,14 @@ package vn.com.tma.emsbackend.service.device;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.NetworkDevicesDTO;
 import vn.com.tma.emsbackend.service.Service;
 
 import java.util.List;
 
 public interface NetworkDeviceService extends Service<NetworkDeviceDTO> {
+    void importDevices(NetworkDevicesDTO networkDevicesDTO);
+
     NetworkDeviceDTO getByIpAddress(String ipAddress);
 
     List<NetworkDeviceDTO> getByDeviceType(Enum.NetworkDeviceType deviceType);

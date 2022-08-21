@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.ErrorDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.NetworkDevicesDTO;
 import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 
 import javax.validation.Valid;
@@ -81,6 +82,19 @@ public class NetworkDeviceController {
     public NetworkDeviceDTO addDevice(@Valid @RequestBody NetworkDeviceDTO networkDeviceDto) {
         return networkDeviceService.add(networkDeviceDto);
     }
+
+    @Operation(summary = "Add devices")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Added the network device", content = {
+                    @Content(schema = @Schema(implementation = NetworkDeviceDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "IP address is invalid", content = {
+                    @Content(schema = @Schema(implementation = ErrorDTO.class))})})
+    @ResponseStatus(code = HttpStatus.CREATED)
+    @PostMapping("/import")
+    public void addDevices(@Valid @RequestBody NetworkDevicesDTO networkDevicesDTO) {
+        networkDeviceService.importDevices(networkDevicesDTO);
+    }
+
 
     @Operation(summary = "Update a specific network device by id")
     @ApiResponses(value = {

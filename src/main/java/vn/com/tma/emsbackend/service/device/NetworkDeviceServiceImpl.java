@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.dto.CredentialDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
+import vn.com.tma.emsbackend.model.dto.NetworkDevicesDTO;
 import vn.com.tma.emsbackend.model.entity.Credential;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
 import vn.com.tma.emsbackend.model.exception.DeviceIPExistsException;
@@ -59,6 +60,14 @@ public class NetworkDeviceServiceImpl implements NetworkDeviceService {
         networkDevice.setResyncStatus(resyncQueueManager.getResyncStatus(networkDevice.getId()));
 
         return networkDeviceMapper.entityToDTO(networkDevice);
+    }
+
+    @Transactional
+    @Override
+    public void importDevices(NetworkDevicesDTO networkDevicesDTO) {
+        for (var d : networkDevicesDTO.getDevices()) {
+            add(d);
+        }
     }
 
     @Override
