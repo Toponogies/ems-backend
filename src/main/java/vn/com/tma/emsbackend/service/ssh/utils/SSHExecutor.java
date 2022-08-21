@@ -68,9 +68,9 @@ public class SSHExecutor {
     private ClientSession createClientSession() {
         ClientSession newClientSession;
         try {
-            newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify().getSession();
+            newClientSession = sshClient.connect(currentManagedDevice.getCredential().getUsername(), currentManagedDevice.getIpAddress(), currentManagedDevice.getSshPort()).verify(5000L).getSession();
             newClientSession.addPasswordIdentity(currentManagedDevice.getCredential().getPassword());
-            newClientSession.auth().verify();
+            newClientSession.auth().verify(5000L);
             return newClientSession;
         } catch (IOException e) {
             throw new DeviceConnectionException(currentManagedDevice.getId());

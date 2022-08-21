@@ -16,7 +16,7 @@ public class AlarmSSHService implements AlarmBaseExternalService {
     private final AlarmSSHRepository alarmSSHRepository;
 
     @Override
-    public List<Alarm> getAllAlarm(Long deviceId) {
+    public List<Alarm> getAllAlarmByDevice(Long deviceId) {
         return alarmSSHRepository.getAllAlarm(deviceId);
     }
 }

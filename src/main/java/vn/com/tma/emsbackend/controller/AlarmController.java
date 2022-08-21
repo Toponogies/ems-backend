@@ -13,7 +13,7 @@ import vn.com.tma.emsbackend.service.alarm.AlarmService;
 import java.util.List;
 
 
-@RequestMapping("/alarms/{id}")
+@RequestMapping("/alarms")
 @RestController
 @RequiredArgsConstructor
 public class AlarmController {
@@ -21,8 +21,13 @@ public class AlarmController {
     private final AlarmService alarmService;
     private final AlarmMapper alarmMapper;
 
+    @GetMapping("/{id}")
+    List<AlarmDTO> getAllAlarmByDeviceId(@PathVariable(value = "id") Long deviceId) {
+        return alarmService.getAllAlarmByDeviceId(deviceId);
+    }
+
     @GetMapping()
-    List<Alarm> getAllAlarm(@PathVariable(value = "id") Long deviceId) {
-        return alarmService.getAllAlarm(deviceId);
+    List<AlarmDTO> getAllAlarm(){
+        return alarmService.getAllAlarm();
     }
 }

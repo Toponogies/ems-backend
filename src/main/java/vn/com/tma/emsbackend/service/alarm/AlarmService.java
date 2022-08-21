@@ -1,9 +1,11 @@
 package vn.com.tma.emsbackend.service.alarm;
 
-import vn.com.tma.emsbackend.model.entity.Alarm;
+import vn.com.tma.emsbackend.model.dto.AlarmDTO;
 
 import java.util.List;
 
 public interface AlarmService {
-    List<Alarm> getAllAlarm(Long deviceId);
+    List<AlarmDTO> getAllAlarmByDeviceId(Long deviceId);
+
+    List<AlarmDTO> getAllAlarm();
 }
