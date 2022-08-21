@@ -38,5 +38,13 @@ public class SSHColumn {
         public static final String MAC_ADDRESS = "MAC address";
     }
 
+    public static final class AlarmDetail {
+        public static final String TIME = "Last Change";
+        public static final String SEVERITY = "S";
+        public static final String CONDITION = "Condition Type";
+        public static final String DESCRIPTION = "Description";
+        public static final String ALARM_NUMBER = "Number";
+    }
+
 
 }
