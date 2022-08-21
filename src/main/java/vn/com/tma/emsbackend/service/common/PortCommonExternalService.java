@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PortCommonExternalService {
-    private PortSSHService portSSHService;
+    private final PortSSHService portSSHService;
 
     public List<Port> getAllPort(NetworkDevice networkDevice) {
         PortBaseExternalService portBaseExternalService = getPortExternalService(networkDevice);

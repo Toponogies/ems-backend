@@ -25,6 +25,15 @@ public class AlarmServiceImpl implements AlarmService {
     private final AlarmMapper alarmMapper;
 
 
+    public List<AlarmDTO> getAllAlarmByDeviceLabel(String label) {
+        NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceService.getByLabel(label));
+        List<AlarmDTO> alarmDTOS = alarmMapper.entitiesToDTOs(alarmCommonExternalService.getAllAlarmByDevice(networkDevice));
+        for(AlarmDTO alarmDTO:alarmDTOS){
+            alarmDTO.setNetworkDevice(networkDevice.getLabel());
+        }
+        return alarmDTOS;
+    }
+
     public List<AlarmDTO> getAllAlarmByDeviceId(Long deviceId) {
         NetworkDevice networkDevice = networkDeviceMapper.dtoToEntity(networkDeviceService.get(deviceId));
         List<AlarmDTO> alarmDTOS = alarmMapper.entitiesToDTOs(alarmCommonExternalService.getAllAlarmByDevice(networkDevice));
@@ -39,7 +48,7 @@ public class AlarmServiceImpl implements AlarmService {
         List<NetworkDeviceDTO> networkDeviceDTOS = networkDeviceService.getAll();
         List<AlarmDTO> alarmDTOS = new ArrayList<>();
         for (NetworkDeviceDTO networkDeviceDTO : networkDeviceDTOS) {
-            List<Alarm> alarmsByDevice = null;
+            List<Alarm> alarmsByDevice;
             try {
                 alarmsByDevice = alarmCommonExternalService.getAllAlarmByDevice(networkDeviceMapper.dtoToEntity(networkDeviceDTO));
             } catch (Exception e) {
