@@ -77,7 +77,7 @@ public class AlarmServiceImpl implements AlarmService {
         AlarmDTO alarmDTO = alarmMapper.entityToDTO(alarm);
         log.info(alarmDTO.getDescription());
         alarmDTO.setNetworkDevice(networkDeviceDTO.getLabel());
-        webSocketTextController.broadcastMessage(alarmDTO);
+        webSocketTextController.sendNewAlarmMessage(alarmDTO);
     }
 
 }
