@@ -9,6 +9,7 @@ import vn.com.tma.emsbackend.service.device.NetworkDeviceService;
 import vn.com.tma.emsbackend.service.deviceinterface.InterfaceService;
 import vn.com.tma.emsbackend.service.ntpserver.NTPServerService;
 import vn.com.tma.emsbackend.service.port.PortService;
+import vn.com.tma.emsbackend.service.snmpconfig.SnmpConfigService;
 import vn.com.tma.emsbackend.service.ssh.utils.ResyncQueueManager;
 
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.List;
 public class ResyncService {
 
     private final NetworkDeviceService networkDeviceService;
+
+    private final SnmpConfigService snmpConfigService;
     private final PortService portService;
     private final InterfaceService interfaceService;
     private final NTPServerService ntpServerService;
@@ -27,6 +30,7 @@ public class ResyncService {
     public void resyncDeviceById(Long id) {
         try {
             log.info("Network device with id " + id + " is resynchronizing...");
+            snmpConfigService.setSnmpTrapConfig(id);
             networkDeviceService.resyncDeviceDetailById(id);
             portService.resyncPortByDeviceId(id);
             interfaceService.resyncInterfaceByDeviceId(id);

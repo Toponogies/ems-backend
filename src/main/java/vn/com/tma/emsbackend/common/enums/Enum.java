@@ -2,6 +2,7 @@ package vn.com.tma.emsbackend.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import static vn.com.tma.emsbackend.common.constant.Constant.NEGATIVE_WORD;
 
@@ -9,9 +10,10 @@ public class Enum {
     @Getter
     @AllArgsConstructor
     public enum State {
-        DISABLED("disabled"),
-        ENABLED("enabled");
+        DISABLED("disabled","disable"),
+        ENABLED("enabled", "enable");
         private final String value;
+        private final String action;
 
         public static Enum.State parse(String value) {
             if (NEGATIVE_WORD.contains(value.toUpperCase())) {
@@ -43,19 +45,33 @@ public class Enum {
         RESYNC_DONE
     }
 
-    public enum Severity {
-        MINOR,
-        CRITICAL,
-        MAJOR;
-        public static Enum.Severity parse(String value) {
+    @Getter
+    public enum AlarmSeverity {
+        MINOR("1"),
+        MAJOR("2"),
+        CRITICAL("3");
+        public final String snmpId;
+        public static AlarmSeverity parse(String value) {
             switch (value){
                 case "MJ":
-                    return Severity.MAJOR;
+                    return AlarmSeverity.MAJOR;
                 case "CR":
-                    return Severity.CRITICAL;
+                    return AlarmSeverity.CRITICAL;
                 default:
-                    return Severity.MINOR;
+                    return AlarmSeverity.MINOR;
             }
+        }
+
+        AlarmSeverity(String snmpId){
+            this.snmpId = snmpId;
+        }
+        public static AlarmSeverity fromSnmpId(String snmpId){
+            if (CRITICAL.snmpId.equals(snmpId)) {
+                return AlarmSeverity.CRITICAL;
+            }else if(MAJOR.snmpId.equals(snmpId)){
+                return AlarmSeverity.MAJOR;
+            }
+            return AlarmSeverity.MINOR;
         }
     }
 

@@ -1,10 +1,10 @@
-package vn.com.tma.emsbackend.parser.splitter;
+package vn.com.tma.emsbackend.parser.ssh.splitter;
 
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static vn.com.tma.emsbackend.parser.ParserUtils.getResultAfterCommandPrompt;
+import static vn.com.tma.emsbackend.parser.ssh.ParserUtils.getResultAfterCommandPrompt;
 
 public class ListSplitter {
     private final String[] lines;

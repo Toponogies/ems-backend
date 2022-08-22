@@ -1,9 +1,9 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.ssh;
 
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
 import vn.com.tma.emsbackend.common.enums.Enum.NetworkDeviceType;
 import vn.com.tma.emsbackend.model.entity.NetworkDevice;
-import vn.com.tma.emsbackend.parser.splitter.ListSplitter;
+import vn.com.tma.emsbackend.parser.ssh.splitter.ListSplitter;
 
 public class NetworkDeviceCommandParser {
     private NetworkDeviceCommandParser() {

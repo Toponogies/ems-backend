@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import vn.com.tma.emsbackend.common.comparator.PortComparator;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.Port;
-import vn.com.tma.emsbackend.parser.PortCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.PortCommandParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;

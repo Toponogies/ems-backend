@@ -1,11 +1,11 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.ssh;
 
 import vn.com.tma.emsbackend.common.constant.SSHColumn;
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
-import vn.com.tma.emsbackend.parser.splitter.ListSplitter;
-import vn.com.tma.emsbackend.parser.splitter.TableSplitter;
+import vn.com.tma.emsbackend.parser.ssh.splitter.ListSplitter;
+import vn.com.tma.emsbackend.parser.ssh.splitter.TableSplitter;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.ssh;
 
 import vn.com.tma.emsbackend.common.enums.Enum;
 import vn.com.tma.emsbackend.model.entity.NTPServer;

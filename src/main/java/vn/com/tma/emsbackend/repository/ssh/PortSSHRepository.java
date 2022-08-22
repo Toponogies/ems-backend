@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import vn.com.tma.emsbackend.common.commandgenerator.PortCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.Port;
-import vn.com.tma.emsbackend.parser.PortCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.PortCommandParser;
 import vn.com.tma.emsbackend.service.ssh.utils.SSHExecutor;
 
 import java.util.List;

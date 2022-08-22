@@ -1,4 +1,4 @@
-package vn.com.tma.emsbackend.parser;
+package vn.com.tma.emsbackend.parser.ssh;
 
 public class ParserUtils {
     private ParserUtils() {

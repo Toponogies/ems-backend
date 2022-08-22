@@ -1,7 +1,9 @@
 package vn.com.tma.emsbackend.service.alarm;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import vn.com.tma.emsbackend.controller.WebSocketController;
 import vn.com.tma.emsbackend.model.dto.AlarmDTO;
 import vn.com.tma.emsbackend.model.dto.NetworkDeviceDTO;
 import vn.com.tma.emsbackend.model.entity.Alarm;
@@ -17,12 +19,16 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AlarmServiceImpl implements AlarmService {
     private final AlarmCommonExternalService alarmCommonExternalService;
     private final NetworkDeviceService networkDeviceService;
     private final NetworkDeviceMapper networkDeviceMapper;
     private final AlarmMapper alarmMapper;
+
+    private final WebSocketController webSocketTextController;
+
 
 
     public List<AlarmDTO> getAllAlarmByDeviceLabel(String label) {
@@ -64,4 +70,14 @@ public class AlarmServiceImpl implements AlarmService {
         }
         return alarmDTOS;
     }
+
+    @Override
+    public void sendNewAlarmWebSocket(Alarm alarm, String ipAddress) {
+        NetworkDeviceDTO networkDeviceDTO = networkDeviceService.getByIpAddress(ipAddress);
+        AlarmDTO alarmDTO = alarmMapper.entityToDTO(alarm);
+        log.info(alarmDTO.getDescription());
+        alarmDTO.setNetworkDevice(networkDeviceDTO.getLabel());
+        webSocketTextController.sendNewAlarmMessage(alarmDTO);
+    }
+
 }

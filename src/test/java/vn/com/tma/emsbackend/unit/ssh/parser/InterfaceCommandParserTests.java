@@ -5,12 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import vn.com.tma.emsbackend.common.comparator.InterfaceComparator;
 import vn.com.tma.emsbackend.common.enums.Enum;
-import vn.com.tma.emsbackend.model.dto.InterfaceDTO;
 import vn.com.tma.emsbackend.model.entity.Interface;
 import vn.com.tma.emsbackend.model.entity.Port;
-import vn.com.tma.emsbackend.parser.InterfaceCommandParser;
+import vn.com.tma.emsbackend.parser.ssh.InterfaceCommandParser;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

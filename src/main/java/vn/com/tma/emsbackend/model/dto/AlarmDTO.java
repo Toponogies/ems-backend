@@ -6,7 +6,7 @@ import vn.com.tma.emsbackend.common.enums.Enum;
 @Data
 public class AlarmDTO {
     private String date;
-    private Enum.Severity severity;
+    private Enum.AlarmSeverity alarmSeverity;
     private String condition;
     private String description;
     private String alarmNumber;
