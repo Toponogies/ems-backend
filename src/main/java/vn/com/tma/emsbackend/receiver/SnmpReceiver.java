@@ -57,10 +57,10 @@ public class SnmpReceiver implements CommandResponder {
         dispatcher = new MultiThreadedMessageDispatcher(threadPool, mdi);
         // UDP address
         listenAddress = GenericAddress.parse(System.getProperty(
-                "snmp4j.listenAddress", "udp:0.0.0.0/3002"));
+                "snmp4j.listenAddress", "udp:0.0.0.0/8162"));
         // INFORM address
         informListenAddress = GenericAddress.parse(System.getProperty("snmp4j.listenAddress",
-                "udp:0.0.0.0/3001"));
+                "udp:0.0.0.0/8161"));
 
         // set the transport mapping with the listen address
         if (listenAddress instanceof UdpAddress) {
