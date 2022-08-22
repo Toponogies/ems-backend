@@ -12,6 +12,7 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.MultiThreadedMessageDispatcher;
 import org.snmp4j.util.ThreadPool;
 import org.springframework.stereotype.Component;
+import vn.com.tma.emsbackend.common.commandgenerator.SnmpTrapConfigCommandGenerator;
 import vn.com.tma.emsbackend.model.entity.Alarm;
 import vn.com.tma.emsbackend.parser.snmp.SnmpTrapParser;
 import vn.com.tma.emsbackend.service.alarm.AlarmService;
@@ -46,6 +47,7 @@ public class SnmpReceiver implements CommandResponder {
 
 
     public void start() {
+        log.info(SnmpTrapConfigCommandGenerator.editSnmpTrapV2c());
         // instantiate the message dispatcher
         MessageDispatcherImpl mdi = new MessageDispatcherImpl();
 

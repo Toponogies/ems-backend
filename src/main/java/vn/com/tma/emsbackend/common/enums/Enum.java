@@ -10,9 +10,10 @@ public class Enum {
     @Getter
     @AllArgsConstructor
     public enum State {
-        DISABLED("disabled"),
-        ENABLED("enabled");
+        DISABLED("disabled","disable"),
+        ENABLED("enabled", "enable");
         private final String value;
+        private final String action;
 
         public static Enum.State parse(String value) {
             if (NEGATIVE_WORD.contains(value.toUpperCase())) {
