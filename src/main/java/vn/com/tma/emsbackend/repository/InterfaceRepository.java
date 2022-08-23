@@ -21,4 +21,6 @@ public interface InterfaceRepository extends JpaRepository<Interface, Long> {
     List<Interface> findByNetworkDeviceId(long deviceId);
 
     List<Interface> findByNetworkDeviceLabel(String label);
+
+    boolean existsByNameAndNetworkDeviceId(String name, long deviceId);
 }

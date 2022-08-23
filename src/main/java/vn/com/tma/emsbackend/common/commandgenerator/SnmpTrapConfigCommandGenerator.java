@@ -10,8 +10,8 @@ public class SnmpTrapConfigCommandGenerator {
     private static final int DEFAULT_HOST_ID = 1;
     private static final Enum.State DEFAULT_SNMP_TRAP_STATE = Enum.State.ENABLED;
     private static final String DEFAULT_HOST_COMMUNICATION_STRING = "emsazerty!";
-    private static final int DEFAULT_HOST_PORT = 3001;
-    private static final String DEFAULT_EMS_IP = "192.168.1.2";
+    private static final int DEFAULT_HOST_PORT = 8161;
+    private static final String DEFAULT_EMS_IP = "0.0.0.0";
 
     public static String editSnmpTrapV2c() {
         return String.format(String.join(" ", COMMAND_PREFIX, "edit", SNMP_V2C,
@@ -25,5 +25,4 @@ public class SnmpTrapConfigCommandGenerator {
                 DEFAULT_EMS_IP,
                 DEFAULT_HOST_PORT);
     }
-
 }

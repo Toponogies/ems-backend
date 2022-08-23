@@ -89,17 +89,17 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional
     public InterfaceDTO add(InterfaceDTO interfaceDTO) {
-        // Check duplicate name
-        boolean checkIfNameExisted = interfaceRepository.existsByName(interfaceDTO.getName());
-        if (checkIfNameExisted) {
-            throw new InterfaceNameExistsException(interfaceDTO.getName());
-        }
-
         // Check device exist
         NetworkDeviceDTO networkDeviceDTO = networkDeviceService.getByLabel(interfaceDTO.getNetworkDevice());
         NetworkDevice networkDevice = new NetworkDevice();
         networkDevice.setId(networkDeviceDTO.getId());
+        networkDevice.setLabel(networkDeviceDTO.getLabel());
 
+        // Check duplicate name
+        boolean checkIfNameExisted = interfaceRepository.existsByNameAndNetworkDeviceId(interfaceDTO.getName(), networkDeviceDTO.getId());
+        if (checkIfNameExisted) {
+            throw new InterfaceNameExistsException(interfaceDTO.getName());
+        }
         // Check port exist
         PortDTO portDTO = portService.getByNameAndNetworkDevice(interfaceDTO.getPort(), interfaceDTO.getNetworkDevice());
         Port port = new Port();
